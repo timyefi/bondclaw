@@ -202,6 +202,7 @@
 - `soul_excel_spec_v1.md`
 - `soul_excel_case_analysis.md`
 - `excel_skill_adoption_plan.md`
+- `codex_execution_runbook.md`
 
 ## 8. 当前仓库内的事实基线
 
@@ -431,6 +432,7 @@
 - `soul_excel_spec_v1.md` 负责：Soul 的结构规范。
 - `soul_excel_case_analysis.md` 负责：基于案例的结构归纳依据。
 - `excel_skill_adoption_plan.md` 负责：Excel 生成技术路线与工具选择。
+- `codex_execution_runbook.md` 负责：如何实际开启和组织多个 Codex 执行线程。
 
 ## 16. 后续维护要求
 

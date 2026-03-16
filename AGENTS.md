@@ -8,6 +8,7 @@
 
 与 Soul Excel 相关的专项文档按以下关系使用：
 - `automation_blueprint.md`：总目标、总架构、总计划、状态看板
+- `codex_execution_runbook.md`：Codex 对话/agent 的执行顺序与启动方式
 - `soul_excel_spec_v1.md`：Soul 结构规范
 - `soul_excel_case_analysis.md`：案例归纳依据
 - `excel_skill_adoption_plan.md`：Excel 生成技术路线与工具选择
