@@ -1,27 +1,40 @@
 {
-  "generated_at": "2026-03-16T21:50:19+08:00",
+  "generated_at": "2026-03-17T07:43:16+08:00",
   "script": "/Users/yetim/project/financialanalysis/financial-analyzer/scripts/run_w6_regression.py",
   "selected_cases": [
     "henglong",
     "country_garden",
-    "hanghai"
+    "hanghai",
+    "missing_notes_workfile",
+    "invalid_notes_workfile"
   ],
   "summary": {
-    "selected_case_count": 3,
-    "passed_case_count": 3,
-    "failed_case_count": 0,
-    "all_passed": true
+    "selected_case_count": 5,
+    "expected_success_count": 3,
+    "expected_failure_count": 2,
+    "matched_case_count": 5,
+    "mismatched_case_count": 0,
+    "all_passed": true,
+    "evaluation_status_counts": {
+      "clean": 5,
+      "diff": 0,
+      "skipped": 0
+    }
   },
   "results": [
     {
       "case_id": "henglong",
       "label": "恒隆地产",
+      "expected_outcome": "success",
       "md_path": "/Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md",
       "notes_workfile": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/henglong_notes_workfile.json",
       "run_dir": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_henglong",
-      "started_at": "2026-03-16T21:50:04+08:00",
-      "finished_at": "2026-03-16T21:50:09+08:00",
+      "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/henglong_success.json",
+      "started_at": "2026-03-17T07:42:56+08:00",
+      "finished_at": "2026-03-17T07:43:04+08:00",
+      "expected_returncode": 0,
       "returncode": 0,
+      "matched": true,
       "passed": true,
       "command": [
         "/opt/homebrew/opt/python@3.13/bin/python3.13",
@@ -129,18 +142,170 @@
             ]
           },
           "errors": []
+        },
+        {
+          "name": "workbook_preview",
+          "passed": true,
+          "details": {
+            "preview_pdf_path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_henglong/preview.pdf",
+            "preview_pdf_exists": true,
+            "png_count": 20,
+            "png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png",
+              "preview-18.png",
+              "preview-19.png",
+              "preview-20.png"
+            ],
+            "png_sizes": {
+              "preview-01.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-02.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-03.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-04.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-05.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-06.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-07.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-08.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-09.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-10.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-11.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-12.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-13.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-14.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-15.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-16.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-17.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-18.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-19.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-20.png": {
+                "width": 1241,
+                "height": 1754
+              }
+            },
+            "expected_png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png",
+              "preview-18.png",
+              "preview-19.png",
+              "preview-20.png"
+            ]
+          },
+          "errors": []
+        }
+      ],
+      "evaluations": [
+        {
+          "name": "golden_success_subset",
+          "status": "clean",
+          "details": {
+            "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/henglong_success.json",
+            "golden_exists": true,
+            "diff_count": 0
+          },
+          "diffs": []
         }
       ]
     },
     {
       "case_id": "country_garden",
       "label": "碧桂园",
+      "expected_outcome": "success",
       "md_path": "/Users/yetim/project/financialanalysis/cases/碧桂园2024年年报分析.md",
       "notes_workfile": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/country_garden_notes_workfile.json",
       "run_dir": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_country_garden",
-      "started_at": "2026-03-16T21:50:09+08:00",
-      "finished_at": "2026-03-16T21:50:14+08:00",
+      "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/country_garden_success.json",
+      "started_at": "2026-03-17T07:43:04+08:00",
+      "finished_at": "2026-03-17T07:43:10+08:00",
+      "expected_returncode": 0,
       "returncode": 0,
+      "matched": true,
       "passed": true,
       "command": [
         "/opt/homebrew/opt/python@3.13/bin/python3.13",
@@ -248,18 +413,152 @@
             ]
           },
           "errors": []
+        },
+        {
+          "name": "workbook_preview",
+          "passed": true,
+          "details": {
+            "preview_pdf_path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_country_garden/preview.pdf",
+            "preview_pdf_exists": true,
+            "png_count": 17,
+            "png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png"
+            ],
+            "png_sizes": {
+              "preview-01.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-02.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-03.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-04.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-05.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-06.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-07.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-08.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-09.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-10.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-11.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-12.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-13.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-14.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-15.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-16.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-17.png": {
+                "width": 1241,
+                "height": 1754
+              }
+            },
+            "expected_png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png"
+            ]
+          },
+          "errors": []
+        }
+      ],
+      "evaluations": [
+        {
+          "name": "golden_success_subset",
+          "status": "clean",
+          "details": {
+            "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/country_garden_success.json",
+            "golden_exists": true,
+            "diff_count": 0
+          },
+          "diffs": []
         }
       ]
     },
     {
       "case_id": "hanghai",
       "label": "杭海新城控股",
+      "expected_outcome": "success",
       "md_path": "/Users/yetim/project/financialanalysis/cases/杭海新城控股2024年年报分析.md",
       "notes_workfile": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/hanghai_notes_workfile.json",
       "run_dir": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_hanghai",
-      "started_at": "2026-03-16T21:50:14+08:00",
-      "finished_at": "2026-03-16T21:50:19+08:00",
+      "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/hanghai_success.json",
+      "started_at": "2026-03-17T07:43:10+08:00",
+      "finished_at": "2026-03-17T07:43:15+08:00",
+      "expected_returncode": 0,
       "returncode": 0,
+      "matched": true,
       "passed": true,
       "command": [
         "/opt/homebrew/opt/python@3.13/bin/python3.13",
@@ -369,6 +668,338 @@
             ]
           },
           "errors": []
+        },
+        {
+          "name": "workbook_preview",
+          "passed": true,
+          "details": {
+            "preview_pdf_path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_hanghai/preview.pdf",
+            "preview_pdf_exists": true,
+            "png_count": 19,
+            "png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png",
+              "preview-18.png",
+              "preview-19.png"
+            ],
+            "png_sizes": {
+              "preview-01.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-02.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-03.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-04.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-05.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-06.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-07.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-08.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-09.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-10.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-11.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-12.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-13.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-14.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-15.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-16.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-17.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-18.png": {
+                "width": 1241,
+                "height": 1754
+              },
+              "preview-19.png": {
+                "width": 1241,
+                "height": 1754
+              }
+            },
+            "expected_png_files": [
+              "preview-01.png",
+              "preview-02.png",
+              "preview-03.png",
+              "preview-04.png",
+              "preview-05.png",
+              "preview-06.png",
+              "preview-07.png",
+              "preview-08.png",
+              "preview-09.png",
+              "preview-10.png",
+              "preview-11.png",
+              "preview-12.png",
+              "preview-13.png",
+              "preview-14.png",
+              "preview-15.png",
+              "preview-16.png",
+              "preview-17.png",
+              "preview-18.png",
+              "preview-19.png"
+            ]
+          },
+          "errors": []
+        }
+      ],
+      "evaluations": [
+        {
+          "name": "golden_success_subset",
+          "status": "clean",
+          "details": {
+            "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/hanghai_success.json",
+            "golden_exists": true,
+            "diff_count": 0
+          },
+          "diffs": []
+        }
+      ]
+    },
+    {
+      "case_id": "missing_notes_workfile",
+      "label": "恒隆地产 / 缺失 notes_workfile",
+      "expected_outcome": "failure",
+      "md_path": "/Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md",
+      "notes_workfile": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/missing_notes_workfile.json",
+      "run_dir": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile",
+      "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/missing_notes_workfile_failure.json",
+      "started_at": "2026-03-17T07:43:15+08:00",
+      "finished_at": "2026-03-17T07:43:15+08:00",
+      "expected_returncode": 1,
+      "returncode": 1,
+      "matched": true,
+      "passed": true,
+      "command": [
+        "/opt/homebrew/opt/python@3.13/bin/python3.13",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/scripts/financial_analyzer.py",
+        "--md",
+        "/Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md",
+        "--notes-workfile",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/missing_notes_workfile.json",
+        "--run-dir",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile"
+      ],
+      "stdout_tail": "[INFO] 输入文件: /Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md\n[INFO] 运行目录: /Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile",
+      "stderr_tail": "",
+      "checks": [
+        {
+          "name": "run_manifest_failure",
+          "passed": true,
+          "details": {
+            "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/run_manifest.json",
+            "exists": true,
+            "expected_failure_reason": "notes_workfile_missing",
+            "status": "failed",
+            "failure_reason": "notes_workfile_missing",
+            "notes_locator_status": "failed",
+            "artifact_names": [
+              "analysis_report",
+              "chapter_records",
+              "final_data",
+              "financial_output",
+              "focus_list",
+              "pending_updates",
+              "run_manifest",
+              "soul_export_payload"
+            ],
+            "run_manifest_artifact": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/run_manifest.json",
+            "existing_artifact_names": [
+              "run_manifest"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "name": "failure_outputs_absent",
+          "passed": true,
+          "details": {
+            "checked_paths": {
+              "analysis_report.md": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/analysis_report.md",
+                "exists": false
+              },
+              "soul_export_payload.json": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/soul_export_payload.json",
+                "exists": false
+              },
+              "financial_output.xlsx": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/financial_output.xlsx",
+                "exists": false
+              },
+              "preview.pdf": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_missing_notes_workfile/preview.pdf",
+                "exists": false
+              }
+            },
+            "preview_png_count": 0,
+            "preview_png_files": []
+          },
+          "errors": []
+        }
+      ],
+      "evaluations": [
+        {
+          "name": "golden_failure_subset",
+          "status": "clean",
+          "details": {
+            "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/missing_notes_workfile_failure.json",
+            "golden_exists": true,
+            "diff_count": 0
+          },
+          "diffs": []
+        }
+      ]
+    },
+    {
+      "case_id": "invalid_notes_workfile",
+      "label": "恒隆地产 / 无效 notes_workfile",
+      "expected_outcome": "failure",
+      "md_path": "/Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md",
+      "notes_workfile": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/henglong_notes_workfile_invalid.json",
+      "run_dir": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile",
+      "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/invalid_notes_workfile_failure.json",
+      "started_at": "2026-03-17T07:43:15+08:00",
+      "finished_at": "2026-03-17T07:43:15+08:00",
+      "expected_returncode": 1,
+      "returncode": 1,
+      "matched": true,
+      "passed": true,
+      "command": [
+        "/opt/homebrew/opt/python@3.13/bin/python3.13",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/scripts/financial_analyzer.py",
+        "--md",
+        "/Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md",
+        "--notes-workfile",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/henglong_notes_workfile_invalid.json",
+        "--run-dir",
+        "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile"
+      ],
+      "stdout_tail": "[INFO] 输入文件: /Users/yetim/project/financialanalysis/output/恒隆地产/恒隆地产2024年報/恒隆地产2024年報.md\n[INFO] 运行目录: /Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile",
+      "stderr_tail": "",
+      "checks": [
+        {
+          "name": "run_manifest_failure",
+          "passed": true,
+          "details": {
+            "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/run_manifest.json",
+            "exists": true,
+            "expected_failure_reason": "notes_workfile_invalid",
+            "status": "failed",
+            "failure_reason": "notes_workfile_invalid",
+            "notes_locator_status": "failed",
+            "artifact_names": [
+              "analysis_report",
+              "chapter_records",
+              "final_data",
+              "financial_output",
+              "focus_list",
+              "pending_updates",
+              "run_manifest",
+              "soul_export_payload"
+            ],
+            "run_manifest_artifact": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/run_manifest.json",
+            "existing_artifact_names": [
+              "run_manifest"
+            ]
+          },
+          "errors": []
+        },
+        {
+          "name": "failure_outputs_absent",
+          "passed": true,
+          "details": {
+            "checked_paths": {
+              "analysis_report.md": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/analysis_report.md",
+                "exists": false
+              },
+              "soul_export_payload.json": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/soul_export_payload.json",
+                "exists": false
+              },
+              "financial_output.xlsx": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/financial_output.xlsx",
+                "exists": false
+              },
+              "preview.pdf": {
+                "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_invalid_notes_workfile/preview.pdf",
+                "exists": false
+              }
+            },
+            "preview_png_count": 0,
+            "preview_png_files": []
+          },
+          "errors": []
+        }
+      ],
+      "evaluations": [
+        {
+          "name": "golden_failure_subset",
+          "status": "clean",
+          "details": {
+            "golden_path": "/Users/yetim/project/financialanalysis/financial-analyzer/testdata/w6_golden/invalid_notes_workfile_failure.json",
+            "golden_exists": true,
+            "diff_count": 0
+          },
+          "diffs": []
         }
       ]
     }
@@ -406,7 +1037,7 @@
       "id": "mixed_legacy_and_soul_workbooks",
       "category": "observed_repo_state",
       "title": "历史目录同时存在旧内部 workbook 与新 Soul workbook",
-      "detail": "W6 v1 只认当前脚本重跑后的 financial_output.xlsx，不直接以历史目录判定通过。",
+      "detail": "W6 只认当前脚本重跑后的 financial_output.xlsx，不直接以历史目录判定通过。",
       "evidence": [
         {
           "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/henglong_soul_contract/financial_output.xlsx",
@@ -434,29 +1065,23 @@
       ]
     },
     {
-      "id": "failure_fixture_not_in_happy_path_baseline",
+      "id": "workbook_cell_level_golden_deferred",
       "category": "known_scope_boundary",
-      "title": "失败路径样本已存在，但未纳入本轮 happy-path 基线",
-      "detail": "missing_notes_workfile 可作为 W6.1 的失败态回归输入，本轮最小回归仅覆盖 3 个成功案例。",
+      "title": "Workbook 单元格级 golden diff 仍暂缓",
+      "detail": "当前 W6.1 仅冻结 payload/manifest 子集；`w6_country_garden` 的 `01_kpi_dashboard` 仍存在 XML 值兼容性问题，暂不做整本或逐单元格 golden。",
       "evidence": [
         {
-          "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/missing_notes_workfile/run_manifest.json",
-          "failure_reason": "notes_workfile_missing"
+          "path": "/Users/yetim/project/financialanalysis/financial-analyzer/test_runs/w6_country_garden/financial_output.xlsx",
+          "sheet_name": "01_kpi_dashboard",
+          "worksheet_xml": "xl/worksheets/sheet2.xml"
         }
       ]
     },
     {
-      "id": "visual_review_not_covered",
+      "id": "preview_layout_semantics_not_covered",
       "category": "known_scope_boundary",
-      "title": "当前最小回归不覆盖 workbook 视觉预览质量",
-      "detail": "本轮只验证文件生成和结构约束，不判断预览 PDF/PNG、版式和视觉一致性。",
-      "evidence": []
-    },
-    {
-      "id": "golden_diff_not_covered",
-      "category": "known_scope_boundary",
-      "title": "当前最小回归不覆盖 JSON/单元格内容级 golden diff",
-      "detail": "W6 v1 定义为 smoke regression，不冻结 payload 内容或 Excel 单元格值。",
+      "title": "当前预览检查只覆盖结构，不覆盖版式语义",
+      "detail": "W6.1 只校验 preview 产物存在性、连续编号和尺寸一致性，不判断分页质量、内容遮挡或视觉美观。",
       "evidence": []
     }
   ],

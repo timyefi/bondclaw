@@ -445,10 +445,13 @@ Subagents 协作约束：
 - 已生成 `financial-analyzer/test_runs/w6_henglong`、`w6_country_garden`、`w6_hanghai` 三个专用回归目录
 - 已生成 `financial-analyzer/test_runs/w6_regression_results.json` 与 `financial-analyzer/test_runs/w6_regression_report.md`
 - 已确认 W6 当前基线只认“当前主线重跑产物”，不以历史 `*_soul_contract`、`*_v1_1_alpha`、`henglong_v3` 等目录判定通过
+- W6.1 已将 `notes_workfile_missing`、`notes_workfile_invalid` 纳入失败路径回归，并新增 `w6_missing_notes_workfile`、`w6_invalid_notes_workfile` 专用目录
+- W6.1 已把 workbook 预览结构检查纳入硬门禁：要求生成 `preview.pdf` 与连续编号的 `preview-*.png`，且 PNG 尺寸一致
+- W6.1 已新增按案例维护的 golden 基线 JSON，并对成功态 payload 子集、失败态 manifest 子集执行非门禁 diff 评估
 
 ### 进行中
 
-- 更细粒度导出 QA：失败路径回归、视觉预览检查、内容级 golden diff
+- 更细粒度导出 QA 的剩余项：workbook 单元格级 golden diff、预览版式语义检查、`soul_export_failed` 等更深失败矩阵
 
 ### 待启动
 
@@ -458,7 +461,7 @@ Subagents 协作约束：
 ### 下一步
 
 - 先推进 W5：基于现有 3 个案例的 `pending_updates.json` 建立跨案例汇总、分级和审核入口。
-- 并行补 W6.1：把 `missing_notes_workfile` 纳入失败路径回归，并评估是否增加 workbook 预览和 golden diff；这一轨道最适合结合 `subagents`。
+- W6 后续增强优先聚焦 exporter 兼容性修复，解决 `w6_country_garden` 的 workbook XML 值问题，再评估单元格级 golden diff。
 - 待 W5/W6.1 边界稳定后，再进入 W7 的批处理与任务编排。
 
 ## 15. 与其他文档的关系

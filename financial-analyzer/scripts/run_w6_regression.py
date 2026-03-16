@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-W6 最小可用回归检查入口。
+W6.1 回归检查入口。
 """
 
 import argparse
@@ -16,6 +16,8 @@ from openpyxl import load_workbook
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 TEST_RUNS_DIR = ROOT_DIR / "financial-analyzer" / "test_runs"
+TESTDATA_DIR = ROOT_DIR / "financial-analyzer" / "testdata"
+GOLDEN_DIR = TESTDATA_DIR / "w6_golden"
 ANALYZER_SCRIPT = ROOT_DIR / "financial-analyzer" / "scripts" / "financial_analyzer.py"
 
 CORE_SHEETS = [
@@ -36,24 +38,60 @@ REQUIRED_PAYLOAD_KEYS = [
     "evidence_index",
 ]
 
+SUCCESS_OUTPUT_FILENAMES = [
+    "analysis_report.md",
+    "soul_export_payload.json",
+    "financial_output.xlsx",
+    "preview.pdf",
+]
+
 CASES = {
     "henglong": {
         "label": "恒隆地产",
+        "expected_outcome": "success",
+        "expected_returncode": 0,
         "md_path": ROOT_DIR / "output" / "恒隆地产" / "恒隆地产2024年報" / "恒隆地产2024年報.md",
-        "notes_workfile": ROOT_DIR / "financial-analyzer" / "testdata" / "henglong_notes_workfile.json",
+        "notes_workfile": TESTDATA_DIR / "henglong_notes_workfile.json",
         "run_dir": TEST_RUNS_DIR / "w6_henglong",
+        "golden_path": GOLDEN_DIR / "henglong_success.json",
     },
     "country_garden": {
         "label": "碧桂园",
+        "expected_outcome": "success",
+        "expected_returncode": 0,
         "md_path": ROOT_DIR / "cases" / "碧桂园2024年年报分析.md",
-        "notes_workfile": ROOT_DIR / "financial-analyzer" / "testdata" / "country_garden_notes_workfile.json",
+        "notes_workfile": TESTDATA_DIR / "country_garden_notes_workfile.json",
         "run_dir": TEST_RUNS_DIR / "w6_country_garden",
+        "golden_path": GOLDEN_DIR / "country_garden_success.json",
     },
     "hanghai": {
         "label": "杭海新城控股",
+        "expected_outcome": "success",
+        "expected_returncode": 0,
         "md_path": ROOT_DIR / "cases" / "杭海新城控股2024年年报分析.md",
-        "notes_workfile": ROOT_DIR / "financial-analyzer" / "testdata" / "hanghai_notes_workfile.json",
+        "notes_workfile": TESTDATA_DIR / "hanghai_notes_workfile.json",
         "run_dir": TEST_RUNS_DIR / "w6_hanghai",
+        "golden_path": GOLDEN_DIR / "hanghai_success.json",
+    },
+    "missing_notes_workfile": {
+        "label": "恒隆地产 / 缺失 notes_workfile",
+        "expected_outcome": "failure",
+        "expected_returncode": 1,
+        "expected_failure_reason": "notes_workfile_missing",
+        "md_path": ROOT_DIR / "output" / "恒隆地产" / "恒隆地产2024年報" / "恒隆地产2024年報.md",
+        "notes_workfile": TESTDATA_DIR / "missing_notes_workfile.json",
+        "run_dir": TEST_RUNS_DIR / "w6_missing_notes_workfile",
+        "golden_path": GOLDEN_DIR / "missing_notes_workfile_failure.json",
+    },
+    "invalid_notes_workfile": {
+        "label": "恒隆地产 / 无效 notes_workfile",
+        "expected_outcome": "failure",
+        "expected_returncode": 1,
+        "expected_failure_reason": "notes_workfile_invalid",
+        "md_path": ROOT_DIR / "output" / "恒隆地产" / "恒隆地产2024年報" / "恒隆地产2024年報.md",
+        "notes_workfile": TESTDATA_DIR / "henglong_notes_workfile_invalid.json",
+        "run_dir": TEST_RUNS_DIR / "w6_invalid_notes_workfile",
+        "golden_path": GOLDEN_DIR / "invalid_notes_workfile_failure.json",
     },
 }
 
@@ -93,11 +131,33 @@ def make_check(name, passed, details=None, errors=None):
     }
 
 
+def make_evaluation(name, status, details=None, diffs=None):
+    return {
+        "name": name,
+        "status": status,
+        "details": details or {},
+        "diffs": diffs or [],
+    }
+
+
 def normalize_path(value):
     return str(Path(value).resolve())
 
 
-def validate_manifest(run_dir):
+def build_command(case_config):
+    return [
+        sys.executable,
+        str(ANALYZER_SCRIPT),
+        "--md",
+        str(case_config["md_path"]),
+        "--notes-workfile",
+        str(case_config["notes_workfile"]),
+        "--run-dir",
+        str(case_config["run_dir"]),
+    ]
+
+
+def validate_success_manifest(run_dir):
     manifest_path = run_dir / "run_manifest.json"
     errors = []
     details = {
@@ -149,6 +209,64 @@ def validate_manifest(run_dir):
 
     details["artifacts"] = artifact_details
     return make_check("run_manifest", not errors, details, errors), manifest
+
+
+def validate_failure_manifest(run_dir, expected_failure_reason):
+    manifest_path = run_dir / "run_manifest.json"
+    errors = []
+    details = {
+        "path": str(manifest_path),
+        "exists": manifest_path.exists(),
+        "expected_failure_reason": expected_failure_reason,
+    }
+    manifest = None
+
+    if not manifest_path.exists():
+        errors.append("run_manifest.json 未生成")
+        return make_check("run_manifest_failure", False, details, errors), manifest
+
+    manifest = read_json(manifest_path)
+    details["status"] = manifest.get("status")
+    details["failure_reason"] = manifest.get("failure_reason")
+    details["notes_locator_status"] = ((manifest.get("notes_locator") or {}).get("status"))
+    artifact_names = sorted((manifest.get("artifacts") or {}).keys())
+    details["artifact_names"] = artifact_names
+
+    if manifest.get("status") != "failed":
+        errors.append(f"status 不是 failed: {manifest.get('status')!r}")
+    if manifest.get("failure_reason") != expected_failure_reason:
+        errors.append(
+            "failure_reason 不匹配: "
+            f"expected={expected_failure_reason!r}, actual={manifest.get('failure_reason')!r}"
+        )
+    if details["notes_locator_status"] != "failed":
+        errors.append(
+            "notes_locator.status 不匹配: "
+            f"expected='failed', actual={details['notes_locator_status']!r}"
+        )
+
+    artifacts = manifest.get("artifacts") or {}
+    run_manifest_artifact = artifacts.get("run_manifest")
+    expected_run_manifest_path = str((run_dir / "run_manifest.json").resolve())
+    details["run_manifest_artifact"] = run_manifest_artifact
+    if run_manifest_artifact != expected_run_manifest_path:
+        errors.append(
+            "artifacts.run_manifest 未指向本次 run dir: "
+            f"{run_manifest_artifact!r}"
+        )
+
+    existing_artifact_names = []
+    for name, artifact_path in artifacts.items():
+        if Path(artifact_path).exists():
+            existing_artifact_names.append(name)
+    details["existing_artifact_names"] = sorted(existing_artifact_names)
+    if sorted(existing_artifact_names) != ["run_manifest"]:
+        errors.append(
+            "失败态实际存在的 artifact 不符合预期: "
+            + ", ".join(sorted(existing_artifact_names))
+        )
+
+    return make_check("run_manifest_failure", not errors, details, errors), manifest
 
 
 def validate_analysis_report(run_dir):
@@ -260,23 +378,208 @@ def validate_workbook(run_dir, payload):
     return make_check("financial_output", not errors, details, errors)
 
 
+def read_png_size(path):
+    with open(path, "rb") as handle:
+        header = handle.read(24)
+
+    png_signature = b"\x89PNG\r\n\x1a\n"
+    if len(header) < 24 or header[:8] != png_signature:
+        raise ValueError(f"不是有效 PNG 文件: {path}")
+
+    width = int.from_bytes(header[16:20], byteorder="big")
+    height = int.from_bytes(header[20:24], byteorder="big")
+    return width, height
+
+
+def validate_preview(run_dir):
+    errors = []
+    preview_pdf_path = run_dir / "preview.pdf"
+    png_paths = sorted(run_dir.glob("preview-*.png"))
+    details = {
+        "preview_pdf_path": str(preview_pdf_path),
+        "preview_pdf_exists": preview_pdf_path.exists(),
+        "png_count": len(png_paths),
+        "png_files": [path.name for path in png_paths],
+        "png_sizes": {},
+    }
+
+    if not preview_pdf_path.exists():
+        errors.append("preview.pdf 未生成")
+
+    if not png_paths:
+        errors.append("preview-*.png 未生成")
+        return make_check("workbook_preview", False, details, errors)
+
+    expected_names = [f"preview-{index:02d}.png" for index in range(1, len(png_paths) + 1)]
+    actual_names = [path.name for path in png_paths]
+    details["expected_png_files"] = expected_names
+    if actual_names != expected_names:
+        errors.append("preview PNG 文件名不是从 01 开始连续编号")
+
+    unique_sizes = set()
+    for path in png_paths:
+        try:
+            size = read_png_size(path)
+        except ValueError as exc:
+            errors.append(str(exc))
+            continue
+        details["png_sizes"][path.name] = {
+            "width": size[0],
+            "height": size[1],
+        }
+        unique_sizes.add(size)
+
+    if len(unique_sizes) > 1:
+        errors.append("preview PNG 尺寸不一致")
+
+    return make_check("workbook_preview", not errors, details, errors)
+
+
+def validate_failure_outputs_absent(run_dir):
+    errors = []
+    details = {
+        "checked_paths": {},
+    }
+
+    for filename in SUCCESS_OUTPUT_FILENAMES:
+        path = run_dir / filename
+        exists = path.exists()
+        details["checked_paths"][filename] = {
+            "path": str(path),
+            "exists": exists,
+        }
+        if exists:
+            errors.append(f"失败态不应生成 {filename}")
+
+    preview_pngs = sorted(run_dir.glob("preview-*.png"))
+    details["preview_png_count"] = len(preview_pngs)
+    details["preview_png_files"] = [path.name for path in preview_pngs]
+    if preview_pngs:
+        errors.append("失败态不应生成 preview-*.png")
+
+    return make_check("failure_outputs_absent", not errors, details, errors)
+
+
+def build_success_golden_subset(payload):
+    entity_profile = payload.get("entity_profile") or {}
+    return {
+        "entity_profile": {
+            key: entity_profile.get(key)
+            for key in [
+                "company_name",
+                "report_period",
+                "currency",
+                "report_type",
+                "audit_opinion",
+                "industry_tag",
+            ]
+        },
+        "module_manifest": [
+            {key: item.get(key) for key in ["module_key", "sheet_name", "enabled"]}
+            for item in payload.get("module_manifest") or []
+        ],
+        "overview": {
+            "key_risks": [
+                {key: item.get(key) for key in ["risk_code", "risk_level"]}
+                for item in (payload.get("overview") or {}).get("key_risks") or []
+            ]
+        },
+        "debt_profile": {
+            "totals": [
+                {key: item.get(key) for key in ["metric_code", "value", "unit", "source_status"]}
+                for item in (payload.get("debt_profile") or {}).get("totals") or []
+            ]
+        },
+        "liquidity_and_covenants": {
+            "cash_metrics": [
+                {key: item.get(key) for key in ["metric_code", "value", "unit", "source_status"]}
+                for item in (payload.get("liquidity_and_covenants") or {}).get("cash_metrics") or []
+            ]
+        },
+    }
+
+
+def build_failure_golden_subset(manifest):
+    notes_locator = manifest.get("notes_locator") or {}
+    notes_catalog_summary = manifest.get("notes_catalog_summary") or {}
+    return {
+        "status": manifest.get("status"),
+        "failure_reason": manifest.get("failure_reason"),
+        "notes_locator": {
+            "status": notes_locator.get("status"),
+        },
+        "notes_catalog_summary": {
+            "note_chapter_count": notes_catalog_summary.get("note_chapter_count"),
+        },
+        "existing_artifacts": sorted(
+            name
+            for name, artifact_path in (manifest.get("artifacts") or {}).items()
+            if Path(artifact_path).exists()
+        ),
+    }
+
+
+def collect_diffs(expected, actual, path, diffs):
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        all_keys = sorted(set(expected.keys()) | set(actual.keys()))
+        for key in all_keys:
+            next_path = f"{path}.{key}" if path else key
+            if key not in expected:
+                diffs.append(
+                    f"{next_path}: expected=<missing>, actual={json.dumps(actual[key], ensure_ascii=False)}"
+                )
+                continue
+            if key not in actual:
+                diffs.append(
+                    f"{next_path}: expected={json.dumps(expected[key], ensure_ascii=False)}, actual=<missing>"
+                )
+                continue
+            collect_diffs(expected[key], actual[key], next_path, diffs)
+        return
+
+    if isinstance(expected, list) and isinstance(actual, list):
+        if len(expected) != len(actual):
+            diffs.append(f"{path}: expected_len={len(expected)}, actual_len={len(actual)}")
+        for index, (expected_item, actual_item) in enumerate(zip(expected, actual)):
+            next_path = f"{path}[{index}]"
+            collect_diffs(expected_item, actual_item, next_path, diffs)
+        return
+
+    if expected != actual:
+        diffs.append(
+            f"{path}: expected={json.dumps(expected, ensure_ascii=False)}, "
+            f"actual={json.dumps(actual, ensure_ascii=False)}"
+        )
+
+
+def evaluate_golden(case_config, actual_subset, evaluation_name):
+    golden_path = case_config["golden_path"]
+    details = {
+        "golden_path": str(golden_path),
+        "golden_exists": golden_path.exists(),
+    }
+    if not golden_path.exists():
+        return make_evaluation(evaluation_name, "skipped", details, ["golden 基线文件不存在"])
+
+    expected_subset = read_json(golden_path)
+    diffs = []
+    collect_diffs(expected_subset, actual_subset, "", diffs)
+    details["diff_count"] = len(diffs)
+    return make_evaluation(
+        evaluation_name,
+        "clean" if not diffs else "diff",
+        details,
+        diffs,
+    )
+
+
 def run_case(case_id, case_config):
     run_dir = case_config["run_dir"]
     if run_dir.exists():
         shutil.rmtree(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    command = [
-        sys.executable,
-        str(ANALYZER_SCRIPT),
-        "--md",
-        str(case_config["md_path"]),
-        "--notes-workfile",
-        str(case_config["notes_workfile"]),
-        "--run-dir",
-        str(run_dir),
-    ]
-
+    command = build_command(case_config)
     started_at = now_iso()
     completed = subprocess.run(
         command,
@@ -287,27 +590,80 @@ def run_case(case_id, case_config):
     )
     finished_at = now_iso()
 
-    manifest_check, manifest = validate_manifest(run_dir)
-    report_check = validate_analysis_report(run_dir)
-    payload_check, payload = validate_payload(run_dir)
-    workbook_check = validate_workbook(run_dir, payload)
-    checks = [manifest_check, report_check, payload_check, workbook_check]
-    passed = completed.returncode == 0 and all(item["passed"] for item in checks)
+    checks = []
+    evaluations = []
+    if case_config["expected_outcome"] == "success":
+        manifest_check, manifest = validate_success_manifest(run_dir)
+        report_check = validate_analysis_report(run_dir)
+        payload_check, payload = validate_payload(run_dir)
+        workbook_check = validate_workbook(run_dir, payload)
+        preview_check = validate_preview(run_dir)
+        checks = [manifest_check, report_check, payload_check, workbook_check, preview_check]
+        if payload is not None:
+            evaluations.append(
+                evaluate_golden(
+                    case_config,
+                    build_success_golden_subset(payload),
+                    "golden_success_subset",
+                )
+            )
+        else:
+            evaluations.append(
+                make_evaluation(
+                    "golden_success_subset",
+                    "skipped",
+                    {"golden_path": str(case_config["golden_path"])},
+                    ["payload 缺失，无法执行 golden diff"],
+                )
+            )
+    else:
+        manifest_check, manifest = validate_failure_manifest(
+            run_dir,
+            case_config["expected_failure_reason"],
+        )
+        absent_check = validate_failure_outputs_absent(run_dir)
+        checks = [manifest_check, absent_check]
+        if manifest is not None:
+            evaluations.append(
+                evaluate_golden(
+                    case_config,
+                    build_failure_golden_subset(manifest),
+                    "golden_failure_subset",
+                )
+            )
+        else:
+            evaluations.append(
+                make_evaluation(
+                    "golden_failure_subset",
+                    "skipped",
+                    {"golden_path": str(case_config["golden_path"])},
+                    ["run_manifest 缺失，无法执行 golden diff"],
+                )
+            )
+
+    matched = completed.returncode == case_config["expected_returncode"] and all(
+        item["passed"] for item in checks
+    )
 
     return {
         "case_id": case_id,
         "label": case_config["label"],
+        "expected_outcome": case_config["expected_outcome"],
         "md_path": str(case_config["md_path"]),
         "notes_workfile": str(case_config["notes_workfile"]),
         "run_dir": str(run_dir),
+        "golden_path": str(case_config["golden_path"]),
         "started_at": started_at,
         "finished_at": finished_at,
+        "expected_returncode": case_config["expected_returncode"],
         "returncode": completed.returncode,
-        "passed": passed,
+        "matched": matched,
+        "passed": matched,
         "command": command,
         "stdout_tail": tail_text(completed.stdout),
         "stderr_tail": tail_text(completed.stderr),
         "checks": checks,
+        "evaluations": evaluations,
     }
 
 
@@ -374,7 +730,7 @@ def collect_known_gaps():
                 "id": "mixed_legacy_and_soul_workbooks",
                 "category": "observed_repo_state",
                 "title": "历史目录同时存在旧内部 workbook 与新 Soul workbook",
-                "detail": "W6 v1 只认当前脚本重跑后的 financial_output.xlsx，不直接以历史目录判定通过。",
+                "detail": "W6 只认当前脚本重跑后的 financial_output.xlsx，不直接以历史目录判定通过。",
                 "evidence": [
                     {
                         "path": str(legacy_workbook),
@@ -387,105 +743,156 @@ def collect_known_gaps():
                 ],
             })
 
-    failure_fixture_manifest = TEST_RUNS_DIR / "missing_notes_workfile" / "run_manifest.json"
-    if failure_fixture_manifest.exists():
-        manifest = read_json(failure_fixture_manifest)
-        if manifest.get("status") == "failed":
-            gaps.append({
-                "id": "failure_fixture_not_in_happy_path_baseline",
-                "category": "known_scope_boundary",
-                "title": "失败路径样本已存在，但未纳入本轮 happy-path 基线",
-                "detail": "missing_notes_workfile 可作为 W6.1 的失败态回归输入，本轮最小回归仅覆盖 3 个成功案例。",
-                "evidence": [
-                    {
-                        "path": str(failure_fixture_manifest),
-                        "failure_reason": manifest.get("failure_reason"),
-                    }
-                ],
-            })
+    country_garden_workbook = TEST_RUNS_DIR / "w6_country_garden" / "financial_output.xlsx"
+    if country_garden_workbook.exists():
+        gaps.append({
+            "id": "workbook_cell_level_golden_deferred",
+            "category": "known_scope_boundary",
+            "title": "Workbook 单元格级 golden diff 仍暂缓",
+            "detail": "当前 W6.1 仅冻结 payload/manifest 子集；`w6_country_garden` 的 `01_kpi_dashboard` 仍存在 XML 值兼容性问题，暂不做整本或逐单元格 golden。",
+            "evidence": [
+                {
+                    "path": str(country_garden_workbook),
+                    "sheet_name": "01_kpi_dashboard",
+                    "worksheet_xml": "xl/worksheets/sheet2.xml",
+                }
+            ],
+        })
 
-    gaps.extend([
-        {
-            "id": "visual_review_not_covered",
-            "category": "known_scope_boundary",
-            "title": "当前最小回归不覆盖 workbook 视觉预览质量",
-            "detail": "本轮只验证文件生成和结构约束，不判断预览 PDF/PNG、版式和视觉一致性。",
-            "evidence": [],
-        },
-        {
-            "id": "golden_diff_not_covered",
-            "category": "known_scope_boundary",
-            "title": "当前最小回归不覆盖 JSON/单元格内容级 golden diff",
-            "detail": "W6 v1 定义为 smoke regression，不冻结 payload 内容或 Excel 单元格值。",
-            "evidence": [],
-        },
-    ])
+    gaps.append({
+        "id": "preview_layout_semantics_not_covered",
+        "category": "known_scope_boundary",
+        "title": "当前预览检查只覆盖结构，不覆盖版式语义",
+        "detail": "W6.1 只校验 preview 产物存在性、连续编号和尺寸一致性，不判断分页质量、内容遮挡或视觉美观。",
+        "evidence": [],
+    })
 
     return gaps
 
 
 def build_summary(results):
-    passed_cases = sum(1 for item in results if item["passed"])
+    evaluation_status_counts = {
+        "clean": 0,
+        "diff": 0,
+        "skipped": 0,
+    }
+    for result in results:
+        for evaluation in result["evaluations"]:
+            status = evaluation["status"]
+            if status in evaluation_status_counts:
+                evaluation_status_counts[status] += 1
+
+    expected_success_count = sum(1 for item in results if item["expected_outcome"] == "success")
+    expected_failure_count = sum(1 for item in results if item["expected_outcome"] == "failure")
+    matched_case_count = sum(1 for item in results if item["matched"])
+    mismatched_case_count = len(results) - matched_case_count
     return {
         "selected_case_count": len(results),
-        "passed_case_count": passed_cases,
-        "failed_case_count": len(results) - passed_cases,
-        "all_passed": passed_cases == len(results),
+        "expected_success_count": expected_success_count,
+        "expected_failure_count": expected_failure_count,
+        "matched_case_count": matched_case_count,
+        "mismatched_case_count": mismatched_case_count,
+        "all_passed": mismatched_case_count == 0,
+        "evaluation_status_counts": evaluation_status_counts,
     }
 
 
+def render_case_block(result):
+    status_text = "MATCHED" if result["matched"] else "MISMATCHED"
+    lines = [
+        f"### {result['label']} (`{result['case_id']}`) - {status_text}",
+        "",
+        f"- expected_outcome: `{result['expected_outcome']}`",
+        f"- run dir: `{result['run_dir']}`",
+        f"- markdown: `{result['md_path']}`",
+        f"- notes_workfile: `{result['notes_workfile']}`",
+        f"- expected_returncode: `{result['expected_returncode']}`",
+        f"- returncode: `{result['returncode']}`",
+        "",
+        "#### Checks",
+        "",
+    ]
+
+    for check in result["checks"]:
+        marker = "PASS" if check["passed"] else "FAIL"
+        lines.append(f"- `{check['name']}`: {marker}")
+        for error in check["errors"]:
+            lines.append(f"  - {error}")
+
+    if result["stdout_tail"]:
+        lines.extend([
+            "",
+            "```text",
+            result["stdout_tail"],
+            "```",
+        ])
+
+    if result["stderr_tail"]:
+        lines.extend([
+            "",
+            "```text",
+            result["stderr_tail"],
+            "```",
+        ])
+
+    lines.append("")
+    return lines
+
+
 def render_report(results_payload):
+    summary = results_payload["summary"]
+    success_results = [
+        result for result in results_payload["results"] if result["expected_outcome"] == "success"
+    ]
+    failure_results = [
+        result for result in results_payload["results"] if result["expected_outcome"] == "failure"
+    ]
     lines = [
         "# W6 Regression Report",
         "",
         f"- 生成时间：{results_payload['generated_at']}",
         f"- 结果 JSON：`{results_payload['results_path']}`",
-        f"- 汇总：{results_payload['summary']['passed_case_count']}/{results_payload['summary']['selected_case_count']} 通过",
+        f"- 匹配情况：{summary['matched_case_count']}/{summary['selected_case_count']} matched",
+        f"- 成功案例：{summary['expected_success_count']}",
+        f"- 失败案例：{summary['expected_failure_count']}",
+        f"- Golden Diff：clean={summary['evaluation_status_counts']['clean']}, diff={summary['evaluation_status_counts']['diff']}, skipped={summary['evaluation_status_counts']['skipped']}",
         "",
         "## 验证范围",
         "",
-        "- 固定 3 个案例重跑 `financial_analyzer.py`。",
-        "- 仅检查 `run_manifest.json`、`analysis_report.md`、`soul_export_payload.json`、`financial_output.xlsx` 的生成结果和结构约束。",
+        "- 固定 3 个成功案例重跑 `financial_analyzer.py`，并验证 `run_manifest.json`、`analysis_report.md`、`soul_export_payload.json`、`financial_output.xlsx`、`preview.pdf`、`preview-*.png`。",
+        "- 固定 2 个失败案例重跑 `financial_analyzer.py`，并验证失败态 `run_manifest.json`、失败原因和成功态产物缺失。",
+        "- Golden diff 仅评估受控 payload/manifest 子集，不把 diff 作为退出码门禁。",
         "- 不把历史 `test_runs` 目录作为通过依据。",
         "",
-        "## 案例结果",
+        "## 成功案例",
         "",
     ]
 
+    for result in success_results:
+        lines.extend(render_case_block(result))
+
+    lines.extend([
+        "## 失败路径回归",
+        "",
+    ])
+    for result in failure_results:
+        lines.extend(render_case_block(result))
+
+    lines.extend([
+        "## Golden Diff 评估",
+        "",
+    ])
     for result in results_payload["results"]:
-        status_text = "PASS" if result["passed"] else "FAIL"
-        lines.extend([
-            f"### {result['label']} (`{result['case_id']}`) - {status_text}",
-            "",
-            f"- run dir: `{result['run_dir']}`",
-            f"- markdown: `{result['md_path']}`",
-            f"- notes_workfile: `{result['notes_workfile']}`",
-            f"- returncode: `{result['returncode']}`",
-            "",
-        ])
-
-        for check in result["checks"]:
-            marker = "PASS" if check["passed"] else "FAIL"
-            lines.append(f"- `{check['name']}`: {marker}")
-            for error in check["errors"]:
-                lines.append(f"  - {error}")
-
-        if result["stdout_tail"]:
-            lines.extend([
-                "",
-                "```text",
-                result["stdout_tail"],
-                "```",
-            ])
-
-        if result["stderr_tail"]:
-            lines.extend([
-                "",
-                "```text",
-                result["stderr_tail"],
-                "```",
-            ])
-
+        lines.append(f"### {result['label']} (`{result['case_id']}`)")
+        lines.append("")
+        for evaluation in result["evaluations"]:
+            lines.append(f"- `{evaluation['name']}`: `{evaluation['status']}`")
+            if evaluation["details"].get("golden_path"):
+                lines.append(f"  - golden_path: `{evaluation['details']['golden_path']}`")
+            if evaluation["diffs"]:
+                lines.append("  - diffs:")
+                for diff in evaluation["diffs"]:
+                    lines.append(f"    - {diff}")
         lines.append("")
 
     lines.extend([
@@ -508,7 +915,7 @@ def render_report(results_payload):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="运行 W6 最小可用回归检查")
+    parser = argparse.ArgumentParser(description="运行 W6.1 回归检查")
     parser.add_argument(
         "--case",
         action="append",
@@ -547,7 +954,7 @@ def main():
     print(f"[INFO] 已写出结果报告: {report_path}")
     print(
         "[OK] 回归结果: "
-        f"{summary['passed_case_count']}/{summary['selected_case_count']} 通过"
+        f"{summary['matched_case_count']}/{summary['selected_case_count']} matched"
     )
 
     raise SystemExit(0 if summary["all_passed"] else 1)
