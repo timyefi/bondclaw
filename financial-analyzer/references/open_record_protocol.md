@@ -22,6 +22,13 @@
 - `evidence`
 - `extensions`
 
+记录范围仅限“已确认附注主章节”，正文不进入 `chapter_records.jsonl`。
+`attributes` 至少补充：
+
+- `note_no`
+- `note_scope`
+- `locator_evidence`
+
 读取旧记录时，只依赖固定核心字段；扩展字段缺失不能导致失败。
 
 ## 重点列表
@@ -48,6 +55,17 @@
 - `topic_results`
 
 各主题节点允许通过 `attributes` 和 `extensions` 自由增长。
+
+## 运行清单
+
+`run_manifest.json` 需要显式记录附注工作流结果：
+
+- `status`
+- `failure_reason`
+- `notes_locator`
+- `notes_catalog_summary`
+
+失败时只写失败态 `run_manifest.json`，不写正常分析产物。
 
 ## 待固化更新
 

@@ -1,35 +1,69 @@
 ---
 name: financial-analyzer
-description: 开放式企业年报财务分析 skill。用于解析 A 股/港股/交易商协会年报 Markdown 或 PDF 转换结果，按逐章研究方式生成 chapter records、动态重点、待固化更新和统一导出产物；适用于财务分析、信用分析、债务结构识别、审计意见研判与技能演化场景。
+description: 企业年报附注优先财务分析 skill。用于对 A 股、港股或交易商协会报告先识别财报附注，再通过关键词搜索、抽样阅读和主附注目录建立来驱动逐章分析，最终生成 chapter records、动态重点、待固化更新和统一导出产物。
 ---
 
 # Financial Analyzer
 
-按“稳定外壳 + 扩展载荷”执行，不预设固定专题清单，也不要求每次先改死 schema。
+本 skill 采用“经验式附注工作流 + 最小编排脚本”。
 
-## 核心流程
+## 强制流程
 
-1. 识别报告类型、币种、审计意见与实体基础信息。
-2. 从第一章到最后一章逐章读取并生成 `chapter_records.jsonl`。
-3. 每章都输出固定核心字段：
-   - `chapter_no`
-   - `chapter_title`
-   - `status`
-   - `summary`
-4. 每章都允许扩展载荷自由增长：
-   - `attributes`
-   - `numeric_data`
-   - `findings`
-   - `anomalies`
-   - `evidence`
-   - `extensions`
-5. 全章结束后，基于证据密度和风险信号动态生成 `focus_list.json`。
-6. 基于全部记录聚合 `final_data.json`、`analysis_report.md`、`financial_output.xlsx`。
-7. 新主题、新字段、新规则不直接写入正式知识库，先进入 `pending_updates.json`。
+1. 先识别报告类型、公司名、报告期、币种、审计意见。
+2. 不直接进入全文分析，必须先定位财报附注。
+3. 通过关键词搜索找附注候选：
+   - `财务报表附注`
+   - `合并财务报表项目注释`
+   - `Notes to the Financial Statements`
+4. 对命中点前后做抽样阅读，确认已经进入正式附注区间。
+5. 在已确认的附注区间内建立主附注目录。
+   - 只记录主附注，如 `1`、`10`、`17`、`18`
+   - `(a)(b)` 等子附注并入父附注，不单独成章
+6. 将附注定位结果写成 `notes_workfile`。
+7. 最后调用主脚本生成固定产物。
+
+## 正文边界
+
+- 正文只用于元信息识别和附注定位。
+- 正文不得进入 `chapter_records.jsonl`。
+- 正文不得参与 `focus_list.json`、`final_data.json` 和最终结论。
+- 找不到可信附注区间时直接失败，不降级全文分析。
+
+## 脚本入口
+
+唯一入口：
+
+- `scripts/financial_analyzer.py`
+
+命令行接口：
+
+```powershell
+py "C:\Users\Administrator\Desktop\项目\信用工作流\年报训练\financial-analyzer\scripts\financial_analyzer.py" `
+  --md "C:\path\to\report.md" `
+  --notes-workfile "C:\path\to\notes_workfile.json" `
+  --run-dir "C:\path\to\run_dir"
+```
+
+## notes_workfile 契约
+
+顶层至少包含：
+
+- `notes_start_line`
+- `notes_end_line`
+- `locator_evidence`
+- `notes_catalog`
+
+`notes_catalog` 每项至少包含：
+
+- `note_no`
+- `chapter_title`
+- `start_line`
+- `end_line`
+- `evidence`
 
 ## 稳定产物
 
-每次运行必须生成以下文件：
+每次成功运行必须生成：
 
 - `run_manifest.json`
 - `chapter_records.jsonl`
@@ -39,39 +73,10 @@ description: 开放式企业年报财务分析 skill。用于解析 A 股/港股
 - `analysis_report.md`
 - `financial_output.xlsx`
 
-如果调用方传入的是旧式 Excel 输出路径，仍然兼容复制 Excel，但稳定外壳文件名不能变化。
+失败时只生成失败态 `run_manifest.json`。
 
-## 何时读取 references
+## 进化原则
 
-- 调整记录结构或做前向兼容判断时，读取 `references/open_record_protocol.md`
-- 调整重点生成逻辑时，读取 `references/focus_generation.md`
-- 修改 Markdown/Excel/JSON 导出行为时，读取 `references/output_contract.md`
-
-## 执行约束
-
-- Windows 下优先使用 `py`，并保持 UTF-8 编码。
-- 不要一次性通读全文后直接输出最终结论；必须先形成逐章记录。
-- 不要把新增发现直接固化到 `knowledge_base.json`；先记录到 `pending_updates.json`。
-- 不要把主题名、指标名、章节名写成唯一合法枚举；允许通过 `extensions` 增长。
-
-## 脚本入口
-
-- 主入口：`scripts/financial_analyzer.py`
-- 新内核：`scripts/financial_analyzer_v3.py`
-- 知识治理：`scripts/knowledge_manager.py`
-
-## 推荐调用
-
-```powershell
-py "C:\Users\Administrator\Desktop\项目\信用工作流\年报训练\financial-analyzer\scripts\financial_analyzer.py" `
-  --md "C:\path\to\report.md" `
-  --run-dir "C:\path\to\run_dir"
-```
-
-兼容旧调用：
-
-```powershell
-py "C:\Users\Administrator\Desktop\项目\信用工作流\年报训练\financial-analyzer\scripts\financial_analyzer.py" `
-  --md "C:\path\to\report.md" `
-  --output "C:\path\to\result.xlsx"
-```
+- 新格式先记录到 `pending_updates.json`，不要直接写死到主脚本。
+- 记录新的附注定位关键词、编号样式、标题变体、边界现象。
+- 调整产物契约时读取 `references/open_record_protocol.md` 和 `references/output_contract.md`。
