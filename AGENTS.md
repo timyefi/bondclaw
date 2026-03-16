@@ -3,6 +3,22 @@
 ## Project Structure & Module Organization
 根目录主要存放年报 PDF、分析产出 `.md/.xlsx`，以及两个辅助脚本：`run_mineru.py` 用于触发 PDF 转 Markdown，`generate_henglong_report.py` 用于生成示例 Excel 报告。核心分析逻辑位于 `financial-analyzer/`：`scripts/` 放主程序，`templates/` 放行业模板，`references/` 放产物契约与流程说明，`testdata/` 放手工测试输入，`test_runs/` 保存回归运行结果。
 
+## Planning & Canonical Docs
+本项目的整体性设计、阶段计划、workstream 拆解、跨对话协作约定，统一以根目录 `automation_blueprint.md` 为主入口和最高优先级项目文档。后续新对话或新 agent 开始工作时，如任务不是纯局部修复，应先阅读该文件，再阅读当前任务对应的专项文档。
+
+与 Soul Excel 相关的专项文档按以下关系使用：
+- `automation_blueprint.md`：总目标、总架构、总计划、状态看板
+- `soul_excel_spec_v1.md`：Soul 结构规范
+- `soul_excel_case_analysis.md`：案例归纳依据
+- `excel_skill_adoption_plan.md`：Excel 生成技术路线与工具选择
+
+原则上不要在 `AGENTS.md` 重复蓝图内容；如项目方向、workstream 边界、阶段状态发生变化，应优先更新上述文档，而不是只在对话中说明。
+
+## Cross-Session Workflow
+如果一次工作涉及结构性决策、模块边界变化、优先级变化或阶段推进，结束前应同步更新 `automation_blueprint.md` 中的相关部分，至少保证“当前状态看板”和“下一步”可供下一个对话直接接手。
+
+如任务只涉及某个局部模块，也应在开始时先明确当前属于哪个 workstream，避免在同一对话中同时重构采集、解析、分析、导出等多个层次。
+
 ## Build, Test, and Development Commands
 本仓库没有统一构建系统，日常开发直接运行 Python 脚本。
 
