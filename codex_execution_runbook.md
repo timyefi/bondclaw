@@ -15,6 +15,17 @@
 
 本项目建议采用“1 个总控线程 + 多个执行线程”的工作方式。
 
+### 2.0 Git 基线
+
+本项目当前采用单分支策略：
+
+1. 本地默认只保留 `main`
+2. 远程默认只保留 `origin/main`
+3. 新对话默认直接在 `main` 上工作
+4. 除非用户明确要求，否则不要创建新的 `codex/*` 或其他长期分支
+
+这意味着“多个执行线程”是多个 Codex 对话，不是多个长期 Git 分支。
+
 ### 2.1 总控线程
 
 用途：
@@ -76,8 +87,65 @@
 1. 阅读 `AGENTS.md`
 2. 阅读 `automation_blueprint.md`
 3. 阅读与本线程直接相关的专项文档
-4. 用一句话确认当前线程属于哪个 workstream
-5. 用一句话确认本线程的唯一主交付物
+4. 确认当前 Git 分支是 `main`
+5. 用一句话确认当前线程属于哪个 workstream
+6. 用一句话确认本线程的唯一主交付物
+
+## 5.1 你实际怎么操作 Git
+
+如果你后面自己开新对话并在完成后提交推送，最简单的固定流程就是：
+
+1. 先确认在 `main`
+2. 拉取最新 `main`
+3. 让 Codex 完成修改
+4. 运行必要验证
+5. 提交到 `main`
+6. 推送 `main`
+
+推荐命令：
+
+```bash
+git checkout main
+git pull --ff-only origin main
+git status --short
+git add <files>
+git commit -m "feat: ..."
+git push origin main
+```
+
+如果你想在提交前再确认一次自己没有偏离单分支策略，可以加两步：
+
+```bash
+git branch -vv
+git branch -r
+```
+
+你应当看到本地只有 `main`，远程只有 `origin/main`。
+
+## 5.2 提交前检查
+
+每次准备提交前，至少检查：
+
+1. `git branch -vv` 显示当前在 `main`
+2. `git status --short` 只包含你预期的改动
+3. 必要验证命令已经跑过
+4. 本次对话如果涉及结构性决策，相关文档已同步更新
+
+## 5.3 推送后检查
+
+每次推送后，建议检查：
+
+```bash
+git fetch origin
+git branch -vv
+git branch -r
+```
+
+目标状态：
+
+- 本地：只有 `main`
+- 远程：只有 `origin/main`
+- `main` 不显示 `ahead` 或 `behind`
 
 ## 6. 推荐线程卡片
 
@@ -293,6 +361,7 @@
 2. 先写复杂模板，再确定 Soul 骨架。
 3. 在一个线程里同时重做分析逻辑和 Excel 结构。
 4. 没有更新蓝图，只把决策留在对话里。
+5. 为了开多个 Codex 对话而创建多个长期 Git 分支。
 
 ## 9. 建议你现在就怎么开始
 
