@@ -1,6 +1,6 @@
 {
   "summary": {
-    "generated_at": "2026-03-17T09:03:23+08:00",
+    "generated_at": "2026-03-17T12:58:13+08:00",
     "scenario_count": 5,
     "all_passed": true,
     "passed_scenarios": 5,
@@ -214,8 +214,8 @@
           "name": "latest_run",
           "passed": true,
           "details": {
-            "started_at": "2026-03-17T09:03:23+08:00",
-            "completed_at": "2026-03-17T09:03:23+08:00",
+            "started_at": "2026-03-17T12:58:12+08:00",
+            "completed_at": "2026-03-17T12:58:12+08:00",
             "resume": true,
             "only_failed": false,
             "build_review_bundle": true,
@@ -226,7 +226,9 @@
               "henglong_2024",
               "country_garden_2024",
               "hanghai_2024"
-            ]
+            ],
+            "skipped_existing_success_without_local_result_count": 0,
+            "skipped_by_registry_or_batch_count": 3
           },
           "errors": []
         }
@@ -253,15 +255,17 @@
           "name": "latest_run",
           "passed": true,
           "details": {
-            "started_at": "2026-03-17T09:03:23+08:00",
-            "completed_at": "2026-03-17T09:03:23+08:00",
+            "started_at": "2026-03-17T12:58:12+08:00",
+            "completed_at": "2026-03-17T12:58:13+08:00",
             "resume": false,
             "only_failed": true,
             "build_review_bundle": true,
             "selected_task_count": 2,
             "executed_task_count": 2,
             "skipped_existing_success_count": 0,
-            "skipped_existing_success_task_ids": []
+            "skipped_existing_success_task_ids": [],
+            "skipped_existing_success_without_local_result_count": 0,
+            "skipped_by_registry_or_batch_count": 0
           },
           "errors": []
         }

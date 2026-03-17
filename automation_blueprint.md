@@ -456,18 +456,19 @@ Subagents 协作约束：
 - W6.1 已新增按案例维护的 golden 基线 JSON，并对成功态 payload 子集、失败态 manifest 子集执行非门禁 diff 评估
 - W7 已新增 `financial-analyzer/scripts/run_batch_pipeline.py`，支持 Markdown-first 任务清单批跑、失败记录、`--resume`、`--only-failed`、`pending_updates_index.json` 与可选的 W5 review bundle 构建
 - W7 已补充 `financial-analyzer/testdata/w7_batch_tasks/` 样例任务清单，以及 `financial-analyzer/scripts/run_w7_batch_regression.py` 回归脚本，覆盖混合批次、全成功批次、`--resume`、`--only-failed` 和 review bundle 门槛
+- 生产化 P2 已完成第一版：新增项目内 processed reports registry 规范文档、runtime helper、registry helper，并把 [runtime/state/registry/processed_reports/processed_reports.json](/Users/yetim/project/financialanalysis/runtime/state/registry/processed_reports/processed_reports.json) 接入 `run_batch_pipeline.py`
+- P2 已实现 W6 历史单案回填、W7 batch 回填告警口径、全局去重/重跑判定，以及 `financial-analyzer/scripts/run_p2_registry_regression.py` 专项回归脚本
 
 ### 进行中
 
 - W5 后续项：基于 `financial-analyzer/test_runs/w5_knowledge_governance/` 的审核包做抽样复核，并设计独立的 apply 流程；当前仍不直接批量写入 `knowledge_base.json`
 - 更细粒度导出 QA 的剩余项：workbook 单元格级 golden diff、预览版式语义检查、`soul_export_failed` 等更深失败矩阵
 - W7 后续项：如需进入真正的全链路编排，应先把 ChinaMoney / MinerU 上游入口收敛为与当前 batch runner 一致的稳定 CLI，再考虑并入统一状态机
-- 生产化阶段进行中：P1 已完成项目内 runtime 目录、`runtime_config` 契约和 Git 边界设计；P2/P3/P5/P6 仍待推进
+- 生产化阶段进行中：P1/P2 已完成；P3/P5/P6 仍待推进
 
 ### 下一步
 
-- 先推进生产化 P2：基于 `runtime/state/registry/processed_reports/` 补全局 processed_reports registry。
-- 之后推进生产化 P3：让已安装 skill 基于 `runtime/runtime_config.json` 稳定绑定项目内 runtime。
+- 先推进生产化 P3：让已安装 skill 基于 `runtime/runtime_config.json` 稳定绑定项目内 runtime。
 - 待 runtime/registry 落地后，再推进生产化 P4/P5：自动找 10 份财报并执行冷启动全真生产仿真。
 - 最后整理生产化 P6：go-live checklist、人工复核点和回滚策略。
 

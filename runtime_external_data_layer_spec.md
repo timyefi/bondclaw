@@ -215,6 +215,7 @@ P1 只定义上述 Git 边界与目录口径：
 
 - 这是高频状态表，不进入 Git。
 - P2 线程必须以此为唯一正式落点设计 schema 和更新流程。
+- P2 的正式 schema、去重/重跑规则与 batch 关系见 [processed_reports_registry_spec.md](/Users/yetim/project/financialanalysis/processed_reports_registry_spec.md)。
 
 ### 7.3 批次产物
 

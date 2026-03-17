@@ -13,11 +13,18 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from processed_reports_registry import ProcessedReportsRegistry
+from runtime_support import (
+    current_engine_version,
+    load_knowledge_base_version,
+    resolve_default_batch_root,
+    try_load_runtime_config,
+)
+
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 ANALYZER_SCRIPT = ROOT_DIR / "financial-analyzer" / "scripts" / "financial_analyzer.py"
 KNOWLEDGE_MANAGER_SCRIPT = ROOT_DIR / "financial-analyzer" / "scripts" / "knowledge_manager.py"
-DEFAULT_BATCH_ROOT = ROOT_DIR / "financial-analyzer" / "test_runs" / "batches"
 TASK_RESULT_LOG = "task_results.jsonl"
 FAILED_TASKS_FILE = "failed_tasks.json"
 PENDING_UPDATES_INDEX_FILE = "pending_updates_index.json"
@@ -199,21 +206,32 @@ def determine_selected_tasks(
     failed_task_ids: List[str],
     resume: bool,
     only_failed: bool,
-) -> Tuple[List[Dict[str, Any]], List[str]]:
+    registry_contexts: Dict[str, Dict[str, Any]],
+) -> Tuple[List[Dict[str, Any]], List[str], Dict[str, str]]:
     selected_tasks: List[Dict[str, Any]] = []
     skipped_success_task_ids: List[str] = []
+    selection_decisions: Dict[str, str] = {}
     failed_id_set = set(failed_task_ids)
 
     for task in tasks:
         task_id = task["task_id"]
         previous = latest_results.get(task_id)
+        registry_context = registry_contexts.get(task_id, {})
         if only_failed and task_id not in failed_id_set:
+            selection_decisions[task_id] = "filtered_out_not_failed"
             continue
-        if resume and previous and previous.get("status") == "success":
-            skipped_success_task_ids.append(task_id)
-            continue
+        if resume:
+            if previous and previous.get("status") == "success" and registry_context.get("skip_allowed"):
+                skipped_success_task_ids.append(task_id)
+                selection_decisions[task_id] = "skipped_existing_success_in_batch"
+                continue
+            if registry_context.get("skip_allowed"):
+                skipped_success_task_ids.append(task_id)
+                selection_decisions[task_id] = "skipped_existing_success_in_registry"
+                continue
+        selection_decisions[task_id] = "selected_for_run"
         selected_tasks.append(task)
-    return selected_tasks, skipped_success_task_ids
+    return selected_tasks, skipped_success_task_ids, selection_decisions
 
 
 def clear_task_run_dir(run_dir: Path):
@@ -514,21 +532,31 @@ def run_governance_review(
 def build_task_index(
     tasks: List[Dict[str, Any]],
     latest_results: Dict[str, Dict[str, Any]],
+    registry_contexts: Dict[str, Dict[str, Any]],
+    registry_decisions: Dict[str, str],
 ) -> List[Dict[str, Any]]:
     task_index = []
     for task in tasks:
         latest = latest_results.get(task["task_id"], {})
+        registry_context = registry_contexts.get(task["task_id"], {})
+        registry_decision = latest.get("registry_decision", registry_decisions.get(task["task_id"], ""))
+        status = latest.get("status", "pending")
+        if status == "pending" and registry_decision.startswith("skipped_"):
+            status = "skipped"
         task_index.append(
             {
                 "task_id": task["task_id"],
                 "issuer": task["issuer"],
                 "year": task["year"],
                 "run_dir": str(task["run_dir"]),
-                "status": latest.get("status", "pending"),
+                "status": status,
                 "failure_reason": latest.get("failure_reason", ""),
                 "manifest_path": latest.get("manifest_path", ""),
                 "pending_updates_path": latest.get("pending_updates_path", ""),
                 "pending_updates_count": latest.get("pending_updates_count", 0),
+                "registry_report_key": latest.get("registry_report_key", registry_context.get("report_key", "")),
+                "registry_decision": registry_decision,
+                "registry_needs_rerun": latest.get("registry_needs_rerun", registry_context.get("needs_rerun", True)),
             }
         )
     return task_index
@@ -551,10 +579,19 @@ def build_batch_manifest(
     only_failed: bool,
     build_review_bundle: bool,
     governance_payload: Dict[str, Any],
+    registry_payload: Dict[str, Any],
+    registry_contexts: Dict[str, Dict[str, Any]],
+    registry_decisions: Dict[str, str],
 ) -> Dict[str, Any]:
     success_count = sum(1 for item in latest_results.values() if item.get("status") == "success")
     failed_count = sum(1 for item in latest_results.values() if item.get("status") == "failed")
-    pending_count = max(len(tasks) - success_count - failed_count, 0)
+    skipped_without_result_count = sum(1 for task_id in skipped_success_task_ids if task_id not in latest_results)
+    pending_count = max(len(tasks) - success_count - failed_count - skipped_without_result_count, 0)
+    skipped_in_batch_count = sum(
+        1
+        for decision in registry_decisions.values()
+        if decision in {"skipped_existing_success_in_batch", "skipped_existing_success_in_registry"}
+    )
     return {
         "batch_name": batch_name,
         "batch_run_dir": str(batch_run_dir),
@@ -577,9 +614,12 @@ def build_batch_manifest(
             "executed_task_count": executed_task_count,
             "skipped_existing_success_count": len(skipped_success_task_ids),
             "skipped_existing_success_task_ids": skipped_success_task_ids,
+            "skipped_existing_success_without_local_result_count": skipped_without_result_count,
+            "skipped_by_registry_or_batch_count": skipped_in_batch_count,
         },
+        "registry": registry_payload,
         "governance": governance_payload,
-        "task_index": build_task_index(tasks, latest_results),
+        "task_index": build_task_index(tasks, latest_results, registry_contexts, registry_decisions),
     }
 
 
@@ -594,10 +634,15 @@ def main():
     if not isinstance(batch_name, str) or not batch_name.strip():
         raise SystemExit("任务清单缺少合法的 batch_name")
 
+    runtime_config = try_load_runtime_config()
+    registry = ProcessedReportsRegistry(runtime_config=runtime_config) if runtime_config else None
+    target_engine_version = current_engine_version()
+    knowledge_base_version = load_knowledge_base_version(runtime_config)
+    default_batch_root = resolve_default_batch_root(runtime_config)
     batch_run_dir = (
         Path(args.batch_run_dir).resolve()
         if args.batch_run_dir
-        else (DEFAULT_BATCH_ROOT / slugify(batch_name))
+        else (default_batch_root / slugify(batch_name))
     )
     batch_run_dir.mkdir(parents=True, exist_ok=True)
 
@@ -611,17 +656,79 @@ def main():
     created_at = previous_manifest.get("created_at", now_iso())
     latest_results = load_latest_results(task_result_log_path)
     failed_task_ids = load_failed_task_ids(failed_tasks_path) if args.only_failed else []
-    selected_tasks, skipped_success_task_ids = determine_selected_tasks(
+    registry_contexts = {
+        task["task_id"]: (
+            registry.prepare_task_context(
+                task,
+                target_engine_version=target_engine_version,
+                knowledge_base_version=knowledge_base_version,
+            )
+            if registry
+            else {
+                "available": False,
+                "report_key": "",
+                "document_fingerprint": "",
+                "processing_fingerprint": "",
+                "needs_rerun": True,
+                "rerun_reasons": ["registry_disabled"],
+                "audit_flags": [],
+                "skip_allowed": False,
+            }
+        )
+        for task in task_list["tasks"]
+    }
+    selected_tasks, skipped_success_task_ids, registry_decisions = determine_selected_tasks(
         task_list["tasks"],
         latest_results,
         failed_task_ids,
         args.resume,
         args.only_failed,
+        registry_contexts,
     )
 
     run_started_at = now_iso()
     for task in selected_tasks:
         result = run_single_task(task)
+        registry_update = {
+            "registered": False,
+            "report_key": registry_contexts.get(task["task_id"], {}).get("report_key", ""),
+            "document_fingerprint": registry_contexts.get(task["task_id"], {}).get("document_fingerprint", ""),
+            "processing_fingerprint": registry_contexts.get(task["task_id"], {}).get("processing_fingerprint", ""),
+            "attempt_id": "",
+            "deduplicated": False,
+            "needs_rerun": True,
+            "rerun_reasons": ["registry_disabled"],
+            "audit_flags": [],
+        }
+        if registry:
+            registry_update = registry.record_batch_task_result(
+                task=task,
+                result=result,
+                registry_context=registry_contexts.get(task["task_id"], {}),
+                batch_name=task_list["batch_name"],
+                batch_run_dir=batch_run_dir,
+                task_results_path=task_result_log_path,
+                batch_manifest_path=batch_manifest_path,
+                knowledge_base_version=knowledge_base_version,
+            )
+            registry_contexts[task["task_id"]] = registry.prepare_task_context(
+                task,
+                target_engine_version=target_engine_version,
+                knowledge_base_version=knowledge_base_version,
+            )
+
+        result.update(
+            {
+                "registry_report_key": registry_update.get("report_key", ""),
+                "registry_document_fingerprint": registry_update.get("document_fingerprint", ""),
+                "registry_processing_fingerprint": registry_update.get("processing_fingerprint", ""),
+                "registry_attempt_id": registry_update.get("attempt_id", ""),
+                "registry_needs_rerun": registry_update.get("needs_rerun", True),
+                "registry_rerun_reasons": registry_update.get("rerun_reasons", []),
+                "registry_audit_flags": registry_update.get("audit_flags", []),
+                "registry_decision": registry_decisions.get(task["task_id"], "selected_for_run"),
+            }
+        )
         append_jsonl(task_result_log_path, result)
         latest_results[result["task_id"]] = result
 
@@ -646,6 +753,23 @@ def main():
         latest_results,
     )
     run_completed_at = now_iso()
+    registry_payload = (
+        registry.registry_summary(
+            knowledge_base_version=knowledge_base_version,
+            engine_version_value=target_engine_version,
+        )
+        if registry
+        else {
+            "registry_path": "",
+            "schema_version": "",
+            "updated_at": "",
+            "stats": {},
+            "knowledge_base_version": knowledge_base_version,
+            "engine_version": target_engine_version,
+            "backfill_performed_on_init": False,
+            "init_warnings": ["runtime_config_missing"],
+        }
+    )
 
     batch_manifest = build_batch_manifest(
         batch_name=task_list["batch_name"],
@@ -663,6 +787,9 @@ def main():
         only_failed=args.only_failed,
         build_review_bundle=args.build_review_bundle,
         governance_payload=governance_payload,
+        registry_payload=registry_payload,
+        registry_contexts=registry_contexts,
+        registry_decisions=registry_decisions,
     )
     write_json(batch_manifest_path, batch_manifest)
 
