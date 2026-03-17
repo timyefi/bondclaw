@@ -441,6 +441,7 @@ Subagents 协作约束：
 - 已验证首轮专题模块：`investment_property`、`restricted_assets`、`lgfv_features`、`external_guarantees`
 - 已将 `financial_analyzer.py` 的最终 Excel 导出切换为“先输出稳定契约，再调用独立 Soul exporter”模式，`financial_output.xlsx` 现由 W4 导出层生成
 - `financial-analyzer/SKILL.md` 已定义 `candidate / validated / promoted` 分级口径，`knowledge_manager.py` 已具备 `pending_updates` 校验与汇总能力，可作为 W5 起点
+- W5 已建立知识治理最小闭环：`knowledge_manager.py` 新增 `validate-pending`、`build-review-bundle`、`show-review-summary`，可基于 3 个 W6 案例执行候选项校验、跨案例归并、`candidate/validated/promoted` 推荐分级，并输出 `knowledge_review_bundle.json` 与 `knowledge_review_report.md`
 - 已新增 `financial-analyzer/scripts/run_w6_regression.py`，将 W6 最小回归收敛为固定 3 案例重跑 + 结构校验
 - 已生成 `financial-analyzer/test_runs/w6_henglong`、`w6_country_garden`、`w6_hanghai` 三个专用回归目录
 - 已生成 `financial-analyzer/test_runs/w6_regression_results.json` 与 `financial-analyzer/test_runs/w6_regression_report.md`
@@ -451,16 +452,16 @@ Subagents 协作约束：
 
 ### 进行中
 
+- W5 后续项：基于 `financial-analyzer/test_runs/w5_knowledge_governance/` 的审核包做抽样复核，并设计独立的 apply 流程；当前仍不直接批量写入 `knowledge_base.json`
 - 更细粒度导出 QA 的剩余项：workbook 单元格级 golden diff、预览版式语义检查、`soul_export_failed` 等更深失败矩阵
 
 ### 待启动
 
-- 知识审核与采纳流程（应在 W7 前启动）
 - 批处理与任务编排
 
 ### 下一步
 
-- 先推进 W5：基于现有 3 个案例的 `pending_updates.json` 建立跨案例汇总、分级和审核入口。
+- 先消费 W5 审核包：优先抽样复核 `recommended_status=promoted`、存在标题噪声的组，以及适用范围分歧的组，再决定 apply 流程的落地方式。
 - W6 后续增强优先聚焦 exporter 兼容性修复，解决 `w6_country_garden` 的 workbook XML 值问题，再评估单元格级 golden diff。
 - 待 W5/W6.1 边界稳定后，再进入 W7 的批处理与任务编排。
 

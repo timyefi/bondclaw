@@ -366,7 +366,7 @@ git branch -r
 先阅读 AGENTS.md、automation_blueprint.md、financial-analyzer/SKILL.md、financial-analyzer/references/output_contract.md、financial-analyzer/references/open_record_protocol.md，以及 financial-analyzer/scripts/knowledge_manager.py。当前聚焦 W5。请基于至少三个案例的 pending_updates.json，建立最小可用的知识治理闭环：完成候选项校验、跨案例汇总、candidate/validated/promoted 升级规则和审核入口设计，但不要直接批量写入 knowledge_base.json，也不要修改 Soul 结构。
 ```
 
-## 6.6 线程 F：W6.1 / 更细粒度 QA（适合结合 Subagents）
+## 6.6 线程 F：W6.1 / 更细粒度 QA（适合结合 Subagents,已完成）
 
 ### 目标
 
