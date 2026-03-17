@@ -34,12 +34,52 @@
 - 第 4 步不是人工挑报告，而是让 Codex 按目标和规则生成测试样本集。
 - 第 5 步要求尽量接近真实生产，而不是复用当前会话里的隐式上下文。
 
+## 3.1 当前建议的 Skill 安装基线
+
+基于当前仓库结构，生产化阶段建议区分三类 skill：
+
+1. 已安装的通用 skill：例如 `spreadsheet`
+2. 项目内自定义 skill：`financial-analyzer`、`chinamoney`、`mineru`
+3. P5 冷启动仿真前才需要冻结版本的 skill 包
+
+当前建议：
+
+- 在进入 P3 前，至少安装 `financial-analyzer`
+- 如果 P3 准备覆盖完整链路，建议同时安装 `chinamoney` 和 `mineru`
+- `spreadsheet` 已是通用依赖，如果当前机器已安装，则无需重复处理
+
+## 3.2 安装方式建议
+
+在当前阶段，建议分两种安装方式：
+
+### 开发态安装
+
+适用于 P3 前后反复调整 `SKILL.md` 或脚本。
+
+- 优先使用软链接，把仓库内 skill 目录链接到 `~/.codex/skills/`
+- 好处是仓库内修改可以直接体现在已安装 skill 上
+- 每次调整后重启 Codex 即可重新拾取
+
+### 冷启动仿真安装
+
+适用于 P5 的正式仿真。
+
+- 使用复制后的冻结版本，而不是继续用开发态软链接
+- 这样更接近未来正式投入使用时的真实安装状态
+- 安装后重启 Codex，再开始冷启动测试
+
 ## 4. 对话启动模板
 
 每个新对话都建议先用下面这句开场：
 
 ```text
 先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、production_execution_runbook.md。确认当前在 main 分支。请先用一句话确认本线程属于生产化阶段的哪一个任务，再开始执行。
+```
+
+如果你只是要先处理 skill 安装本身，再开下面这个对话：
+
+```text
+先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md。当前聚焦生产化安装基线。请先核对当前 ~/.codex/skills 中已经安装了哪些 skill，再判断项目内自定义 skill（financial-analyzer、chinamoney、mineru）是否应在 P3 前安装，并给出推荐安装顺序、开发态安装方式、冷启动仿真安装方式和重启要求；如有必要，再实际完成安装。
 ```
 
 ## 5. 线程卡片与可复制 Prompt
