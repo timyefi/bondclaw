@@ -409,20 +409,25 @@ Subagents 协作约束：
 
 - 建立待审核知识池、审核机制和版本化沉淀。
 
+### Phase 6：生产化与正式投入使用
+
+目标：
+
+- 把项目从“已能跑通”推进到“已具备正式投入使用所需的 runtime、registry、冷启动仿真和上线门禁”。
+
 ## 13. 当前优先级排序
 
-截至 2026-03-16，建议优先级如下：
+截至 2026-03-17，在 W1-W7 主线已基本落地后，建议优先级如下：
 
-1. 建立 `pending_updates` 的知识治理最小闭环（W5）。
-2. 补齐 W6.1：失败路径回归、视觉预览检查和更细粒度导出 QA。
-3. 再推进批处理与任务编排（W7）。
+1. 补齐生产化基础设施：runtime 外部数据层、全局 registry、skill/runtime 绑定。
+2. 做“自动找 10 份财报”的冷启动全真生产仿真。
+3. 形成 go-live checklist 和上线门禁。
 
 排序原因：
 
-- W6 的最小 smoke regression 已可由固定 3 案例重跑验证，主线回归闭环已具备最小可用形态。
-- 当前仓库已具备 3 个案例的 `pending_updates.json` 样本，可支撑 W5 做跨案例汇总与分级。
-- 更细粒度的 QA 和 W7 编排都依赖更稳定的知识边界与异常处理口径，先做 W5 返工概率更低。
-- `subagents` 上线后，W6.1 可作为并行增强轨推进，但这不改变 W5 仍是主线程下一步的判断。
+- W5、W6.1、W7 已具备可用基础，但当前仍主要面向项目内运行，不等于已具备正式投入使用所需的运行时治理能力。
+- 生产阶段最关键的新问题不是继续细化单点功能，而是补齐外部 runtime、全局历史 registry 和已安装 skill 的稳定绑定。
+- 在没有 runtime/registry 的前提下直接做 10 案仿真，无法充分验证“历史去重、重跑判定、跨批次追踪”这些生产问题。
 
 ## 14. 当前状态看板
 
@@ -457,12 +462,14 @@ Subagents 协作约束：
 - W5 后续项：基于 `financial-analyzer/test_runs/w5_knowledge_governance/` 的审核包做抽样复核，并设计独立的 apply 流程；当前仍不直接批量写入 `knowledge_base.json`
 - 更细粒度导出 QA 的剩余项：workbook 单元格级 golden diff、预览版式语义检查、`soul_export_failed` 等更深失败矩阵
 - W7 后续项：如需进入真正的全链路编排，应先把 ChinaMoney / MinerU 上游入口收敛为与当前 batch runner 一致的稳定 CLI，再考虑并入统一状态机
+- 生产化阶段待启动：runtime 外部数据层、全局 processed_reports registry、skill/runtime 绑定、冷启动全真仿真、go-live checklist
 
 ### 下一步
 
-- 先消费 W5 审核包：优先抽样复核 `recommended_status=promoted`、存在标题噪声的组，以及适用范围分歧的组，再决定 apply 流程的落地方式。
-- W6 后续增强优先聚焦 exporter 兼容性修复，解决 `w6_country_garden` 的 workbook XML 值问题，再评估单元格级 golden diff。
-- W7 进入后续增强阶段：仅在上游下载/解析入口稳定后，再把 ChinaMoney/MinerU 纳入统一批处理；当前主线先保持 Markdown-first 口径。
+- 先推进生产化 P1：定义 runtime 外部数据层、配置契约和与 skill 的读写边界。
+- 之后推进生产化 P2/P3：补全局 processed_reports registry，并让已安装 skill 稳定绑定外部 runtime。
+- 待 runtime/registry 落地后，再推进生产化 P4/P5：自动找 10 份财报并执行冷启动全真生产仿真。
+- 最后整理生产化 P6：go-live checklist、人工复核点和回滚策略。
 
 ## 15. 与其他文档的关系
 
@@ -472,6 +479,7 @@ Subagents 协作约束：
 - `excel_skill_adoption_plan.md` 负责：Excel 生成技术路线与工具选择。
 - `financial-analyzer/references/soul_export_contract.md` 负责：Soul 导出 JSON 契约。
 - `codex_execution_runbook.md` 负责：如何实际开启和组织多个 Codex 执行线程。
+- `production_execution_runbook.md` 负责：生产化阶段如何逐个开启 Codex 对话并执行 runtime/registry/go-live 相关任务。
 
 ## 16. 后续维护要求
 
