@@ -16,6 +16,7 @@
 4. `knowledge_manager.py` 只负责正式知识库审计、摘要与兼容入口，不再承担候选治理主路径。
 5. 任何章节级知识写入都必须能回滚，并且能被摘要工具看见。
 6. `chapter_records.jsonl` 的 `status=completed` 只表示模板抽取完成，不代表已复核、已采纳或已正式成稿。
+7. `knowledge_adoption_delta_contract.md` 定义正式 delta payload、审计外壳和 rollback 规则，后续线程不得各自发明变体口径。
 
 ## 2.1 R1 控制面边界
 
@@ -27,20 +28,18 @@
 
 ## 3. 推荐执行顺序
 
+R1 与 R2 已收口到文档与规范，当前剩余主线是 R3 和 P6。
+
 | 顺序 | 类型 | 主目标 | 核心交付物 |
 |------|------|--------|------------|
 | 0 | 总控线程 | 维护复核状态、排序任务 | 状态更新、下一步安排 |
-| 1 | 执行线程 | 建立复核与直写控制面 | chapter review ledger、adoption gate、finalization gate、rollback boundary |
-| 2 | 执行线程 | 定义 knowledge adoption delta contract | delta schema、validation 规则、rollback 约束 |
-| 3 | 执行线程 | 做 1-2 个完整案例的 scaffold -> adopt 演练 | 正式 knowledge_base、adoption logs、正式成稿 |
-| 4 | 执行线程 | 形成 go-live checklist | 上线门禁、人工复核点、回滚策略 |
+| 1 | 执行线程 | 做 1-2 个完整案例的 scaffold -> adopt 演练 | 正式 knowledge_base、adoption logs、正式成稿 |
+| 2 | 执行线程 | 形成 go-live checklist | 上线门禁、人工复核点、回滚策略 |
 
 说明：
 
-- 第 1 步先把“什么时候允许正式写入”定义清楚。
-- 第 2 步把单次写入的数据结构固定下来。
-- 第 3 步只选少量完整案例演练，不要一上来跑 10 案。
-- 第 4 步只在复核闭环跑通后推进。
+- 第 1 步只选少量完整案例演练，不要一上来跑 10 案。
+- 第 2 步只在复核闭环跑通后推进。
 
 ## 4. 新线程 Prompt
 
@@ -94,13 +93,16 @@
 
 ### 目标
 
-- 固化每次章节级知识写入的 delta 契约，使 `write_knowledge_adoption.py` 的输入可审计、可回滚、可摘要。
+- 固化每次章节级知识写入的 delta 契约、审计外壳与 rollback 约束，使 `write_knowledge_adoption.py` 的输入可审计、可回滚、可摘要。
 
 ### 开始前阅读
 
 - `AGENTS.md`
 - `automation_blueprint.md`
+- `codex_execution_runbook.md`
+- `financial-analyzer/references/open_record_protocol.md`
 - `production_execution_runbook.md`
+- `knowledge_adoption_delta_contract.md`
 - `financial-analyzer/scripts/write_knowledge_adoption.py`
 - `financial-analyzer/scripts/rollback_knowledge_adoption.py`
 - `financial-analyzer/scripts/show_knowledge_adoption.py`
@@ -108,9 +110,10 @@
 ### 交付物
 
 - delta 契约文档
+- adoption log 审计键与摘要口径
 - 允许的操作类型与字段说明
 - 验证规则
-- 示例 payload
+- 最小示例 payload
 
 ### 本线程不做
 
@@ -121,7 +124,7 @@
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、financial-analyzer/scripts/write_knowledge_adoption.py、financial-analyzer/scripts/rollback_knowledge_adoption.py、financial-analyzer/scripts/show_knowledge_adoption.py。当前聚焦 R2：Knowledge Adoption Delta Contract。请定义每次章节级知识写入所需的 delta 契约，至少包括 source、review_state、operations、evidence_refs、before_hash、after_hash、knowledge_base_version_before/after、rollback 约束和 validation 规则，并给出一个最小可执行示例。请把结果落成仓库文档，不要直接改代码。
+先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、financial-analyzer/references/open_record_protocol.md、knowledge_adoption_delta_contract.md，以及 financial-analyzer/scripts/write_knowledge_adoption.py、financial-analyzer/scripts/rollback_knowledge_adoption.py、financial-analyzer/scripts/show_knowledge_adoption.py。当前聚焦 R2：Knowledge Adoption Delta Contract。请把章节级正式写入所需的 delta schema、adoption_id、logged_at、result、source、review、operations、evidence_refs、before_hash、after_hash、knowledge_base_version_before/after、rollback 约束和 validation 规则落成仓库文档，并明确 adoption log 的摘要口径；不要改 Soul 结构，也不要重新引入 pending_updates 作为主学习路径。
 ```
 
 ### 4.3 线程 R3：1-2 个完整案例的 Scaffold -> Adopt 演练

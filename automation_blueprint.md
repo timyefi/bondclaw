@@ -427,16 +427,15 @@ Subagents 协作约束：
 
 ## 13. 当前优先级排序
 
-截至 2026-03-18，在 W1-W7 主线和 P1-P5 基础设施已基本落地后，R1 第一版控制面已完成文档落地，当前优先级如下：
+截至 2026-03-18，在 W1-W7 主线和 P1-P5 基础设施已基本落地后，R1 与 R2 已完成文档收口，当前优先级如下：
 
-1. 固化 knowledge adoption delta contract 与章节级 review ledger（R2）。
-2. 用 1-2 个完整案例演练 scaffold -> adopt -> formal 的闭环（R3）。
-3. 在闭环稳定后再整理 go-live checklist（P6）。
+1. 用 1-2 个完整案例演练 scaffold -> adopt -> formal 的闭环（R3）。
+2. 在闭环稳定后再整理 go-live checklist（P6）。
 
 排序原因：
 
 - scaffold-only 已切换为当前主线；正式知识学习不再依赖 `pending_updates`，而是依赖逐章复核后的 direct adopt。
-- 当前最关键的缺口已经从“控制面是否存在”转为“delta 契约是否稳定、闭环是否可验证、回滚是否可审计”。
+- 当前最关键的缺口已经从“控制面是否存在”转为“闭环是否可验证、回滚是否可审计”。
 - 没有先跑通 1-2 个完整案例的 scaffold -> adopt 闭环，就直接上 P6 会缺少最小可验证基线。
 
 ## 14. 当前状态看板
@@ -484,20 +483,19 @@ Subagents 协作约束：
 - `financial_analyzer.py` 已切换为 scaffold-only 模式：脚本主线只生成 `chapter_records.jsonl`、`analysis_report_scaffold.md`、`focus_list_scaffold.json`、`final_data_scaffold.json`、`soul_export_payload_scaffold.json` 和标记 `codex_review_required=true` 的 `run_manifest.json`
 - 已新增 `write_knowledge_adoption.py`、`rollback_knowledge_adoption.py`、`show_knowledge_adoption.py`，用于支撑 Codex 逐章直写正式 `runtime/knowledge/knowledge_base.json` 并保留 adoption log / rollback 能力
 - 生产化 R1 第一版已落地：已明确章节复核状态机、adoption gate、finalization gate、rollback boundary 与 `chapter_review_ledger` 控制面口径
-- 生产化 R2/R3/P6 待推进：知识 adoption delta contract、1-2 个完整案例的 scaffold -> adopt 演练、go-live checklist
+- 生产化 R2 已完成文档收口：知识 adoption delta contract、审计外壳、rollback 约束与校验规则已统一到仓库文档
+- 生产化 R3/P6 待推进：1-2 个完整案例的 scaffold -> adopt 演练、go-live checklist
 
 ### 进行中
 
-- R2 待推进：把 delta contract、rollback 约束和审计字段写成正式规范
 - R3 待推进：用 1-2 个完整案例验证 scaffold -> adopt -> formal 闭环
-- P6 待在 R1-R3 跑通后再推进
+- P6 待在 R3 跑通后再推进
 - 当前主阻塞不再是抽取链路，而是“复核、直写、回滚、正式成稿”的治理闭环是否足够稳
 - 当前已确认完整链路可按两层运行：`PDF -> MinerU Markdown -> notes_workfile -> batch 抽取层 -> Codex/skill 逐章分析与知识写入`
 
 ### 下一步
 
-- 先推进 R2：把知识 adoption delta contract 和回滚字段固定下来。
-- 再推进 R3：用 1-2 个完整案例演练 scaffold -> adopt -> formal 闭环。
+- 先推进 R3：用 1-2 个完整案例演练 scaffold -> adopt -> formal 闭环。
 - 最后再整理 P6：go-live checklist、人工抽检点和回滚策略。
 
 ## 15. 与其他文档的关系

@@ -2,29 +2,34 @@
 
 ## 1. 文档定位
 
-这份文档定义每次章节级知识写入正式 `knowledge_base.json` 时，Codex 必须构造的结构化 delta。
+这份文档定义章节级正式知识写入时必须提交的结构化 delta，以及与之绑定的审计外壳。
 
-它解决的是“如何把复核结果稳定、可回滚、可审计地写入正式知识库”，不是知识内容本身。
+它解决的是“如何把复核结果稳定、可回滚、可审计地写入正式 `knowledge_base.json`”，不是知识内容本身，也不是 Soul 结构。
 
-## 2. 设计目标
+本契约是后续 Codex 线程的 canonical 口径：
 
-1. 单次写入必须可审计。
-2. 单次写入必须可回滚。
-3. 单次写入必须能被 `show_knowledge_adoption.py` 摘要。
-4. 单次写入不能依赖隐式聊天上下文。
-5. 单次写入不能绕过章节复核。
+- 章节复核结论必须先落成 delta。
+- 正式写入必须带审计外壳。
+- 回滚必须能从同一份 adoption 记录恢复。
+- `pending_updates.json` 不是主学习路径。
 
-## 3. 推荐契约
+## 2. Canonical 记录形状
+
+章节级正式写入使用一条 adoption 记录承载完整信息。推荐顶层同时包含 delta payload 与 audit envelope，便于脚本摘要、回滚和人工审计消费。
 
 ```json
 {
+  "adoption_id": "20260318_120000_henglong_chapter_10",
   "delta_version": "knowledge_adoption_delta_v1",
+  "logged_at": "2026-03-18T12:00:00+08:00",
+  "result": "applied",
   "source": {
     "case_name": "恒隆地产",
     "chapter_no": "10",
     "chapter_title": "借款和融资成本",
     "run_dir": "/abs/path/to/run_dir",
     "chapter_record_path": "/abs/path/to/run_dir/chapter_records.jsonl",
+    "review_ledger_path": "/abs/path/to/run_dir/chapter_review_ledger.jsonl",
     "scaffold_artifacts": {
       "analysis_report_scaffold": "/abs/path/to/run_dir/analysis_report_scaffold.md",
       "final_data_scaffold": "/abs/path/to/run_dir/final_data_scaffold.json",
@@ -32,12 +37,13 @@
     }
   },
   "review": {
-    "review_state": "reviewed",
+    "review_state": "adopted",
     "reviewer": "Codex",
     "reviewed_at": "2026-03-18T12:00:00+08:00",
     "summary": "将章节结论正式采纳为知识条目",
     "risk_level": "low",
-    "confidence": "high"
+    "confidence": "high",
+    "decision": "adopt"
   },
   "operations": [
     {
@@ -56,88 +62,326 @@
       "type": "chapter_record",
       "path": "/abs/path/to/run_dir/chapter_records.jsonl",
       "chapter_no": "10"
+    },
+    {
+      "type": "scaffold_artifact",
+      "path": "/abs/path/to/run_dir/analysis_report_scaffold.md",
+      "chapter_no": "10"
     }
   ],
   "before_hash": "md5:....",
   "after_hash": "md5:....",
-  "knowledge_base_version_before": "v1.0.0",
-  "knowledge_base_version_after": "v1.0.1",
+  "knowledge_base_version_before": "2.4.0",
+  "knowledge_base_version_after": "2.4.1",
   "rollback": {
     "enabled": true,
-    "backup_path": "/abs/path/to/adoption_logs/20260318_case_chapter_10.before.json",
-    "rollback_log_path": "/abs/path/to/adoption_logs/20260318_case_chapter_10.rollback.json"
-  }
+    "backup_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.before.json",
+    "rollback_log_path": "",
+    "strategy": "restore_full_knowledge_base_snapshot"
+  },
+  "delta_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.delta.json",
+  "knowledge_base_path": "/abs/path/to/runtime/knowledge/knowledge_base.json",
+  "backup_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.before.json",
+  "summary": "将长期借款结构与章节结论正式采纳为知识条目"
 }
 ```
 
-## 4. 字段要求
+## 3. 字段约束
 
-### 4.1 `source`
+### 3.1 `adoption_id`
 
-- `case_name` 必填。
-- `chapter_no` 必填。
-- `chapter_title` 必填。
-- `run_dir` 必填。
-- `chapter_record_path` 必填。
+- 必填。
+- 必须能唯一标识一次章节级正式写入。
+- 推荐与 adoption log 文件名保持同一 stem，格式为 `YYYYMMDD_HHMMSS_case_chapter_no`。
+- 后续 rollback、摘要和人工排查都优先依赖该字段。
+
+### 3.2 `delta_version`
+
+- 必填。
+- 当前固定为 `knowledge_adoption_delta_v1`。
+- 后续如升级 schema，只允许新增版本，不允许悄悄改写 v1 语义。
+
+### 3.3 `logged_at`
+
+- 必填。
+- 必须是带时区的 ISO 8601 时间。
+- 表示这条正式采纳记录生成的时间，而不是章节原文时间。
+
+### 3.4 `result`
+
+- 必填。
+- 推荐取值：
+  - `applied`
+  - `rejected`
+  - `rolled_back`
+  - `dry_run`
+- `applied` 表示正式写入已生效。
+- `rolled_back` 只用于回滚日志或回滚后的审计记录。
+
+### 3.5 `source`
+
+必须至少包含：
+
+- `case_name`
+- `chapter_no`
+- `chapter_title`
+- `run_dir`
+- `chapter_record_path`
+- `review_ledger_path`
+- `scaffold_artifacts`
+
+建议额外保留：
+
+- `issuer`
+- `report_period`
+- `run_manifest_path`
+
+约束：
+
+- `run_dir`、`chapter_record_path`、`review_ledger_path` 必须指向当前案例运行目录内的真实路径。
 - `scaffold_artifacts` 至少应包含 `analysis_report_scaffold`、`final_data_scaffold`、`soul_export_payload_scaffold`。
+- `source` 只描述案例、章节和证据来源，不承载知识库内部治理字段。
 
-### 4.2 `review`
+### 3.6 `review`
 
-- `review_state` 建议取值：
+必须至少包含：
+
+- `review_state`
+- `reviewer`
+- `reviewed_at`
+- `summary`
+- `risk_level`
+- `confidence`
+
+推荐取值：
+
+- `review_state`：
   - `proposed`
   - `reviewed`
   - `adopted`
   - `rejected`
-- `reviewer` 建议固定记录 `Codex` 或具体线程标识。
+  - `blocked`
+- `risk_level`：
+  - `low`
+  - `medium`
+  - `high`
+- `confidence`：
+  - `low`
+  - `medium`
+  - `high`
+
+约束：
+
+- `review_state` 不能空。
 - `reviewed_at` 必须是 ISO 时间。
-- `summary` 要能解释为什么接受或拒绝。
-- `risk_level` 至少区分 `low`、`medium`、`high`。
+- `summary` 必须能解释为什么接受、拒绝或暂缓。
+- `review` 只描述章节复核，不描述 Soul 导出结构。
 
-### 4.3 `operations`
+### 3.7 `operations`
 
-允许的操作类型只保留三类：
+允许的操作类型只有三类：
 
 - `set`
 - `append`
 - `upsert_by_key`
 
-要求：
+统一约束：
 
-- 每个 operation 必须显式写出 `path`。
-- `upsert_by_key` 必须写出 `match_key` 和 `match_value`。
-- `value` 必须是能被 `write_knowledge_adoption.py` 稳定应用的对象。
+- `operations` 必须是非空列表。
+- 每个 operation 都必须显式写出 `path`。
+- `path` 只允许使用点号分隔的对象路径，不引入数组索引语义，例如不允许 `items[0]`。
+- `path` 目标必须位于正式 `knowledge_base.json` 的知识域，不得写入运行态元数据。
 
-### 4.4 `evidence_refs`
+各操作规则：
 
-至少要能回指到：
+- `set`
+  - `value` 必填。
+  - 目标节点必须是对象路径。
+  - 允许创建缺失的中间对象。
+- `append`
+  - `value` 必填。
+  - 目标节点必须是列表。
+  - 若列表不存在，可在正式知识域内创建空列表后再追加。
+- `upsert_by_key`
+  - `value` 必填，且必须是对象。
+  - `match_key` 与 `match_value` 必填。
+  - 若目标列表中已有对象满足 `match_key == match_value`，则用 `value` 与已有对象做浅合并，后写字段覆盖前写字段。
+  - 若未命中，则把 `value` 追加到列表末尾。
 
-- `chapter_records.jsonl`
-- 复核用 scaffold 文件
-- 必要时的正文/附注定位证据
+### 3.8 `evidence_refs`
 
-### 4.5 回滚
+- 必填，且不能空。
+- 每条 evidence 至少应能回指到章节复核证据。
 
-- 每次写入必须先保留 `before` 快照。
-- 每次写入必须生成 `adoption log`。
-- 任何回滚都必须保留自己的 rollback log。
+推荐引用类型：
 
-## 5. 验证规则
+- `chapter_record`
+- `scaffold_artifact`
+- `locator`
+- `raw_excerpt`
+- `manual_note`
 
-1. `operations` 不能为空。
-2. `source.case_name`、`source.chapter_no`、`source.chapter_title` 不能为空。
-3. `review.review_state` 不能为空。
-4. `before_hash` 与 `after_hash` 不能相同，除非本次写入是纯审计事件。
-5. 没有 `adoption log` 的写入视为非法实现。
-6. 不能把内部治理元数据写回 `knowledge_base` 中的正式业务字段。
+推荐字段：
+
+- `type`
+- `path`
+- `chapter_no`
+- `locator`
+- `snippet`
+
+约束：
+
+- 至少一条 evidence 应指向 `chapter_records.jsonl`。
+- 若结论依赖正文或附注定位，必须再补一条 `locator` 或 `raw_excerpt`。
+- evidence 只负责可追溯，不负责承载正文全文。
+
+### 3.9 `before_hash` / `after_hash`
+
+- 必填。
+- 推荐使用 `md5:` 前缀，后接规范化 JSON 的摘要值。
+- 计算对象是写入前后正式 `knowledge_base.json` 的完整内容。
+- `before_hash` 与 `after_hash` 在正式 applied 写入中必须不同。
+
+### 3.10 `knowledge_base_version_before` / `knowledge_base_version_after`
+
+- 必填。
+- 必须显式记录写入前后正式知识库版本。
+- 版本来源以 `runtime/knowledge/knowledge_base.json` 的 `metadata.version` 为准。
+- 版本升级算法不在本契约内规定，但写入方必须保证版本变化可解释、可审计。
+
+### 3.11 `rollback`
+
+必须至少包含：
+
+- `enabled`
+- `backup_path`
+- `rollback_log_path`
+- `strategy`
+
+约束：
+
+- `enabled=true` 时必须预先生成 `backup_path`。
+- `backup_path` 必须指向写入前的完整正式知识库快照。
+- `rollback_log_path` 用于回滚后的审计记录；未回滚前可以为空字符串。
+- `strategy` 推荐固定为 `restore_full_knowledge_base_snapshot`。
+- rollback 只恢复正式知识库，不回写 Soul、`chapter_records.jsonl` 或 review ledger。
+
+### 3.12 审计外壳字段
+
+下面这些字段属于审计外壳，供摘要、排障和人工核查消费：
+
+- `adoption_id`
+- `logged_at`
+- `result`
+- `delta_path`
+- `knowledge_base_path`
+- `backup_path`
+- `summary`
+
+如果后续 rollback 已发生，回滚日志应补充：
+
+- `rolled_back_at`
+- `source_log`
+- `restored_hash`
+- `rollback_log_path`
+
+## 4. Validation 规则
+
+正式写入前必须通过以下校验：
+
+1. `delta_version` 必须等于 `knowledge_adoption_delta_v1`。
+2. `operations` 必须是非空列表。
+3. `source.case_name`、`source.chapter_no`、`source.chapter_title`、`source.run_dir`、`source.chapter_record_path`、`source.review_ledger_path` 不能为空。
+4. `review.review_state`、`review.reviewed_at`、`review.summary` 不能为空。
+5. `review.review_state` 必须落在允许集合内。
+6. `evidence_refs` 至少有 1 条，且必须能回指到章节证据。
+7. `before_hash` 与 `after_hash` 在正式 applied 写入中不能相同。
+8. `knowledge_base_version_before` 与 `knowledge_base_version_after` 必须显式记录。
+9. `rollback.enabled=true` 时必须有 `backup_path`，且 backup 必须在写入前落盘。
+10. 不能把内部治理元数据写回知识库的正式业务字段。
+11. 不能把 `pending_updates`、review bundle 或 Soul 结构当成正式知识学习主路径。
+
+## 5. 回滚约束
+
+1. 每次正式写入必须对应一份写入前快照。
+2. 每次正式写入必须对应一条 adoption log。
+3. 回滚只能基于完整 adoption log 执行。
+4. 回滚只恢复正式 `knowledge_base.json`，不修正 `chapter_records.jsonl`，不修改 Soul 产物。
+5. 回滚动作必须留下独立 rollback log。
+6. 同一条 adoption 记录不能被重复半回滚或部分回滚。
 
 ## 6. 与现有脚本的关系
 
-- `financial-analyzer/scripts/write_knowledge_adoption.py` 应接受符合本契约的 delta。
-- `financial-analyzer/scripts/rollback_knowledge_adoption.py` 应能根据 log 与 backup 还原。
-- `financial-analyzer/scripts/show_knowledge_adoption.py` 应能汇总 source / review / hash / result。
+- `financial-analyzer/scripts/write_knowledge_adoption.py` 是正式写入入口，应接收本契约定义的 delta 形状。
+- `financial-analyzer/scripts/rollback_knowledge_adoption.py` 应按 adoption log + backup 恢复正式知识库。
+- `financial-analyzer/scripts/show_knowledge_adoption.py` 应展示 source / review / hash / result 的摘要。
 
-## 7. 建议的新线程 Prompt
+当前脚本实现仍保留最小兼容口径，后续 Codex 线程应以本契约为准，不应再把旧 `pending_updates` 或 review bundle 当主路径。
 
-```text
-先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及 financial-analyzer/scripts/write_knowledge_adoption.py。当前聚焦 R2：Knowledge Adoption Delta Contract 的落地实现。请把这份 delta 契约落实到脚本和文档中，使章节级知识写入具备明确的 source、review、operations、evidence_refs、hash、rollback 字段，并能被 rollback / summary 工具识别。不要把知识写入重新做成 pending_updates 或 review bundle 旧路径。
+## 7. 最小可执行示例
+
+下面示例展示一条真实章节采纳记录的最小形状。字段可扩展，但核心约束不得缺失。
+
+```json
+{
+  "adoption_id": "20260318_120000_henglong_chapter_10",
+  "delta_version": "knowledge_adoption_delta_v1",
+  "logged_at": "2026-03-18T12:00:00+08:00",
+  "result": "applied",
+  "source": {
+    "case_name": "恒隆地产",
+    "chapter_no": "10",
+    "chapter_title": "借款和融资成本",
+    "run_dir": "/abs/path/to/run_dir",
+    "chapter_record_path": "/abs/path/to/run_dir/chapter_records.jsonl",
+    "review_ledger_path": "/abs/path/to/run_dir/chapter_review_ledger.jsonl",
+    "scaffold_artifacts": {
+      "analysis_report_scaffold": "/abs/path/to/run_dir/analysis_report_scaffold.md",
+      "final_data_scaffold": "/abs/path/to/run_dir/final_data_scaffold.json",
+      "soul_export_payload_scaffold": "/abs/path/to/run_dir/soul_export_payload_scaffold.json"
+    }
+  },
+  "review": {
+    "review_state": "adopted",
+    "reviewer": "Codex",
+    "reviewed_at": "2026-03-18T12:00:00+08:00",
+    "summary": "附注章节结论与原文证据一致，采纳为正式知识",
+    "risk_level": "low",
+    "confidence": "high",
+    "decision": "adopt"
+  },
+  "operations": [
+    {
+      "op": "upsert_by_key",
+      "path": "knowledge.indicators.solvency.long_term",
+      "match_key": "title",
+      "match_value": "长期借款结构",
+      "value": {
+        "title": "长期借款结构",
+        "description": "长期借款主要为银行借款，关注到期结构与担保条款"
+      }
+    }
+  ],
+  "evidence_refs": [
+    {
+      "type": "chapter_record",
+      "path": "/abs/path/to/run_dir/chapter_records.jsonl",
+      "chapter_no": "10"
+    }
+  ],
+  "before_hash": "md5:11111111111111111111111111111111",
+  "after_hash": "md5:22222222222222222222222222222222",
+  "knowledge_base_version_before": "2.4.0",
+  "knowledge_base_version_after": "2.4.1",
+  "rollback": {
+    "enabled": true,
+    "backup_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.before.json",
+    "rollback_log_path": "",
+    "strategy": "restore_full_knowledge_base_snapshot"
+  },
+  "delta_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.delta.json",
+  "knowledge_base_path": "/abs/path/to/runtime/knowledge/knowledge_base.json",
+  "backup_path": "/abs/path/to/adoption_logs/20260318_120000_henglong_chapter_10.before.json",
+  "summary": "将长期借款结构与章节结论正式采纳为知识条目"
+}
 ```

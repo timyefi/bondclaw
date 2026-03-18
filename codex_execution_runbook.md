@@ -77,23 +77,20 @@
 
 ## 4. 当前剩余执行顺序
 
-基于当前仓库进展，W4 契约、W4 模板打样、W3/W4 导出分层、W6 最小回归和 scaffold-only 口径都已经落地；当前主线应切到复核与直写控制面，建议如下：
+基于当前仓库进展，W4 契约、W4 模板打样、W3/W4 导出分层、W6 最小回归和 scaffold-only 口径都已经落地；R1 与 R2 的控制面与契约已经收口，当前主线应切到 R3 / P6，建议如下：
 
 | 顺序 | 类型 | Workstream | 主目标 | 交付物 |
 |------|------|------------|--------|--------|
 | 0 | 总控线程 | PM | 维护蓝图、排序任务、审查结果 | 状态更新、下一步安排 |
-| 1 | 执行线程 | R1 | 建立 Codex 复核与直写控制面 | 章节状态机、adoption gate、finalization gate |
-| 2 | 执行线程 | R2 | 固化知识采纳 delta 契约 | delta schema、审计键、回滚边界 |
-| 3 | 执行线程 | R3 | 做 1-2 个完整案例演练 | scaffold -> 复核 -> 直写 -> formalization |
-| 4 | 执行线程 | P6 | 形成 go-live checklist | 上线门禁、人工复核点、停机/回滚策略 |
+| 1 | 执行线程 | R3 | 做 1-2 个完整案例演练 | scaffold -> 复核 -> 直写 -> formalization |
+| 2 | 执行线程 | P6 | 形成 go-live checklist | 上线门禁、人工复核点、停机/回滚策略 |
 
 说明：
 
 - W4、W3/W4 和 W6 基线不是取消，而是已完成的上游阶段；只有发现回归问题时才回头重开。
-- `R1` 先把章节状态机、直写边界、finalization gate 和回滚路径统一起来，避免直接把旧 W5 继续当主线。
-- `R2` 负责把 delta 契约和审计字段固定下来，后续线程才能稳定消费。
+- `R1` 和 `R2` 已经完成控制面与契约收口，后续线程直接消费文档即可。
 - `R3` 是最小的真实演练，先用 1-2 个案例把 scaffold -> review -> adopt -> formalization 跑通。
-- `P6` 只有在 `R1/R2/R3` 收敛后才适合执行，否则 go-live checklist 只能写成空清单。
+- `P6` 只有在 `R3` 收敛后才适合执行，否则 go-live checklist 只能写成空清单。
 
 ## 5. 每次新线程的标准开场动作
 
@@ -493,10 +490,10 @@ git branch -r
 先阅读 AGENTS.md、automation_blueprint.md、codex_review_and_finalization_runbook.md、financial-analyzer/SKILL.md、financial-analyzer/references/output_contract.md、financial-analyzer/references/open_record_protocol.md，以及 financial-analyzer/scripts/knowledge_manager.py、write_knowledge_adoption.py、rollback_knowledge_adoption.py、show_knowledge_adoption.py。当前聚焦 R1：Codex 复核与直写控制面。请基于 scaffold-only 口径，建立章节状态机、adoption gate、finalization gate 和回滚边界，但不要修改 Soul 结构，也不要回到旧的 pending_updates 主路径。
 ```
 
-如果你要先把正式知识采纳的结构化输入固定下来，建议开 `R2`：
+如果你要先把正式知识采纳的结构化输入固定下来，建议先读 `R2` 的 canonical contract：
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及 financial-analyzer/scripts/write_knowledge_adoption.py、rollback_knowledge_adoption.py、show_knowledge_adoption.py。当前聚焦 R2：知识采纳 delta 契约。请把章节级正式写入所需的 delta schema、审计键、回滚约束和校验规则落成仓库文档，并确保它能被后续 Codex 线程直接消费；不要改 Soul 结构，也不要重新引入 pending_updates 作为主学习路径。
+先阅读 AGENTS.md、automation_blueprint.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md、financial-analyzer/references/open_record_protocol.md，以及 financial-analyzer/scripts/write_knowledge_adoption.py、rollback_knowledge_adoption.py、show_knowledge_adoption.py。当前聚焦 R2：知识采纳 delta 契约。请把章节级正式写入所需的 delta schema、adoption_id、logged_at、result、审计键、回滚约束和校验规则落成仓库文档，并确保它能被后续 Codex 线程直接消费；不要改 Soul 结构，也不要重新引入 pending_updates 作为主学习路径。
 ```
 
 如果你要先做最小真实演练，建议开 `R3`：
