@@ -45,6 +45,7 @@ from run_p5_cold_start_simulation import (
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[1]
 SERIES_MANIFEST = "series_manifest.json"
 SERIES_RESULTS_JSONL = "series_task_results.jsonl"
 SERIES_TASK_LISTS_DIR = "series_task_lists"
@@ -200,6 +201,9 @@ def run_single_task_batch(
             "task_id": task["task_id"],
             "issuer": task["issuer"],
             "year": task["year"],
+            "report_type": str(task.get("report_type", "")),
+            "report_type_label": str(task.get("report_type_label", "")),
+            "report_period_label": str(task.get("report_period_label", "")),
             "status": "failed",
             "batch_name": batch_name,
             "batch_run_dir": str(batch_run_dir),
@@ -244,7 +248,7 @@ def run_single_task_batch(
             "--run-dir",
             str(task_run_dir),
         ],
-        cwd=str(ROOT_DIR),
+        cwd=str(REPO_ROOT),
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -254,6 +258,9 @@ def run_single_task_batch(
             "task_id": task["task_id"],
             "issuer": task["issuer"],
             "year": task["year"],
+            "report_type": str(task.get("report_type", "")),
+            "report_type_label": str(task.get("report_type_label", "")),
+            "report_period_label": str(task.get("report_period_label", "")),
             "status": "failed",
             "batch_name": batch_name,
             "batch_run_dir": str(batch_run_dir),
@@ -282,6 +289,9 @@ def run_single_task_batch(
         "task_id": task["task_id"],
         "issuer": task["issuer"],
         "year": task["year"],
+        "report_type": str(task.get("report_type", "")),
+        "report_type_label": str(task.get("report_type_label", "")),
+        "report_period_label": str(task.get("report_period_label", "")),
         "status": "success" if batch_result["returncode"] == 0 else "failed",
         "batch_name": batch_name,
         "batch_run_dir": str(batch_run_dir),

@@ -231,10 +231,15 @@ def download_one_task(
     fallback_url = str(source.get("official_download_url", "")).strip()
     fallback_lookup: Dict[str, Any] = {}
     if not fallback_url and seed_task:
+        report_type_value = (
+            seed_task.get("report_type")
+            or seed_task.get("report_type_label")
+            or seed_task.get("selection_bucket", "")
+        )
         fallback_lookup = {
             "issuer_name": seed_task.get("issuer", ""),
             "year": seed_task.get("year"),
-            "report_type": str(seed_task.get("selection_bucket", "")),
+            "report_type": report_type_value,
         }
 
     download_result = download_file_with_metadata(
@@ -272,7 +277,8 @@ def download_one_task(
         "content_id": str(source.get("content_id", "")).strip() or extract_content_id_from_url(url),
         "release_date": str(source.get("release_date", "")).strip(),
         "url": url,
-        "seed_report_type": str(seed_task.get("selection_bucket", "")) if seed_task else "",
+        "seed_report_type": str(seed_task.get("report_type", "")) if seed_task else "",
+        "seed_report_type_label": str(seed_task.get("report_type_label", "")) if seed_task else "",
         "seed_issuer": str(seed_task.get("issuer", "")) if seed_task else "",
     }
 
@@ -357,6 +363,56 @@ def find_notes_start(lines: List[str]) -> Tuple[int, Dict[str, Any]]:
     raise ValueError("notes_section_keyword_not_found")
 
 
+def find_statement_fallback(lines: List[str]) -> Tuple[int, List[Dict[str, Any]]]:
+    headings: List[Dict[str, Any]] = []
+    heading_re = re.compile(r"^\s{0,3}#{1,6}\s*(?P<title>.+?)\s*$")
+    for index, line in enumerate(lines, start=1):
+        stripped = line.strip()
+        match = heading_re.match(stripped)
+        if not match:
+            continue
+        title = match.group("title").strip()
+        lowered = title.lower()
+        if not title:
+            continue
+        if any(
+            marker in lowered
+            for marker in (
+                "expressed in renminbi yuan",
+                "expressed in rmb",
+                "consolidated financial statements for the six months ended",
+                "company limited",
+                "vanke real estate",
+            )
+        ):
+            continue
+        if not any(
+            marker in lowered
+            for marker in (
+                "consolidated statement",
+                "statement of financial position",
+                "statement of profit or loss",
+                "statement of comprehensive income",
+                "statement of cash flows",
+                "statement of changes in equity",
+                "notes to the financial statements",
+                "note ",
+            )
+        ):
+            continue
+        headings.append(
+            {
+                "note_no": str(len(headings) + 1),
+                "chapter_title": title,
+                "start_line": index,
+                "evidence": [stripped[:200]],
+            }
+        )
+    if len(headings) < MIN_NOTE_HEADING_COUNT:
+        raise ValueError("statement_heading_fallback_too_small")
+    return headings[0]["start_line"], headings
+
+
 def find_note_headings(lines: List[str], start_line: int) -> List[Dict[str, Any]]:
     headings: List[Dict[str, Any]] = []
     for index in range(start_line - 1, len(lines)):
@@ -400,10 +456,20 @@ def build_notes_workfile_from_markdown(md_path: Path, notes_workfile_path: Path)
     if not lines:
         raise ValueError("markdown_empty")
 
-    notes_start_line, locator_evidence = find_notes_start(lines)
-    headings = find_note_headings(lines, notes_start_line)
-    if len(headings) < MIN_NOTE_HEADING_COUNT:
-        raise ValueError(f"notes_heading_count_below_minimum:{len(headings)}")
+    used_fallback = False
+    try:
+        notes_start_line, locator_evidence = find_notes_start(lines)
+        headings = find_note_headings(lines, notes_start_line)
+        if len(headings) < MIN_NOTE_HEADING_COUNT:
+            raise ValueError(f"notes_heading_count_below_minimum:{len(headings)}")
+    except ValueError:
+        used_fallback = True
+        notes_start_line, headings = find_statement_fallback(lines)
+        locator_evidence = {
+            "step": "statement_section_fallback",
+            "keyword": "english_statement_headings",
+            "excerpt": headings[0]["evidence"][0],
+        }
 
     notes_end_line = determine_notes_end(lines, [item["start_line"] for item in headings])
     notes_catalog: List[Dict[str, Any]] = []
@@ -430,6 +496,7 @@ def build_notes_workfile_from_markdown(md_path: Path, notes_workfile_path: Path)
     payload = {
         "notes_start_line": notes_start_line,
         "notes_end_line": notes_end_line,
+        "used_statement_fallback": used_fallback,
         "locator_evidence": [
             locator_evidence,
             {
@@ -539,6 +606,9 @@ def build_batch_task_entry(
         "task_id": seed_task["task_id"],
         "issuer": seed_task["issuer"],
         "year": seed_task["year"],
+        "report_type": seed_task.get("report_type", ""),
+        "report_type_label": seed_task.get("report_type_label", ""),
+        "report_period_label": seed_task.get("report_period_label", ""),
         "md_path": str(md_path),
         "notes_workfile": str(notes_workfile_path),
         "run_dir": str(analysis_run_dir),
