@@ -26,8 +26,6 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-import requests
-
 from runtime_support import (
     RuntimeConfigError,
     load_runtime_config,
@@ -42,7 +40,7 @@ CHINAMONEY_SCRIPT_DIR = REPO_ROOT / "chinamoney" / "scripts"
 if str(CHINAMONEY_SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(CHINAMONEY_SCRIPT_DIR))
 
-from discover_reports import BASE_PAGE_URL, bootstrap_session, default_headers  # type: ignore
+from download_support import download_file_with_metadata  # type: ignore
 
 
 DOWNLOAD_PHASE_MANIFEST = "download_phase_manifest.json"
@@ -127,6 +125,11 @@ def parse_args() -> argparse.Namespace:
         "--resume-output-dir",
         action="store_true",
         help="若 output_dir 已存在，则复用已下载/已解析产物而不是删除重跑",
+    )
+    parser.add_argument(
+        "--download-only",
+        action="store_true",
+        help="仅执行阶段 A 下载并写出 manifest，不进入 MinerU / batch downstream",
     )
     return parser.parse_args()
 
@@ -213,120 +216,64 @@ def download_one_task(
     *,
     task_id: str,
     task: Dict[str, Any],
+    seed_task: Optional[Dict[str, Any]],
     output_root: Path,
     timeout: int,
     resume_existing: bool,
 ) -> Dict[str, Any]:
     output_path = output_root / str(task.get("output_path", "")).strip()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = output_path.with_suffix(output_path.suffix + ".part")
     url = str(task.get("url", "")).strip()
     retries = int(task.get("retries", 3) or 3)
     source = task.get("source") or {}
-    referer = str(source.get("draft_page_url", "")).strip() or BASE_PAGE_URL
+    referer = str(source.get("draft_page_url", "")).strip() or ""
 
-    attempt_logs: List[Dict[str, Any]] = []
-    if resume_existing and output_path.exists() and output_path.stat().st_size > 0:
-        return {
-            "task_id": task_id,
-            "name": str(task.get("name", "")).strip(),
-            "download_status": "success",
-            "http_status_or_error": "reused_existing_file",
-            "status_code": None,
-            "output_pdf": str(output_path.resolve()),
-            "file_size_bytes": output_path.stat().st_size,
-            "attempted_retries": 0,
-            "attempt_logs": [],
-            "draft_page_url": str(source.get("draft_page_url", "")).strip(),
-            "content_id": str(source.get("content_id", "")).strip() or extract_content_id_from_url(url),
-            "release_date": str(source.get("release_date", "")).strip(),
-            "url": url,
+    fallback_url = str(source.get("official_download_url", "")).strip()
+    fallback_lookup: Dict[str, Any] = {}
+    if not fallback_url and seed_task:
+        fallback_lookup = {
+            "issuer_name": seed_task.get("issuer", ""),
+            "year": seed_task.get("year"),
+            "report_type": str(seed_task.get("selection_bucket", "")),
         }
 
-    final_status = "failed"
-    final_error = ""
-    final_status_code: Optional[int] = None
-    for attempt in range(1, retries + 1):
-        started = time.monotonic()
-        status_code: Optional[int] = None
-        error_text = ""
-        try:
-            session = bootstrap_session()
-            with session.get(
-                url,
-                headers=default_headers(referer=referer),
-                stream=True,
-                allow_redirects=True,
-                timeout=(15, timeout),
-            ) as response:
-                status_code = response.status_code
-                response.raise_for_status()
-                with open(tmp_path, "wb") as handle:
-                    for chunk in response.iter_content(chunk_size=1024 * 256):
-                        if chunk:
-                            handle.write(chunk)
+    download_result = download_file_with_metadata(
+        url,
+        str(output_path),
+        max_retries=retries,
+        timeout=timeout,
+        resume=resume_existing,
+        referer=referer or None,
+        fallback_url=fallback_url,
+        fallback_lookup=fallback_lookup or None,
+    )
 
-            if not tmp_path.exists() or tmp_path.stat().st_size == 0:
-                raise RuntimeError("downloaded_file_empty")
-
-            tmp_path.replace(output_path)
-            final_status = "success"
-            final_status_code = status_code
-            attempt_logs.append(
-                {
-                    "attempt": attempt,
-                    "status": "success",
-                    "status_code": status_code,
-                    "error": "",
-                    "duration_seconds": round(time.monotonic() - started, 3),
-                }
-            )
-            break
-        except requests.HTTPError as exc:
-            status_code = exc.response.status_code if exc.response is not None else None
-            error_text = f"http_error:{status_code}" if status_code is not None else "http_error"
-        except requests.Timeout:
-            error_text = "timeout"
-        except requests.ConnectionError:
-            error_text = "connection_error"
-        except Exception as exc:
-            error_text = str(exc)
-        finally:
-            if tmp_path.exists():
-                try:
-                    tmp_path.unlink()
-                except OSError:
-                    pass
-
-        final_error = error_text
-        final_status_code = status_code
-        attempt_logs.append(
-            {
-                "attempt": attempt,
-                "status": "failed",
-                "status_code": status_code,
-                "error": error_text,
-                "duration_seconds": round(time.monotonic() - started, 3),
-            }
-        )
-        if attempt < retries:
-            time.sleep(float(attempt))
-
-    file_size_bytes = output_path.stat().st_size if output_path.exists() else 0
+    attempt_count = int(download_result.get("attempt_count") or 0)
     return {
         "task_id": task_id,
         "name": str(task.get("name", "")).strip(),
-        "download_status": final_status,
-        "http_status_or_error": status_or_error_label(final_status_code, final_error),
-        "status_code": final_status_code,
+        "download_status": download_result.get("download_status", "failed"),
+        "download_source": download_result.get("download_source", ""),
+        "fallback_used": bool(download_result.get("fallback_used")),
+        "resolved_fallback": bool(download_result.get("resolved_fallback")),
+        "http_status_or_error": download_result.get("http_status_or_error")
+        or status_or_error_label(download_result.get("status_code"), str(download_result.get("failure_reason", ""))),
+        "status_code": download_result.get("status_code"),
         "output_pdf": str(output_path.resolve()),
-        "file_size_bytes": file_size_bytes,
-        "attempted_retries": retries,
-        "attempt_logs": attempt_logs,
+        "file_size_bytes": int(download_result.get("file_size_bytes") or 0),
+        "attempted_retries": max(0, attempt_count - 1),
+        "attempt_count": attempt_count,
+        "retry_budget": retries,
+        "attempt_logs": download_result.get("attempt_logs", []),
+        "failure_reason": download_result.get("failure_reason", ""),
+        "final_url": download_result.get("final_url", ""),
+        "fallback_url": download_result.get("fallback_url", fallback_url),
         "draft_page_url": str(source.get("draft_page_url", "")).strip(),
         "content_id": str(source.get("content_id", "")).strip() or extract_content_id_from_url(url),
         "release_date": str(source.get("release_date", "")).strip(),
         "url": url,
+        "seed_report_type": str(seed_task.get("selection_bucket", "")) if seed_task else "",
+        "seed_issuer": str(seed_task.get("issuer", "")) if seed_task else "",
     }
 
 
@@ -351,6 +298,7 @@ def run_download_phase(
             download_one_task(
                 task_id=task_id,
                 task=task,
+                seed_task=seed_task,
                 output_root=output_dir,
                 timeout=timeout,
                 resume_existing=resume_existing,
@@ -359,12 +307,19 @@ def run_download_phase(
 
     success_count = sum(1 for item in results if item["download_status"] == "success")
     failed_count = len(results) - success_count
+    fallback_success_count = sum(1 for item in results if item.get("download_status") == "success" and item.get("download_source") == "cninfo_mirror")
+    main_success_count = sum(1 for item in results if item.get("download_status") == "success" and item.get("download_source") == "chinamoney_official")
+    reused_success_count = sum(1 for item in results if item.get("download_source") == "reused_existing_file")
     return {
         "generated_at": now_iso(),
         "download_attempted_count": len(results),
         "download_success_count": success_count,
         "download_failed_count": failed_count,
+        "download_main_success_count": main_success_count,
+        "download_fallback_success_count": fallback_success_count,
+        "download_reused_success_count": reused_success_count,
         "download_threshold": threshold,
+        "download_gate_mode": "recovery_aware",
         "gate_passed": success_count >= threshold,
         "results": results,
     }
@@ -828,6 +783,7 @@ def main():
         "p4_dir": str(p4_dir),
         "output_dir": str(output_dir),
         "download_threshold": args.download_threshold,
+        "download_only": bool(args.download_only),
         "skill_status": skill_status,
         "runtime_config_path": str(runtime_config_path),
         "stages": {
@@ -836,15 +792,19 @@ def main():
                 "manifest_path": str((output_dir / DOWNLOAD_PHASE_MANIFEST).resolve()),
                 "download_success_count": download_manifest["download_success_count"],
                 "download_failed_count": download_manifest["download_failed_count"],
+                "download_main_success_count": download_manifest["download_main_success_count"],
+                "download_fallback_success_count": download_manifest["download_fallback_success_count"],
+                "download_reused_success_count": download_manifest["download_reused_success_count"],
                 "gate_passed": download_manifest["gate_passed"],
+                "download_gate_mode": download_manifest["download_gate_mode"],
             },
             "preparation": {
-                "status": "not_started",
+                "status": "skipped" if args.download_only else "not_started",
                 "manifest_path": "",
                 "prepared_task_count": 0,
             },
             "batch": {
-                "status": "not_started",
+                "status": "skipped" if args.download_only else "not_started",
                 "task_list_path": "",
                 "batch_run_dir": "",
                 "batch_manifest_path": "",
@@ -860,6 +820,12 @@ def main():
     if not download_manifest["gate_passed"]:
         p5_manifest["go_live_blocker"] = "chinamoney_download_gate_blocked"
         p5_manifest["next_step"] = "retry_p5_after_download_gateway_revalidation"
+        write_json(output_dir / P5_MANIFEST, p5_manifest)
+        return
+
+    if args.download_only:
+        p5_manifest["go_live_blocker"] = "download_only_mode"
+        p5_manifest["next_step"] = "download_only_validation_complete"
         write_json(output_dir / P5_MANIFEST, p5_manifest)
         return
 

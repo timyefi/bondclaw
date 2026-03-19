@@ -137,7 +137,7 @@ python scripts/discover_reports.py --year 2024 --report-type 4 --org-name "ä¸‡ç§
 Current observed facts:
 - call `https://www.chinamoney.com.cn/chinese/zqcwbgcwgd/` first to establish session
 - then call `https://www.chinamoney.com.cn/ags/ms/cm-u-notice-issue/financeRepo`
-- direct attachment HEAD/GET may return `421 Misdirected Request` in the current environment, so report discovery and attachment-size probing must be treated as separate concerns
+- direct attachment GET may still hit `421 Misdirected Request` or `There are too many connections from your internet address` in the current environment, so download code now uses retry/backoff on the official attachment and falls back to CNInfo mirror when available
 
 ### Step 2: Open Financial Report Page
 

@@ -28,14 +28,30 @@ def download_file_from_config(task):
     output_path = task['output_path']
     name = task.get('name', os.path.basename(output_path))
     retries = task.get('retries', 3)
+    referer = task.get('referer', '') or task.get('source', {}).get('draft_page_url', '')
+    fallback_url = task.get('fallback_url', '') or task.get('source', {}).get('official_download_url', '')
+    fallback_lookup = task.get('fallback_lookup') or {}
 
     print(f"\n下载: {name}")
     print("-" * 60)
 
     # 直接导入download模块，避免subprocess编码问题
     try:
-        from download import download_file
-        return download_file(url, output_path, retries)
+        from download_support import download_file_with_metadata
+
+        result = download_file_with_metadata(
+            url,
+            output_path,
+            max_retries=retries,
+            referer=referer or None,
+            fallback_url=fallback_url,
+            fallback_lookup=fallback_lookup or None,
+        )
+        if result.get("download_status") == "success":
+            print(f"[OK] {result.get('download_source')} -> {result.get('output_path')}")
+            return True
+        print(f"[FAIL] {result.get('http_status_or_error')}: {result.get('failure_reason')}")
+        return False
     except Exception as e:
         print(f"执行失败: {e}")
         return False

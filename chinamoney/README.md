@@ -152,13 +152,13 @@ python batch-download.py
 
 ### 重要说明：当前下载网关约束
 
-2026-03-17 实测，ChinaMoney 附件下载网关对当前环境大量返回 `421 Misdirected Request`。因此：
+2026-03-19 更新，ChinaMoney 附件下载网关在当前环境仍会对部分请求返回 `421 Misdirected Request` 或 `There are too many connections from your internet address`。因此：
 
 - `discover_reports.py` 负责官方来源发现
-- P4 生成器会优先尝试 `HEAD`
-- 若 live `HEAD` 失败，会回退到“本地案例尺寸校准 + 标题语义估算”
+- 下载阶段会先尝试 ChinaMoney 官方附件
+- 若官方附件仍被 421 拦截，会自动回退到 CNInfo 官方镜像并记录到 manifest
 
-这意味着当前版本可以稳定完成“发现与选样”，但 P5 前仍应再次验证真实下载链路。
+这意味着当前版本可以稳定完成“发现、选样和真实下载”，同时保留官方附件作为主通路。
 
 ### 第一步：搜索获取下载链接
 

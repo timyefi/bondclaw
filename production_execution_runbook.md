@@ -269,6 +269,7 @@
   - `download_config.json`
   - `task_seed_list.json`
 - 阶段 A 先做真实下载验证，并输出 `download_phase_manifest.json`
+- 阶段 A 先尝试 ChinaMoney 官方附件，若 421 触发官方镜像回退，并在 `download_phase_manifest.json` 中记录主路 / 回退 / 复用统计
 - 只有当真实下载成功数 `>= 8/10` 时，才进入 MinerU、`notes_workfile`、batch task list 和 `run_batch_pipeline.py`
 - 若下载 gate 未通过，P5 必须在阶段 A 停止，并在 `p5_run_manifest.json` 中明确标记下载链路阻塞
 
