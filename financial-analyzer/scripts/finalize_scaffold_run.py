@@ -2,6 +2,8 @@
 """
 将 scaffold-only 运行目录正式化为可交付成品。
 
+注意：这个脚本是显式收口工具，应该在 Codex 已经完成中间产物阅读、写作和知识比对之后再调用，不应替代人工式阅读本身。
+
 输入：
 - run_manifest.json
 - chapter_records.jsonl

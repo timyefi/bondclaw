@@ -5,7 +5,7 @@
 目标：
 - 复用 ChinaMoney 发现 / 下载
 - 复用 MinerU 解析
-- 复用 financial_analyzer.py + run_batch_pipeline.py 的单案正式输出
+- 默认只停在 scaffold / review 输入，正式化需要显式 `--formalize`
 - 每份报告独立完成后再进入下一份，不在同一个分析结果里合并多份报告
 """
 
@@ -83,6 +83,11 @@ def parse_args() -> argparse.Namespace:
         "--download-only",
         action="store_true",
         help="仅执行下载与解析，不进入单案正式分析",
+    )
+    parser.add_argument(
+        "--formalize",
+        action="store_true",
+        help="显式执行正式化，生成 analysis_report.md / final_data.json / soul_export_payload.json / financial_output.xlsx",
     )
     parser.add_argument(
         "--no-build-review-bundle",
@@ -180,12 +185,14 @@ def run_single_task_batch(
     batch_root: Path,
     series_name: str,
     review_bundle: bool,
+    formalize: bool,
 ) -> Dict[str, Any]:
     batch_name = build_series_batch_name(series_name, task["task_id"])
     batch_run_dir = batch_root / batch_name
     task_list_dir = batch_run_dir / "task_list"
     task_list_dir.mkdir(parents=True, exist_ok=True)
     task_list_path = task_list_dir / f"{task['task_id']}.json"
+    task_run_dir = Path(task["run_dir"])
     payload = build_batch_task_list_payload(batch_name, [task])
     write_json(task_list_path, payload)
 
@@ -224,6 +231,7 @@ def run_single_task_batch(
             "soul_export_payload": "",
             "soul_export_payload_scaffold": "",
             "financial_output": "",
+            "formalization_status": "failed",
             "chapter_records": "",
             "run_manifest": "",
             "formalization_manifest": "",
@@ -234,13 +242,46 @@ def run_single_task_batch(
     if manifest_path.exists():
         manifest = read_json(manifest_path)
 
-    task_run_dir = Path(task["run_dir"])
     task_manifest_path = task_run_dir / "run_manifest.json"
     task_manifest: Dict[str, Any] = {}
     if task_manifest_path.exists():
         task_manifest = read_json(task_manifest_path)
 
     artifacts = (task_manifest.get("artifacts") or {}) if task_manifest else {}
+    if not formalize:
+        return {
+            "task_id": task["task_id"],
+            "issuer": task["issuer"],
+            "year": task["year"],
+            "report_type": str(task.get("report_type", "")),
+            "report_type_label": str(task.get("report_type_label", "")),
+            "report_period_label": str(task.get("report_period_label", "")),
+            "status": "success" if batch_result["returncode"] == 0 else "failed",
+            "batch_name": batch_name,
+            "batch_run_dir": str(batch_run_dir),
+            "batch_task_list_path": str(task_list_path),
+            "batch_returncode": batch_result["returncode"],
+            "batch_log_path": batch_result["log_path"],
+            "batch_manifest_path": batch_result["batch_manifest_path"],
+            "batch_failed_tasks_path": batch_result["failed_tasks_path"],
+            "batch_scaffold_index_path": batch_result["scaffold_index_path"],
+            "task_run_dir": str(task_run_dir),
+            "task_manifest_path": str(task_manifest_path) if task_manifest_path.exists() else "",
+            "task_manifest_status": str(task_manifest.get("status", "")),
+            "task_failure_reason": str(task_manifest.get("failure_reason", "")) if batch_result["returncode"] == 0 else "analysis_batch_failed",
+            "analysis_report": "",
+            "analysis_report_scaffold": str(artifacts.get("analysis_report_scaffold", "")),
+            "final_data": "",
+            "final_data_scaffold": str(artifacts.get("final_data_scaffold", "")),
+            "soul_export_payload": "",
+            "soul_export_payload_scaffold": str(artifacts.get("soul_export_payload_scaffold", "")),
+            "financial_output": "",
+            "formalization_status": "pending",
+            "chapter_records": str(artifacts.get("chapter_records", "")),
+            "run_manifest": str(artifacts.get("run_manifest", "")),
+            "formalization_manifest": "",
+        }
+
     finalizer_result = subprocess.run(
         [
             sys.executable,
@@ -281,6 +322,7 @@ def run_single_task_batch(
             "soul_export_payload": str(task_run_dir / "soul_export_payload.json"),
             "soul_export_payload_scaffold": str(artifacts.get("soul_export_payload_scaffold", "")),
             "financial_output": str(task_run_dir / "financial_output.xlsx"),
+            "formalization_status": "failed",
             "chapter_records": str(artifacts.get("chapter_records", "")),
             "run_manifest": str(artifacts.get("run_manifest", "")),
             "formalization_manifest": "",
@@ -312,6 +354,7 @@ def run_single_task_batch(
         "soul_export_payload": str(task_run_dir / "soul_export_payload.json"),
         "soul_export_payload_scaffold": str(artifacts.get("soul_export_payload_scaffold", "")),
         "financial_output": str(task_run_dir / "financial_output.xlsx"),
+        "formalization_status": "completed",
         "chapter_records": str(artifacts.get("chapter_records", "")),
         "run_manifest": str(artifacts.get("run_manifest", "")),
         "formalization_manifest": str(task_run_dir / "formalization_manifest.json"),
@@ -328,16 +371,19 @@ def build_series_manifest(
     preparation_manifest: Dict[str, Any],
     task_results: List[Dict[str, Any]],
     download_only: bool,
+    formalize: bool,
 ) -> Dict[str, Any]:
     success_count = sum(1 for item in task_results if item["status"] == "success")
     failed_count = sum(1 for item in task_results if item["status"] != "success")
     complete_count = sum(1 for item in task_results if item.get("task_manifest_status") == "success" and item.get("status") == "success")
+    formalized_count = sum(1 for item in task_results if item.get("formalization_status") == "completed")
     return {
         "generated_at": now_iso(),
         "p4_dir": str(p4_dir),
         "output_dir": str(output_dir),
         "runtime_config_path": str(runtime_config_path),
         "download_only": bool(download_only),
+        "formalize": bool(formalize),
         "skill_status": skill_status,
         "download_phase_manifest_path": str(output_dir / DOWNLOAD_PHASE_MANIFEST),
         "preparation_manifest_path": str(output_dir / PREPARATION_MANIFEST),
@@ -346,6 +392,7 @@ def build_series_manifest(
             "success_count": success_count,
             "failed_count": failed_count,
             "complete_task_count": complete_count,
+            "formalized_task_count": formalized_count,
             "download_success_count": int(download_manifest.get("download_success_count", 0)),
             "download_failed_count": int(download_manifest.get("download_failed_count", 0)),
             "preparation_success_count": int(preparation_manifest.get("preparation_success_count", 0)),
@@ -479,6 +526,7 @@ def main():
                     "task_run_dir": "",
                     "analysis_report": "",
                     "financial_output": "",
+                    "formalization_status": "not_run",
                 }
             )
             if args.stop_on_failure:
@@ -500,6 +548,7 @@ def main():
                     "task_run_dir": "",
                     "analysis_report": "",
                     "financial_output": "",
+                    "formalization_status": "not_run",
                 }
             )
             if args.stop_on_failure:
@@ -522,6 +571,7 @@ def main():
                     "task_run_dir": "",
                     "analysis_report": "",
                     "financial_output": "",
+                    "formalization_status": "not_run",
                 }
             )
             if args.stop_on_failure:
@@ -534,6 +584,7 @@ def main():
             batch_root=batch_root,
             series_name=output_dir.name,
             review_bundle=not args.no_build_review_bundle,
+            formalize=args.formalize,
         )
         batch_result["download_status"] = download_item.get("download_status", "")
         batch_result["analysis_status"] = "success" if batch_result["status"] == "success" else "failed"
@@ -556,6 +607,7 @@ def main():
             preparation_manifest=preparation_manifest,
             task_results=task_results,
             download_only=args.download_only,
+            formalize=args.formalize,
         )
     )
     series_manifest["stages"]["per_report"] = {
@@ -571,9 +623,12 @@ def main():
         "[OK] 结果汇总: "
         f"success={series_manifest['summary']['success_count']}, "
         f"failed={series_manifest['summary']['failed_count']}, "
-        f"complete={series_manifest['summary']['complete_task_count']}"
+        f"complete={series_manifest['summary']['complete_task_count']}, "
+        f"formalized={series_manifest['summary']['formalized_task_count']}"
     )
     print(f"[OK] series_manifest: {output_dir / SERIES_MANIFEST}")
+    if not args.formalize:
+        print("[HINT] 当前只停在 scaffold；如需正式报告与 Excel，请显式传 --formalize 复跑")
 
 
 if __name__ == "__main__":

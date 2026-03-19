@@ -23,6 +23,7 @@
 ## 导出规则
 
 - 模板脚本输出的 scaffold 只能视为草稿，不能未经复核直接作为最终交付。
+- 主链路默认停在 scaffold；正式 `analysis_report.md` 和 `financial_output.xlsx` 需要在 Codex 读完中间产物后显式 formalize。
 - `soul_export_payload.json` 仍是 Soul Excel 导出层的正式稳定契约。
 - `financial_output.xlsx` 由独立 Soul exporter 基于正式 `soul_export_payload.json` 生成。
 - Excel 只消费稳定核心字段和已确认结构，不消费内部知识治理元数据。

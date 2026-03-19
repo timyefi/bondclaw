@@ -15,7 +15,7 @@
 
 1. 自动采集完整财报与评级报告。
 2. 自动解析 PDF 并定位关键章节，尤其是附注。
-3. 自动生成研究分析结果。
+3. 在 Skill 驱动下生成研究分析结果。
 4. 自动生成对外交付级 Excel 成品 `Soul`。
 5. 自动沉淀内部知识候选，但与对外交付严格解耦。
 
@@ -37,7 +37,7 @@
   -> 数据采集层（ChinaMoney）
   -> 文档理解层（MinerU）
   -> 文档标准化层（Normalizer / Locator）
-  -> 分析引擎层（Financial Analysis）
+  -> 分析引擎层（Skill 驱动的 Financial Analysis）
   -> 成品导出层（Soul Excel）
   -> 运行治理层（Manifest / QA / Retry）
   -> 知识进化层（Scaffold -> Codex Review -> Direct Adopt）
@@ -132,7 +132,7 @@
 职责：
 
 - 基于附注优先原则提取财务与信用关键信息。
-- 生成分析报告、焦点主题、章节记录和候选知识。
+- 先让 Codex 完整阅读中间产物，再生成分析报告、焦点主题、章节记录和候选知识。
 - 输出 Soul 所需的稳定数据契约。
 
 输入：
@@ -178,7 +178,7 @@
 
 职责：
 
-- 把一次案例里新发现的字段、规则、专题候选经 Codex 逐章复核后直接沉淀为正式知识库。
+- 把一次案例里新发现的字段、规则、专题候选经 Codex 逐章阅读、写作、比对后沉淀为正式知识库。
 - 通过 adoption log 和 rollback 工具维持可审计、可回滚。
 
 约束：
@@ -220,7 +220,7 @@
 
 ### 8.2 已确认事实
 
-1. `financial_analyzer.py` 当前已采用“先输出 `soul_export_payload.json`，再调用 `soul_exporter.py` 生成 `financial_output.xlsx`”的导出链路，主线输出已切换为 Soul workbook。
+1. `financial_analyzer.py` 当前仍以 scaffold-only 为默认输出，正式报告和 Excel 需要在 Codex 完整阅读中间产物后显式收口。
 2. 历史 `test_runs` 目录仍混有旧内部分析 workbook、旧路径口径和分层改造前样本，不能直接等同于当前 W6 回归基线。
 3. 现有历史 Excel 与 3 个固定案例可继续作为结构归纳和回归样本，但需要区分“历史样本”和“当前主线重跑产物”。
 4. curated `spreadsheet` skill 已安装，可作为 Excel 生成层参考。

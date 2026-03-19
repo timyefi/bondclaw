@@ -6,6 +6,8 @@
 
 它解决的是“如何把复核结果稳定、可回滚、可审计地写入正式 `knowledge_base.json`”，不是知识内容本身，也不是 Soul 结构。
 
+正式写入必须发生在 Codex 已经完成中间产物阅读、正式报告写作和 Excel 收口之后；scaffold 只能作为复核输入，不能直接跳到 adoption。
+
 本契约是后续 Codex 线程的 canonical 口径：
 
 - 章节复核结论必须先落成 delta。
@@ -180,11 +182,14 @@ canonical 审计键由以下字段共同构成：
 - `issuer`
 - `report_period`
 - `run_manifest_path`
+- `analysis_report_path`
+- `financial_output_path`
 
 约束：
 
 - `run_dir`、`chapter_record_path`、`review_ledger_path` 必须指向当前案例运行目录内的真实路径。
 - `scaffold_artifacts` 至少应包含 `analysis_report_scaffold`、`final_data_scaffold`、`soul_export_payload_scaffold`。
+- 当正式报告和 Excel 已生成时，建议同时保留 `analysis_report_path` 和 `financial_output_path`，用于证明 adoption 发生在最终成稿之后。
 - `source` 只描述案例、章节和证据来源，不承载知识库内部治理字段。
 
 ### 3.6 `review`

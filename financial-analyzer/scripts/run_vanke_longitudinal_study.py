@@ -5,8 +5,8 @@
 流程：
 1. 从 ChinaMoney 官方接口发现 2016-2025 的年报 / 半年报
 2. 生成 discovery / download / task seed 产物
-3. 调用 run_report_series.py 跑完整单案闭环
-4. 汇总每份正式产物，输出 master analysis_report.md 与 master financial_output.xlsx
+3. 调用 run_report_series.py 跑 scaffold-first 单案闭环
+4. 如显式 formalize，则基于每份正式产物做二次阅读与 synthesis，输出 master reading ledger 与 master financial_output.xlsx；正式 analysis_report.md 需由 Codex 依据阅读结果另行写作
 """
 
 import argparse
@@ -85,6 +85,13 @@ def write_json(path: Path, payload: Dict[str, Any]):
         json.dump(payload, handle, ensure_ascii=False, indent=2)
 
 
+def write_jsonl(path: Path, rows: List[Dict[str, Any]]):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as handle:
+        for row in rows:
+            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
 def write_text(path: Path, text: str):
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
@@ -108,6 +115,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume-output-dir", action="store_true", help="若输出目录已存在，则复用而不是删除重跑")
     parser.add_argument("--prepare-only", action="store_true", help="仅生成 discovery 产物，不进入 series / 汇总")
     parser.add_argument("--series-only", action="store_true", help="跳过 discovery 生成步骤，直接复用已有 output-dir 中的 discovery 产物")
+    parser.add_argument(
+        "--postformalize-only",
+        action="store_true",
+        help="跳过 discovery / series 执行，只读取既有正式产物并生成 master 报告与 workbook",
+    )
+    parser.add_argument("--formalize", action="store_true", help="显式执行正式化并生成 master 报告与 workbook")
     parser.add_argument("--no-build-review-bundle", action="store_true", help="调用 series 时不构建 review bundle")
     return parser.parse_args()
 
@@ -516,6 +529,8 @@ def build_run_command(python_executable: str, series_script: Path, discovery_dir
     ]
     if args.resume_output_dir:
         command.append("--resume-output-dir")
+    if args.formalize:
+        command.append("--formalize")
     if args.no_build_review_bundle:
         command.append("--no-build-review-bundle")
     return command
@@ -569,6 +584,9 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
 
     seed_by_task_id = {task["task_id"]: task for task in discovery["task_seed_list"]["tasks"]}
     report_entries: List[Dict[str, Any]] = []
+    reading_digest_rows: List[Dict[str, Any]] = []
+    topic_rows: List[Dict[str, Any]] = []
+    risk_rows: List[Dict[str, Any]] = []
     metric_rows: List[Dict[str, Any]] = []
     evidence_rows: List[Dict[str, Any]] = []
     top_risk_counter = collections.Counter()
@@ -600,10 +618,26 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
         debt_profile = soul_payload.get("debt_profile") or {}
         liquidity = soul_payload.get("liquidity_and_covenants") or {}
         evidence_index = soul_payload.get("evidence_index") or []
+        reading_digest = build_reading_digest(item, seed, run_manifest, final_data, soul_payload)
 
         if status == "success":
+            reading_digest_rows.append(reading_digest)
             for risk in overview.get("key_risks") or []:
                 top_risk_counter[str(risk.get("risk_code", "")) or "unknown"] += 1
+                risk_rows.append(
+                    {
+                        "task_id": task_id,
+                        "issuer": item.get("issuer", ""),
+                        "year": item.get("year", ""),
+                        "report_type_label": item.get("report_type_label", seed.get("report_type_label", "")),
+                        "report_period_label": seed.get("report_period_label", ""),
+                        "risk_code": risk.get("risk_code", ""),
+                        "label": risk.get("label", ""),
+                        "risk_level": risk.get("risk_level", ""),
+                        "description": risk.get("description", ""),
+                        "evidence_refs": ", ".join(risk.get("evidence_refs") or []),
+                    }
+                )
             for section in kpi_dashboard.get("sections") or []:
                 for metric in section.get("metrics") or []:
                     top_metric_counter[str(metric.get("metric_code", "")) or "unknown"] += 1
@@ -629,6 +663,7 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
                             "analysis_report": str(analysis_report_path),
                         }
                     )
+            topic_rows.extend(build_topic_rollup_rows(item, seed, final_data))
             for entry in evidence_index:
                 evidence_rows.append(
                     {
@@ -646,8 +681,10 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
                         "note_no": entry.get("note_no", ""),
                         "line_span": entry.get("line_span", ""),
                         "confidence": entry.get("confidence", ""),
-                    }
-                )
+                }
+            )
+        else:
+            reading_digest_rows.append(reading_digest)
 
         report_entries.append(
             {
@@ -680,6 +717,11 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
                 "key_conclusions": " | ".join(final_data.get("key_conclusions") or []),
                 "coverage_note": (financial_summary.get("coverage_note") or ""),
                 "run_manifest_status": run_manifest.get("status", ""),
+                "chapter_total": reading_digest.get("chapter_total", 0),
+                "topic_count": reading_digest.get("topic_count", 0),
+                "top_topics": reading_digest.get("top_topics_text", ""),
+                "top_risks": reading_digest.get("top_risks_text", ""),
+                "reading_note": reading_digest.get("reading_note", ""),
             }
         )
 
@@ -701,6 +743,20 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
             item["evidence_id"],
         )
     )
+    topic_rows.sort(
+        key=lambda item: (
+            period_sort_key(str(item.get("report_type_label", "")), str(item.get("report_period_label", ""))),
+            -int(item.get("chapter_count", 0) or 0),
+            str(item.get("topic_key", "")),
+        )
+    )
+    risk_rows.sort(
+        key=lambda item: (
+            period_sort_key(str(item.get("report_type_label", "")), str(item.get("report_period_label", ""))),
+            str(item.get("risk_level", "")),
+            str(item.get("risk_code", "")),
+        )
+    )
     report_type_counts = collections.Counter(
         item["report_type_label"]
         for item in report_entries
@@ -711,11 +767,138 @@ def collect_series_records(series_dir: Path, discovery: Dict[str, Any]) -> Dict[
         "series_manifest": series_manifest,
         "results": results,
         "reports": report_entries,
+        "reading_digest_rows": reading_digest_rows,
+        "topic_rows": topic_rows,
+        "risk_rows": risk_rows,
         "metric_rows": metric_rows,
         "evidence_rows": evidence_rows,
         "top_risk_counter": top_risk_counter,
         "top_metric_counter": top_metric_counter,
         "report_type_counts": report_type_counts,
+    }
+
+
+def severity_sort_key(value: Any) -> int:
+    order = {
+        "high": 0,
+        "medium": 1,
+        "low": 2,
+        "unknown": 3,
+        "": 4,
+    }
+    return order.get(str(value).strip().lower(), 5)
+
+
+def extract_chapter_total(run_manifest: Dict[str, Any], final_data: Dict[str, Any], soul_payload: Dict[str, Any]) -> int:
+    counts = run_manifest.get("counts") or {}
+    chapter_total = counts.get("chapter_records")
+    if isinstance(chapter_total, int) and chapter_total > 0:
+        return chapter_total
+    for text in final_data.get("key_conclusions") or []:
+        match = re.search(r"(\d+)\s*条", str(text))
+        if match:
+            return int(match.group(1))
+    for text in (soul_payload.get("overview") or {}).get("executive_summary") or []:
+        match = re.search(r"(\d+)\s*条", str(text))
+        if match:
+            return int(match.group(1))
+    return 0
+
+
+def summarize_topic_payload(topic_key: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    attributes = payload.get("attributes") or {}
+    chapter_count = attributes.get("chapter_count")
+    risk_signals = payload.get("extensions", {}).get("risk_signals") or []
+    summary = str(payload.get("summary") or "").replace("\n", " ").strip()
+    if len(summary) > 160:
+        summary = summary[:157] + "..."
+    return {
+        "topic_key": topic_key,
+        "topic_display": topic_key.replace("_", " ") if "_" in topic_key and not any("\u4e00" <= ch <= "\u9fff" for ch in topic_key) else topic_key,
+        "chapter_count": int(chapter_count or 0),
+        "risk_signal_count": len(risk_signals),
+        "summary": summary,
+    }
+
+
+def build_topic_rollup_rows(item: Dict[str, Any], seed: Dict[str, Any], final_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    topic_items = []
+    for topic_key, payload in (final_data.get("topic_results") or {}).items():
+        topic_items.append(summarize_topic_payload(topic_key, payload or {}))
+    topic_items.sort(key=lambda row: (-row["chapter_count"], -row["risk_signal_count"], row["topic_key"]))
+    for row in topic_items[:8]:
+        rows.append(
+            {
+                "task_id": item.get("task_id", ""),
+                "issuer": item.get("issuer", ""),
+                "year": item.get("year", ""),
+                "report_type_label": item.get("report_type_label", seed.get("report_type_label", "")),
+                "report_period_label": seed.get("report_period_label", ""),
+                **row,
+            }
+        )
+    return rows
+
+
+def build_reading_digest(
+    item: Dict[str, Any],
+    seed: Dict[str, Any],
+    run_manifest: Dict[str, Any],
+    final_data: Dict[str, Any],
+    soul_payload: Dict[str, Any],
+) -> Dict[str, Any]:
+    entity_profile = soul_payload.get("entity_profile") or {}
+    overview = soul_payload.get("overview") or {}
+    key_conclusions = final_data.get("key_conclusions") or []
+    raw_risks = overview.get("key_risks") or []
+    risks = sorted(
+        raw_risks,
+        key=lambda row: (
+            severity_sort_key(row.get("risk_level")),
+            str(row.get("risk_code", "")),
+        ),
+    )
+    topic_rows = []
+    for topic_key, payload in (final_data.get("topic_results") or {}).items():
+        topic_rows.append(summarize_topic_payload(topic_key, payload or {}))
+    topic_rows.sort(key=lambda row: (-row["chapter_count"], -row["risk_signal_count"], row["topic_key"]))
+    chapter_total = extract_chapter_total(run_manifest, final_data, soul_payload)
+    top_topics = topic_rows[:5]
+    top_risks = risks[:5]
+    top_topic_text = "；".join(f"`{row['topic_display']}`({row['chapter_count']})" for row in top_topics) if top_topics else "暂无稳定主题"
+    top_risk_text = "；".join(
+        f"`{risk.get('risk_code', '')}`/{risk.get('risk_level', '')}"
+        for risk in top_risks
+        if risk.get("risk_code")
+    ) or "暂无稳定风险"
+    reading_note = (
+        f"{item.get('report_period_label', seed.get('report_period_label', ''))}："
+        f"总附注 {chapter_total} 章，阅读重心落在 {top_topic_text}；"
+        f"高频风险聚焦 {top_risk_text}。"
+    )
+    if key_conclusions:
+        reading_note = reading_note + f" 结论起点：{str(key_conclusions[0]).strip()}"
+    return {
+        "task_id": item.get("task_id", ""),
+        "issuer": item.get("issuer", entity_profile.get("company_name", DEFAULT_ISSUER)),
+        "year": item.get("year", entity_profile.get("report_period", "")),
+        "report_type_label": item.get("report_type_label", seed.get("report_type_label", "")),
+        "report_period_label": item.get("report_period_label", seed.get("report_period_label", "")),
+        "report_type": item.get("report_type", ""),
+        "status": item.get("status", ""),
+        "chapter_total": chapter_total,
+        "topic_count": len(final_data.get("topic_results") or {}),
+        "top_topics_text": top_topic_text,
+        "top_risks_text": top_risk_text,
+        "reading_note": reading_note,
+        "key_conclusions": " | ".join(str(text).strip() for text in key_conclusions[:3] if text),
+        "analysis_report": item.get("analysis_report", ""),
+        "final_data": item.get("final_data", ""),
+        "soul_export_payload": item.get("soul_export_payload", ""),
+        "financial_output": item.get("financial_output", ""),
+        "source_pdf": item.get("source_pdf", ""),
+        "run_manifest": item.get("run_manifest", ""),
     }
 
 
@@ -767,9 +950,10 @@ def format_metric_cells(row: Dict[str, Any]) -> Tuple[Any, str]:
 
 def build_report_markdown(summary: Dict[str, Any]) -> str:
     reports = summary["reports"]
+    reading_rows = summary["reading_digest_rows"]
+    topic_rows = summary["topic_rows"]
+    risk_rows = summary["risk_rows"]
     metric_rows = summary["metric_rows"]
-    top_risk_counter = summary["top_risk_counter"]
-    top_metric_counter = summary["top_metric_counter"]
     report_type_counts = summary.get("report_type_counts", {})
     series_manifest = summary["series_manifest"]
     coverage_info = summary.get("coverage", {})
@@ -777,73 +961,101 @@ def build_report_markdown(summary: Dict[str, Any]) -> str:
 
     success_count = sum(1 for item in reports if item["status"] == "success")
     coverage = series_manifest.get("summary", {})
+    annual_readings = [row for row in reading_rows if row["report_type_label"] == "年度报告" and row["status"] == "success"]
+    semiannual_readings = [row for row in reading_rows if row["report_type_label"] == "半年度报告" and row["status"] == "success"]
 
-    annual_rows = [row for row in metric_rows if row["report_type_label"] == "年度报告"]
-    semiannual_rows = [row for row in metric_rows if row["report_type_label"] == "半年度报告"]
+    risk_counter = collections.Counter()
+    for row in risk_rows:
+        if row.get("risk_code"):
+            risk_counter[row["risk_code"]] += 1
 
-    selected_metric_codes = [
-        code
-        for code, _count in top_metric_counter.most_common(8)
-        if code and code != "unknown"
-    ]
-    trend_blocks = []
-    for metric_code in selected_metric_codes:
-        rows = [row for row in annual_rows if row["metric_code"] == metric_code]
-        if not rows:
-            continue
-        trend = infer_trend(rows)
-        if trend["direction"] == "insufficient":
-            continue
-        first = trend["first"]
-        last = trend["last"]
-        trend_blocks.append(
-            f"- `{metric_code}`: {first[2]} {first[1]:.4g} -> {last[2]} {last[1]:.4g}，方向 {trend['direction']}"
+    topic_counter = collections.Counter()
+    for row in topic_rows:
+        if row.get("topic_key"):
+            topic_counter[row["topic_key"]] += 1
+
+    reading_lines = []
+    for row in reading_rows:
+        reading_lines.append(
+            f"### {row['report_period_label']}\n"
+            f"- 状态：{row['status']}\n"
+            f"- 总附注章数：{row['chapter_total']}\n"
+            f"- 主题重心：{row['top_topics_text']}\n"
+            f"- 风险标签：{row['top_risks_text']}\n"
+            f"- 阅读摘要：{row['reading_note']}\n"
+            f"- 产物：`analysis_report.md` / `final_data.json` / `soul_export_payload.json` / `financial_output.xlsx`\n"
         )
 
     risk_lines = []
-    for risk_code, count in top_risk_counter.most_common(8):
-        if not risk_code or risk_code == "unknown":
-            continue
+    for risk_code, count in risk_counter.most_common(8):
         risk_lines.append(f"- `{risk_code}`: {count} 份报告")
-
     if not risk_lines:
         risk_lines = ["- 暂无可归纳的高频风险标签"]
-    if not trend_blocks:
-        trend_blocks = ["- 年报 KPI 样本不足，无法形成稳定趋势"]
+
+    topic_lines = []
+    for topic_key, count in topic_counter.most_common(8):
+        topic_lines.append(f"- `{topic_key}`: {count} 次出现在各报告的重点阅读位")
+    if not topic_lines:
+        topic_lines = ["- 暂无可归纳的高频主题"]
+
+    annual_total_chapters = [row["chapter_total"] for row in annual_readings]
+    semiannual_total_chapters = [row["chapter_total"] for row in semiannual_readings]
+    annual_avg = (sum(annual_total_chapters) / len(annual_total_chapters)) if annual_total_chapters else 0
+    semiannual_avg = (sum(semiannual_total_chapters) / len(semiannual_total_chapters)) if semiannual_total_chapters else 0
 
     report_lines = [
-        "# 万科近 10 年年报/半年报纵向分析",
+        "# 万科近 10 年年报/半年报后续阅读分析",
         "",
-        "## 摘要",
-        f"- 覆盖窗口：{coverage_info.get('year_start', 2016)}-{coverage_info.get('year_end', 2025)} 自然年窗口",
-        f"- 成功闭环：{success_count}/{len(reports)} 份正式报告",
-        f"- 发现缺口：{missing_report_count} 份缺失，2025 年报当前未发现",
-        f"- 处理方式：ChinaMoney 发现/下载 + MinerU 解析 + financial-analyzer 附注优先闭环 + master 汇总",
+        "## 方法",
+        f"- 阅读对象：既有 19 份正式输出，而不是重新回到原始 PDF 解析。",
+        f"- 阅读顺序：逐份读取 `analysis_report.md`、`final_data.json`、`soul_export_payload.json`，再回看对应 `financial_output.xlsx`。",
+        f"- 目标：先形成每份报告的阅读摘要，再做横向 synthesis，最后才考虑知识净化。",
         "",
         "## 覆盖情况",
-        f"- 计划样本数：{coverage_info.get('planned_report_count', len(reports))}",
-        f"- 实际发现数：{coverage_info.get('discovered_report_count', len(reports))}",
-        f"- 半年度样本数：{report_type_counts.get('半年度报告', len(semiannual_rows))}",
-        f"- 年度样本数：{report_type_counts.get('年度报告', len(annual_rows))}",
-        f"- series 任务数：{coverage.get('total_tasks', len(reports))}",
-        f"- 成功数：{coverage.get('success_count', success_count)}",
-        f"- 失败数：{coverage.get('failed_count', len(reports) - success_count)}",
-        f"- 完成闭环数：{coverage.get('complete_task_count', success_count)}",
-        f"- 2025 年度报告：ChinaMoney 当前无记录，保持为真实缺口",
+        f"- 覆盖窗口：{coverage_info.get('year_start', 2016)}-{coverage_info.get('year_end', 2025)} 自然年窗口",
+        f"- 正式报告数：{success_count}/{len(reports)}",
+        f"- 发现缺口：{missing_report_count} 份缺失，2025 年报当前未发现",
+        f"- 年度样本数：{report_type_counts.get('年度报告', 0)}",
+        f"- 半年度样本数：{report_type_counts.get('半年度报告', 0)}",
+        f"- 年度总附注平均章数：{annual_avg:.1f}",
+        f"- 半年度总附注平均章数：{semiannual_avg:.1f}",
         "",
-        "## 风险频次",
-        *risk_lines[:8],
+        "## 高频风险",
+        *risk_lines,
         "",
-        "## 年报趋势",
-        *trend_blocks[:8],
+        "## 高频主题",
+        *topic_lines,
         "",
-        "## 半年报样本",
-        f"- 半年报 KPI 记录数：{len(semiannual_rows)}",
-        f"- 年报 KPI 记录数：{len(annual_rows)}",
+        "## 逐报告阅读",
+        *reading_lines,
         "",
-        "## 报告清单",
+        "## 年度样本观感",
     ]
 
+    if annual_readings:
+        for row in annual_readings[:5]:
+            report_lines.append(
+                f"- {row['report_period_label']}: {row['reading_note']}"
+            )
+    else:
+        report_lines.append("- 暂无可用年度样本")
+
+    report_lines.extend([
+        "",
+        "## 半年度样本观感",
+    ])
+    if semiannual_readings:
+        for row in semiannual_readings[:5]:
+            report_lines.append(
+                f"- {row['report_period_label']}: {row['reading_note']}"
+            )
+    else:
+        report_lines.append("- 暂无可用半年度样本")
+
+    report_lines.extend([
+        "",
+        "## 报告清单",
+    ])
     for row in reports:
         report_lines.append(
             f"- {row['report_period_label']} | {row['status']} | {row['analysis_report']} | {row['financial_output']}"
@@ -888,118 +1100,180 @@ def build_workbook(output_path: Path, summary: Dict[str, Any]):
         "risk_low": workbook.add_format({"border": 1, "bg_color": "#E2F0D9", "font_color": "#385723"}),
     }
 
-    reports_sheet = workbook.add_worksheet("00_overview")
-    reports_sheet.hide_gridlines(2)
-    reports_sheet.freeze_panes(4, 0)
-    reports_sheet.set_column("A:A", 18)
-    reports_sheet.set_column("B:B", 18)
-    reports_sheet.set_column("C:C", 18)
-    reports_sheet.set_column("D:D", 14)
-    reports_sheet.set_column("E:E", 14)
-    reports_sheet.set_column("F:F", 18)
-    reports_sheet.set_column("G:G", 18)
-    reports_sheet.set_column("H:H", 18)
-    reports_sheet.set_column("I:I", 60)
-    reports_sheet.merge_range(0, 0, 0, 8, "万科近 10 年年报/半年报纵向分析", formats["title"])
-    reports_sheet.write(1, 0, "ChinaMoney 官方发现 + 逐报告正式化 + master synthesis", formats["note"])
-    reports_sheet.write(2, 0, "覆盖报告数", formats["section"])
-    reports_sheet.write(2, 1, len(summary["reports"]), formats["integer"])
-    reports_sheet.write(2, 2, "成功闭环", formats["section"])
-    reports_sheet.write(2, 3, sum(1 for row in summary["reports"] if row["status"] == "success"), formats["integer"])
-    reports_sheet.write(2, 4, "缺失报告", formats["section"])
-    reports_sheet.write(2, 5, summary.get("missing_report_count", 0), formats["integer"])
+    reports = summary["reports"]
+    reading_rows = summary["reading_digest_rows"]
+    topic_rows = summary["topic_rows"]
+    risk_rows = summary["risk_rows"]
+    evidence_rows = summary["evidence_rows"]
+    metric_rows = summary["metric_rows"]
+    success_count = sum(1 for row in reports if row["status"] == "success")
+    annual_rows = [row for row in reading_rows if row["report_type_label"] == "年度报告" and row["status"] == "success"]
+    semiannual_rows = [row for row in reading_rows if row["report_type_label"] == "半年度报告" and row["status"] == "success"]
+    annual_avg_chapters = (
+        sum(row["chapter_total"] for row in annual_rows) / len(annual_rows)
+        if annual_rows
+        else 0
+    )
+    semiannual_avg_chapters = (
+        sum(row["chapter_total"] for row in semiannual_rows) / len(semiannual_rows)
+        if semiannual_rows
+        else 0
+    )
 
-    row = 4
-    reports_sheet.write_row(row, 0, [
+    overview_sheet = workbook.add_worksheet("00_overview")
+    overview_sheet.hide_gridlines(2)
+    overview_sheet.freeze_panes(4, 0)
+    overview_sheet.set_column("A:A", 20)
+    overview_sheet.set_column("B:B", 16)
+    overview_sheet.set_column("C:C", 18)
+    overview_sheet.set_column("D:D", 18)
+    overview_sheet.set_column("E:E", 18)
+    overview_sheet.set_column("F:F", 18)
+    overview_sheet.set_column("G:G", 18)
+    overview_sheet.set_column("H:H", 60)
+    overview_sheet.merge_range(0, 0, 0, 7, "万科既有正式研报的二次阅读 synthesis", formats["title"])
+    overview_sheet.write(1, 0, "逐份读取 formal outputs 后再生成总报告与总 Excel", formats["note"])
+    overview_sheet.write_row(2, 0, ["指标", "数值", "说明"], formats["header"])
+    overview_rows = [
+        ("覆盖报告数", len(reports), "19 份正式输出"),
+        ("成功阅读数", success_count, "成功读取并纳入 synthesis 的报告"),
+        ("年度样本数", len(annual_rows), "逐份正式产物阅读"),
+        ("半年度样本数", len(semiannual_rows), "逐份正式产物阅读"),
+        ("年度平均附注章数", round(annual_avg_chapters, 1), "按总附注章数统计"),
+        ("半年度平均附注章数", round(semiannual_avg_chapters, 1), "按总附注章数统计"),
+        ("缺失年报", summary.get("missing_report_count", 0), "2025 年报保持为真实缺口"),
+    ]
+    row = 3
+    for label, value, note in overview_rows:
+        overview_sheet.write(row, 0, label, formats["section"])
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            overview_sheet.write(row, 1, value, formats["number"] if isinstance(value, float) and not float(value).is_integer() else formats["integer"])
+        else:
+            overview_sheet.write(row, 1, value, formats["text"])
+        overview_sheet.write(row, 2, note, formats["text"])
+        row += 1
+
+    overview_sheet.write(row + 1, 0, "高频风险", formats["section"])
+    overview_sheet.write(row + 1, 1, "报告数", formats["section"])
+    overview_sheet.write(row + 1, 2, "观察", formats["section"])
+    risk_counter = summary["top_risk_counter"]
+    risk_row = row + 2
+    for risk_code, count in risk_counter.most_common(8):
+        overview_sheet.write(risk_row, 0, risk_code, formats["text"])
+        overview_sheet.write(risk_row, 1, count, formats["integer"])
+        overview_sheet.write(risk_row, 2, "来自各份正式输出的 `overview.key_risks`", formats["text"])
+        risk_row += 1
+
+    digest_sheet = workbook.add_worksheet("01_report_digest")
+    digest_sheet.hide_gridlines(2)
+    digest_sheet.freeze_panes(1, 0)
+    digest_sheet.set_column("A:A", 18)
+    digest_sheet.set_column("B:B", 14)
+    digest_sheet.set_column("C:C", 14)
+    digest_sheet.set_column("D:D", 12)
+    digest_sheet.set_column("E:E", 12)
+    digest_sheet.set_column("F:F", 60)
+    digest_sheet.set_column("G:G", 60)
+    digest_sheet.set_column("H:H", 90)
+    digest_sheet.set_column("I:I", 60)
+    digest_sheet.set_column("J:J", 60)
+    digest_sheet.set_column("K:K", 60)
+    digest_sheet.write_row(0, 0, [
         "task_id",
         "report_period",
         "report_type",
         "status",
+        "chapter_total",
+        "topic_count",
+        "top_topics",
+        "top_risks",
+        "reading_note",
         "analysis_report",
         "financial_output",
-        "key_risks",
-        "kpi_count",
-        "evidence_count",
     ], formats["header"])
-    row += 1
-    for report in summary["reports"]:
-        reports_sheet.write(row, 0, report["task_id"], formats["text"])
-        reports_sheet.write(row, 1, report["report_period_label"], formats["text"])
-        reports_sheet.write(row, 2, report["report_type_label"], formats["text"])
-        reports_sheet.write(row, 3, report["status"], formats["text"])
-        reports_sheet.write(row, 4, report["analysis_report"], formats["text"])
-        reports_sheet.write(row, 5, report["financial_output"], formats["text"])
-        reports_sheet.write(row, 6, report["top_risks"], formats["text"])
-        reports_sheet.write(row, 7, report["kpi_metric_count"], formats["integer"])
-        reports_sheet.write(row, 8, report["evidence_count"], formats["integer"])
+    row = 1
+    for report in reading_rows:
+        digest_sheet.write(row, 0, report["task_id"], formats["text"])
+        digest_sheet.write(row, 1, report["report_period_label"], formats["text"])
+        digest_sheet.write(row, 2, report["report_type_label"], formats["text"])
+        digest_sheet.write(row, 3, report["status"], formats["text"])
+        digest_sheet.write(row, 4, report["chapter_total"], formats["integer"])
+        digest_sheet.write(row, 5, report["topic_count"], formats["integer"])
+        digest_sheet.write(row, 6, report["top_topics_text"], formats["text"])
+        digest_sheet.write(row, 7, report["top_risks_text"], formats["text"])
+        digest_sheet.write(row, 8, report["reading_note"], formats["text"])
+        digest_sheet.write(row, 9, report["analysis_report"], formats["text"])
+        digest_sheet.write(row, 10, report["financial_output"], formats["text"])
         row += 1
 
-    risk_sheet = workbook.add_worksheet("01_risk_frequency")
+    risk_sheet = workbook.add_worksheet("02_risk_rollup")
     risk_sheet.hide_gridlines(2)
     risk_sheet.freeze_panes(1, 0)
-    risk_sheet.set_column("A:A", 24)
-    risk_sheet.set_column("B:B", 12)
-    risk_sheet.set_column("C:C", 60)
-    risk_sheet.write_row(0, 0, ["risk_code", "count", "comment"], formats["header"])
-    row = 1
-    for risk_code, count in summary["top_risk_counter"].most_common(20):
-        risk_sheet.write(row, 0, risk_code, formats["text"])
-        risk_sheet.write(row, 1, count, formats["integer"])
-        risk_sheet.write(row, 2, "高频风险标签", formats["text"])
-        row += 1
-
-    metrics_sheet = workbook.add_worksheet("02_metric_long")
-    metrics_sheet.hide_gridlines(2)
-    metrics_sheet.freeze_panes(1, 0)
-    metrics_sheet.set_column("A:A", 18)
-    metrics_sheet.set_column("B:B", 18)
-    metrics_sheet.set_column("C:C", 14)
-    metrics_sheet.set_column("D:D", 14)
-    metrics_sheet.set_column("E:E", 14)
-    metrics_sheet.set_column("F:F", 26)
-    metrics_sheet.set_column("G:G", 28)
-    metrics_sheet.set_column("H:H", 18)
-    metrics_sheet.set_column("I:I", 24)
-    metrics_sheet.set_column("J:J", 14)
-    metrics_sheet.set_column("K:K", 14)
-    metrics_sheet.set_column("L:L", 18)
-    metrics_sheet.set_column("M:M", 18)
-    metrics_sheet.write_row(0, 0, [
+    risk_sheet.set_column("A:A", 18)
+    risk_sheet.set_column("B:B", 18)
+    risk_sheet.set_column("C:C", 18)
+    risk_sheet.set_column("D:D", 18)
+    risk_sheet.set_column("E:E", 18)
+    risk_sheet.set_column("F:F", 60)
+    risk_sheet.set_column("G:G", 60)
+    risk_sheet.write_row(0, 0, [
         "task_id",
-        "issuer",
-        "year",
-        "report_type",
         "report_period",
-        "category",
-        "metric_code",
-        "label",
-        "value",
-        "unit",
+        "report_type",
+        "risk_code",
         "risk_level",
-        "source_status",
+        "label",
+        "description",
         "evidence_refs",
     ], formats["header"])
     row = 1
-    for metric in summary["metric_rows"]:
-        metrics_sheet.write(row, 0, metric["task_id"], formats["text"])
-        metrics_sheet.write(row, 1, metric["issuer"], formats["text"])
-        metrics_sheet.write(row, 2, metric["year"], formats["integer"])
-        metrics_sheet.write(row, 3, metric["report_type_label"], formats["text"])
-        metrics_sheet.write(row, 4, metric["report_period_label"], formats["text"])
-        metrics_sheet.write(row, 5, metric["category"], formats["text"])
-        metrics_sheet.write(row, 6, metric["metric_code"], formats["text"])
-        metrics_sheet.write(row, 7, metric["label"], formats["text"])
-        value, value_kind = format_metric_cells(metric)
-        metrics_sheet.write(row, 8, value, formats["number"] if value_kind == "number" else formats["text"])
-        metrics_sheet.write(row, 9, metric["unit"], formats["text"])
+    for item in risk_rows:
+        risk_sheet.write(row, 0, item["task_id"], formats["text"])
+        risk_sheet.write(row, 1, item["report_period_label"], formats["text"])
+        risk_sheet.write(row, 2, item["report_type_label"], formats["text"])
+        risk_sheet.write(row, 3, item["risk_code"], formats["text"])
         risk_format = formats["risk_high"]
-        if str(metric["risk_level"]).lower() == "medium":
+        if str(item.get("risk_level", "")).lower() == "medium":
             risk_format = formats["risk_medium"]
-        elif str(metric["risk_level"]).lower() == "low":
+        elif str(item.get("risk_level", "")).lower() == "low":
             risk_format = formats["risk_low"]
-        metrics_sheet.write(row, 10, metric["risk_level"], risk_format)
-        metrics_sheet.write(row, 11, metric["source_status"], formats["text"])
-        metrics_sheet.write(row, 12, metric["evidence_refs"], formats["text"])
+        risk_sheet.write(row, 4, item["risk_level"], risk_format)
+        risk_sheet.write(row, 5, item["label"], formats["text"])
+        risk_sheet.write(row, 6, item["description"], formats["text"])
+        risk_sheet.write(row, 7, item["evidence_refs"], formats["text"])
+        row += 1
+
+    topic_sheet = workbook.add_worksheet("03_topic_rollup")
+    topic_sheet.hide_gridlines(2)
+    topic_sheet.freeze_panes(1, 0)
+    topic_sheet.set_column("A:A", 18)
+    topic_sheet.set_column("B:B", 18)
+    topic_sheet.set_column("C:C", 24)
+    topic_sheet.set_column("D:D", 18)
+    topic_sheet.set_column("E:E", 18)
+    topic_sheet.set_column("F:F", 70)
+    topic_sheet.set_column("G:G", 60)
+    topic_sheet.write_row(0, 0, [
+        "task_id",
+        "report_period",
+        "report_type",
+        "topic_key",
+        "chapter_count",
+        "risk_signal_count",
+        "summary",
+        "analysis_report",
+    ], formats["header"])
+    row = 1
+    for item in topic_rows:
+        topic_sheet.write(row, 0, item["task_id"], formats["text"])
+        topic_sheet.write(row, 1, item["report_period_label"], formats["text"])
+        topic_sheet.write(row, 2, item["report_type_label"], formats["text"])
+        topic_sheet.write(row, 3, item["topic_display"], formats["text"])
+        topic_sheet.write(row, 4, item["chapter_count"], formats["integer"])
+        topic_sheet.write(row, 5, item["risk_signal_count"], formats["integer"])
+        topic_sheet.write(row, 6, item["summary"], formats["text"])
+        report_path = next((report["analysis_report"] for report in reading_rows if report["task_id"] == item["task_id"]), "")
+        topic_sheet.write(row, 7, report_path, formats["text"])
         row += 1
 
     evidence_sheet = workbook.add_worksheet("99_evidence_index")
@@ -1034,7 +1308,7 @@ def build_workbook(output_path: Path, summary: Dict[str, Any]):
         "confidence",
     ], formats["header"])
     row = 1
-    for item in summary["evidence_rows"]:
+    for item in evidence_rows:
         evidence_sheet.write(row, 0, item["task_id"], formats["text"])
         evidence_sheet.write(row, 1, item["issuer"], formats["text"])
         evidence_sheet.write(row, 2, item["year"], formats["integer"])
@@ -1050,30 +1324,80 @@ def build_workbook(output_path: Path, summary: Dict[str, Any]):
         evidence_sheet.write(row, 12, metric_value_to_string(item["confidence"]), formats["text"])
         row += 1
 
+    if metric_rows and any(row.get("value") not in (None, "") for row in metric_rows):
+        metrics_sheet = workbook.add_worksheet("04_metric_long")
+        metrics_sheet.hide_gridlines(2)
+        metrics_sheet.freeze_panes(1, 0)
+        metrics_sheet.set_column("A:A", 18)
+        metrics_sheet.set_column("B:B", 18)
+        metrics_sheet.set_column("C:C", 14)
+        metrics_sheet.set_column("D:D", 14)
+        metrics_sheet.set_column("E:E", 14)
+        metrics_sheet.set_column("F:F", 26)
+        metrics_sheet.set_column("G:G", 28)
+        metrics_sheet.set_column("H:H", 18)
+        metrics_sheet.set_column("I:I", 24)
+        metrics_sheet.set_column("J:J", 14)
+        metrics_sheet.set_column("K:K", 14)
+        metrics_sheet.set_column("L:L", 18)
+        metrics_sheet.set_column("M:M", 18)
+        metrics_sheet.write_row(0, 0, [
+            "task_id",
+            "issuer",
+            "year",
+            "report_type",
+            "report_period",
+            "category",
+            "metric_code",
+            "label",
+            "value",
+            "unit",
+            "risk_level",
+            "source_status",
+            "evidence_refs",
+        ], formats["header"])
+        row = 1
+        for metric in metric_rows:
+            metrics_sheet.write(row, 0, metric["task_id"], formats["text"])
+            metrics_sheet.write(row, 1, metric["issuer"], formats["text"])
+            metrics_sheet.write(row, 2, metric["year"], formats["integer"])
+            metrics_sheet.write(row, 3, metric["report_type_label"], formats["text"])
+            metrics_sheet.write(row, 4, metric["report_period_label"], formats["text"])
+            metrics_sheet.write(row, 5, metric["category"], formats["text"])
+            metrics_sheet.write(row, 6, metric["metric_code"], formats["text"])
+            metrics_sheet.write(row, 7, metric["label"], formats["text"])
+            value, value_kind = format_metric_cells(metric)
+            metrics_sheet.write(row, 8, value, formats["number"] if value_kind == "number" else formats["text"])
+            metrics_sheet.write(row, 9, metric["unit"], formats["text"])
+            risk_format = formats["risk_high"]
+            if str(metric["risk_level"]).lower() == "medium":
+                risk_format = formats["risk_medium"]
+            elif str(metric["risk_level"]).lower() == "low":
+                risk_format = formats["risk_low"]
+            metrics_sheet.write(row, 10, metric["risk_level"], risk_format)
+            metrics_sheet.write(row, 11, metric["source_status"], formats["text"])
+            metrics_sheet.write(row, 12, metric["evidence_refs"], formats["text"])
+            row += 1
+
     workbook.close()
 
 
 def build_master_outputs(output_dir: Path, discovery: Dict[str, Any], summary: Dict[str, Any]) -> Dict[str, Any]:
     master_dir = output_dir / "master"
     master_dir.mkdir(parents=True, exist_ok=True)
-    report_path = master_dir / "analysis_report.md"
     workbook_path = master_dir / "financial_output.xlsx"
     summary_json_path = master_dir / "master_summary.json"
-
-    report_summary = {
-        **summary,
-        "coverage": discovery["coverage"],
-        "missing_report_count": len(discovery["missing_reports"]),
-    }
-    report_text = build_report_markdown(report_summary)
-    write_text(report_path, report_text)
+    reading_ledger_path = master_dir / "postformal_reading_ledger.jsonl"
     build_workbook(workbook_path, summary)
+    write_jsonl(reading_ledger_path, summary["reading_digest_rows"])
 
     payload = {
         "generated_at": now_iso(),
         "output_dir": str(output_dir),
-        "report_path": str(report_path),
+        "report_path": str(master_dir / "analysis_report.md"),
         "workbook_path": str(workbook_path),
+        "reading_ledger_path": str(reading_ledger_path),
+        "report_written_by_script": False,
         "coverage": discovery["coverage"],
         "missing_report_count": len(discovery["missing_reports"]),
         "discovery": discovery["coverage"],
@@ -1083,6 +1407,9 @@ def build_master_outputs(output_dir: Path, discovery: Dict[str, Any], summary: D
         "missing_reports": discovery["missing_reports"],
         "top_risk_counter": dict(summary["top_risk_counter"]),
         "top_metric_counter": dict(summary["top_metric_counter"]),
+        "reading_digest_rows": summary["reading_digest_rows"],
+        "topic_rows": summary["topic_rows"],
+        "risk_rows": summary["risk_rows"],
         "reports": summary["reports"],
     }
     write_json(summary_json_path, payload)
@@ -1110,7 +1437,26 @@ def main():
     series_dir.mkdir(parents=True, exist_ok=True)
 
     discovery_payload: Optional[Dict[str, Any]] = None
-    if not args.series_only:
+    if args.postformalize_only:
+        selection_manifest_path = discovery_dir / "selection_manifest.json"
+        download_config_path = discovery_dir / "download_config.json"
+        task_seed_list_path = discovery_dir / "task_seed_list.json"
+        discovery_manifest_path = discovery_dir / "discovery_manifest.json"
+        if (
+            not selection_manifest_path.exists()
+            or not download_config_path.exists()
+            or not task_seed_list_path.exists()
+            or not discovery_manifest_path.exists()
+        ):
+            raise SystemExit("postformalize-only 模式需要先存在 discovery 产物")
+        discovery_payload = read_json(discovery_manifest_path)
+        discovery_payload["selection_manifest"] = read_json(selection_manifest_path)
+        discovery_payload["download_config"] = read_json(download_config_path)
+        discovery_payload["task_seed_list"] = read_json(task_seed_list_path)
+        discovery_payload["candidates"] = discovery_payload["task_seed_list"]["tasks"]
+        if not (series_dir / SERIES_RESULTS_NAME).exists():
+            raise SystemExit("postformalize-only 模式需要先存在 series_task_results.jsonl")
+    elif not args.series_only:
         discovery_payload = discover_vanke_reports(args.year_start, args.year_end)
         selection_manifest = build_selection_manifest(discovery_payload, output_dir)
         download_config = build_download_config(discovery_payload, output_dir)
@@ -1127,35 +1473,45 @@ def main():
             print(f"[OK] missing_count: {len(discovery_payload['missing_reports'])}")
             return
     else:
-        discovery_payload = {
-            "generated_at": now_iso(),
-            "coverage": {},
-            "missing_reports": [],
-            "candidates": [],
-        }
         selection_manifest_path = discovery_dir / "selection_manifest.json"
         download_config_path = discovery_dir / "download_config.json"
         task_seed_list_path = discovery_dir / "task_seed_list.json"
-        if not selection_manifest_path.exists() or not download_config_path.exists() or not task_seed_list_path.exists():
+        discovery_manifest_path = discovery_dir / "discovery_manifest.json"
+        if (
+            not selection_manifest_path.exists()
+            or not download_config_path.exists()
+            or not task_seed_list_path.exists()
+            or not discovery_manifest_path.exists()
+        ):
             raise SystemExit("series-only 模式需要先存在 discovery 产物")
+        discovery_payload = read_json(discovery_manifest_path)
         discovery_payload["selection_manifest"] = read_json(selection_manifest_path)
         discovery_payload["download_config"] = read_json(download_config_path)
         discovery_payload["task_seed_list"] = read_json(task_seed_list_path)
         discovery_payload["candidates"] = discovery_payload["task_seed_list"]["tasks"]
 
-    series_script = SCRIPT_DIR / "run_report_series.py"
-    command = build_run_command(sys.executable, series_script, discovery_dir, series_dir, args)
-    completed = subprocess.run(command, cwd=str(REPO_ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
     series_log_path = output_dir / "run_report_series.log"
-    write_text(series_log_path, completed.stdout)
-    if completed.returncode != 0:
-        raise SystemExit(f"run_report_series 失败，日志已写入 {series_log_path}")
+    if args.postformalize_only:
+        write_text(series_log_path, "[SKIP] postformalize-only: reuse existing series outputs")
+    else:
+        series_script = SCRIPT_DIR / "run_report_series.py"
+        command = build_run_command(sys.executable, series_script, discovery_dir, series_dir, args)
+        completed = subprocess.run(command, cwd=str(REPO_ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        write_text(series_log_path, completed.stdout)
+        if completed.returncode != 0:
+            raise SystemExit(f"run_report_series 失败，日志已写入 {series_log_path}")
 
     summary = collect_series_records(series_dir, {
         "task_seed_list": read_json(discovery_dir / "task_seed_list.json"),
         "selection_manifest": read_json(discovery_dir / "selection_manifest.json"),
     })
-    master_payload = build_master_outputs(output_dir, discovery_payload, summary)
+
+    master_payload = {
+        "report_path": "",
+        "workbook_path": "",
+    }
+    if args.formalize:
+        master_payload = build_master_outputs(output_dir, discovery_payload, summary)
 
     study_manifest = {
         "generated_at": now_iso(),
@@ -1169,9 +1525,13 @@ def main():
         "task_seed_list": str(discovery_dir / "task_seed_list.json"),
         "series_manifest": str(series_dir / SERIES_MANIFEST_NAME),
         "series_results": str(series_dir / SERIES_RESULTS_NAME),
-        "master_summary": str(output_dir / "master" / "master_summary.json"),
+        "master_summary": str(output_dir / "master" / "master_summary.json") if args.formalize else "",
+        "reading_ledger": str(output_dir / "master" / "postformal_reading_ledger.jsonl") if args.formalize else "",
         "master_report": master_payload["report_path"],
         "master_workbook": master_payload["workbook_path"],
+        "master_report_written_by_script": master_payload.get("report_written_by_script", False) if args.formalize else False,
+        "formalize": bool(args.formalize),
+        "formalization_required": not bool(args.formalize),
         "report_count": len(summary["reports"]),
         "success_count": sum(1 for row in summary["reports"] if row["status"] == "success"),
         "failure_count": sum(1 for row in summary["reports"] if row["status"] != "success"),
@@ -1179,8 +1539,14 @@ def main():
     write_json(output_dir / "study_manifest.json", study_manifest)
 
     print(f"[OK] output_dir: {output_dir}")
-    print(f"[OK] master_report: {master_payload['report_path']}")
-    print(f"[OK] master_workbook: {master_payload['workbook_path']}")
+    if args.formalize:
+        print(f"[OK] master_report_target: {master_payload['report_path']}")
+        print(f"[OK] master_workbook: {master_payload['workbook_path']}")
+        print("[OK] master_report_written_by_script: false")
+    else:
+        print("[OK] formalization_required: true")
+        print(f"[OK] series_dir: {series_dir}")
+        print("[HINT] review 完成后可用 --series-only --resume-output-dir --formalize 复跑正式化")
 
 
 if __name__ == "__main__":

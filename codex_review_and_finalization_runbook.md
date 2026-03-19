@@ -4,7 +4,7 @@
 
 这份文档只解决一件事：
 
-- 当项目已经完成 scaffold-only 抽取、runtime 绑定和 batch 回归后，如何把“章节复核 -> 直写知识 -> 正式成稿”变成稳定、可交接、可回滚的主线。
+- 当项目已经完成 scaffold-only 抽取、runtime 绑定和 batch 回归后，如何把“先读中间产物 -> 再写正式报告和 Excel -> 最后直写知识”变成稳定、可交接、可回滚的主线。
 
 它不是总蓝图的替代品，也不是 `codex_execution_runbook.md` 的重复版。它只承接后 W5 的新主线：`Codex Review & Direct Adopt`。
 
@@ -12,11 +12,12 @@
 
 1. `financial_analyzer.py` 只负责抽取与 scaffold，不再直接生成正式分析结论。
 2. `pending_updates.json` 不是主学习路径，只保留兼容痕迹。
-3. 正式知识学习由 Codex 按章复核后，通过 adoption log 直写 `runtime/knowledge/knowledge_base.json`。
-4. `knowledge_manager.py` 只负责正式知识库审计、摘要与兼容入口，不再承担候选治理主路径。
-5. 任何章节级知识写入都必须能回滚，并且能被摘要工具看见。
-6. `chapter_records.jsonl` 的 `status=completed` 只表示模板抽取完成，不代表已复核、已采纳或已正式成稿。
-7. `knowledge_adoption_delta_contract.md` 定义正式 delta payload、审计外壳和 rollback 规则，canonical 形状固定为 `identity / source / review / operations / evidence_refs / hashes / rollback / audit`，后续线程不得各自发明变体口径。
+3. `chapter_records.jsonl` 和各类 scaffold 只表示抽取完成，不代表已完整阅读、已成稿或已净化知识库。
+4. 正式报告与 Excel 必须由 Codex 读完中间产物后再写，不能把 scaffold 自动收口当成最终分析。
+5. 正式知识学习由 Codex 按章阅读后，通过 adoption log 直写 `runtime/knowledge/knowledge_base.json`。
+6. `knowledge_manager.py` 只负责正式知识库审计、摘要与兼容入口，不再承担候选治理主路径。
+7. 任何章节级知识写入都必须能回滚，并且能被摘要工具看见。
+8. `knowledge_adoption_delta_contract.md` 定义正式 delta payload、审计外壳和 rollback 规则，canonical 形状固定为 `identity / source / review / operations / evidence_refs / hashes / rollback / audit`，后续线程不得各自发明变体口径。
 
 ## 2.1 R1 控制面边界
 
@@ -33,7 +34,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 | 顺序 | 类型 | 主目标 | 核心交付物 |
 |------|------|--------|------------|
 | 0 | 总控线程 | 维护复核状态、排序任务 | 状态更新、下一步安排 |
-| 1 | 执行线程 | 做 1-2 个完整案例的 scaffold -> adopt 演练 | 正式 knowledge_base、adoption logs、正式成稿 |
+| 1 | 执行线程 | 做 1-2 个完整案例的 scaffold -> read -> write -> adopt 演练 | 正式 knowledge_base、adoption logs、正式成稿 |
 | 2 | 执行线程 | 形成 go-live checklist | 上线门禁、人工复核点、回滚策略 |
 
 说明：
@@ -47,7 +48,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 
 ### 目标
 
-- 把“模板脚本输出 scaffold -> Codex 逐章复核 -> 直写正式 knowledge_base -> 生成正式交付”的控制面标准化，替代旧的 `pending_updates / review bundle` 主路径。
+- 把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 写正式 analysis_report / final_data / soul_export_payload / financial_output -> 直写正式 knowledge_base”的控制面标准化，替代旧的 `pending_updates / review bundle` 主路径。
 - 明确章节状态机、adoption gate、finalization gate、rollback boundary 和 direct adopt 交接规则。
 
 ### 开始前阅读
@@ -86,7 +87,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、production_execution_runbook.md、financial-analyzer/SKILL.md、financial-analyzer/references/open_record_protocol.md、financial-analyzer/references/output_contract.md。当前聚焦 R1：Codex Review & Direct Adopt Control Plane。请把“模板脚本输出 scaffold -> Codex 逐章复核 -> 直写正式 knowledge_base -> 生成正式交付”的控制面标准化，明确 review 状态机、adoption gate、finalization gate、章节级 review ledger 口径、rollback boundary 以及与 direct adopt 的交接规则，并把结果落成仓库文档。不要继续按 `pending_updates / review bundle` 主路径推进，也不要开始 10 案测试。
+先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、production_execution_runbook.md、financial-analyzer/SKILL.md、financial-analyzer/references/open_record_protocol.md、financial-analyzer/references/output_contract.md。当前聚焦 R1：Codex Review & Direct Adopt Control Plane。请把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 写正式 analysis_report / final_data / soul_export_payload / financial_output -> 直写正式 knowledge_base”的控制面标准化，明确 review 状态机、adoption gate、finalization gate、章节级 review ledger 口径、rollback boundary 以及与 direct adopt 的交接规则，并把结果落成仓库文档。不要继续按 `pending_updates / review bundle` 主路径推进，也不要把 scaffold 自动收口当成最终分析。
 ```
 
 ### 4.2 线程 R2：Knowledge Adoption Delta Contract
@@ -131,7 +132,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 
 ### 目标
 
-- 用少量完整案例验证“scaffold -> 逐章复核 -> adoption log -> 正式知识库 -> 正式成稿”的闭环。
+- 用少量完整案例验证“scaffold -> 完整阅读 -> 写正式报告和 Excel -> adoption log -> 正式知识库”的闭环。
 
 ### 开始前阅读
 
@@ -158,7 +159,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及最新的 W6 / W7 回归结果。当前聚焦 R3：1-2 个完整案例的 Scaffold -> Adopt 演练。请选取 1 到 2 个完整案例，按“先 scaffold、再逐章复核、再通过 adoption log 直写正式 knowledge_base、最后生成正式 analysis_report/final_data/soul_export_payload/financial_output”的顺序跑通全流程，并记录 adoption logs、回滚验证和单案复核摩擦点。不要扩成 10 案，也不要回到 pending_updates/review bundle 口径。
+先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及最新的 W6 / W7 回归结果。当前聚焦 R3：1-2 个完整案例的 Scaffold -> Read -> Write -> Adopt 演练。请选取 1 到 2 个完整案例，按“先 scaffold、再完整阅读中间产物、再写正式 analysis_report/final_data/soul_export_payload/financial_output、最后通过 adoption log 直写正式 knowledge_base”的顺序跑通全流程，并记录 adoption logs、回滚验证和单案复核摩擦点。不要扩成 10 案，也不要回到 pending_updates/review bundle 口径。
 ```
 
 ### 4.4 线程 P6：Go-Live Checklist
@@ -191,7 +192,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、go_live_checklist.md，以及最近一次 R3 演练结果。当前聚焦 P6：Go-Live Checklist。请基于已经跑通的 scaffold -> adopt -> formal 流程，维护正式投入使用前的 go-live checklist，至少覆盖 skill 安装校验、runtime 配置校验、registry 状态、复核状态机、adoption log 完整性、失败重跑策略、回滚策略、人工抽检点和“哪些问题出现时必须停止上线”。请把结果落成仓库文档，并确保与 R3 真实产物一致。
+先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、go_live_checklist.md，以及最近一次 R3 演练结果。当前聚焦 P6：Go-Live Checklist。请基于已经跑通的 scaffold -> read -> write -> adopt 流程，维护正式投入使用前的 go-live checklist，至少覆盖 skill 安装校验、runtime 配置校验、registry 状态、复核状态机、adoption log 完整性、失败重跑策略、回滚策略、人工抽检点和“哪些问题出现时必须停止上线”。请把结果落成仓库文档，并确保与 R3 真实产物一致。
 ```
 
 ## 5. 使用方式
@@ -204,4 +205,4 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 
 `P6` 只在 `R3` 跑通之后再开；当前 `go_live_checklist.md` 已作为正式收口文档落地。
 
-当前状态：`R3` 已在 `henglong_2024` 与 `country_garden_2024` 上完成 scaffold -> adopt -> rollback -> formal 闭环，后续线程可直接进入 `P6` 的 go-live checklist 收口。
+当前状态：`R3` 已在 `henglong_2024` 与 `country_garden_2024` 上完成 scaffold -> read -> write -> adopt -> rollback -> formal 闭环，后续线程可直接进入 `P6` 的 go-live checklist 收口。
