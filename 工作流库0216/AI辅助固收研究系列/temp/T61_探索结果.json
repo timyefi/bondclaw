@@ -1,0 +1,155 @@
+{
+  "project_id": "T61",
+  "project_name": "指标库整理",
+  "project_type": "数据处理与分析工具",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "file_name": "config.py",
+      "file_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T61-指标库整理\\config.py",
+      "file_type": "配置文件",
+      "description": "包含MySQL和PostgreSQL数据库连接配置、融资成本计算参数"
+    },
+    {
+      "file_name": "指标库整理.ipynb",
+      "file_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T61-指标库整理\\指标库整理.ipynb",
+      "file_type": "Jupyter Notebook",
+      "description": "核心Notebook，包含有息债务计算、融资成本插值、可视化分析和数据库存储功能"
+    }
+  ],
+  "directory_structure": {
+    "root": "T61-指标库整理",
+    "files": [
+      "config.py",
+      "指标库整理.ipynb"
+    ],
+    "subdirectories": [],
+    "total_files": 2
+  },
+  "unique_points": [
+    "双数据库架构：同时支持MySQL和PostgreSQL数据库连接",
+    "融资成本线性回归插值：使用sklearn的LinearRegression进行融资成本外推计算",
+    "有息债务规模计算：包含短期债务（8类指标）和长期债务（5类指标）的分类计算逻辑",
+    "融资成本合理性校验：设置最小值2.0%和最大值8.0%的范围限制",
+    "完整的可视化分析：包含融资成本与债券融资成本关系图、分布直方图",
+    "数据库闭环操作：从数据库读取数据、处理计算、结果存回数据库的完整流程"
+  ],
+  "data_sources": [
+    {
+      "type": "MySQL数据库",
+      "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+      "database": "bond",
+      "purpose": "债券相关数据存储"
+    },
+    {
+      "type": "PostgreSQL数据库",
+      "host": "139.224.107.113",
+      "database": "tsdb",
+      "purpose": "时序数据存储，包含融资成本表"
+    }
+  ],
+  "key_functions": [
+    {
+      "name": "get_mysql_connection",
+      "purpose": "获取MySQL数据库连接"
+    },
+    {
+      "name": "get_postgres_connection",
+      "purpose": "获取PostgreSQL数据库连接"
+    },
+    {
+      "name": "calculate_interest_bearing_debt",
+      "purpose": "计算有息债务规模，包含短期和长期债务指标聚合"
+    },
+    {
+      "name": "linear_extrapolation",
+      "purpose": "使用线性回归进行融资成本插值，支持成本范围限制"
+    }
+  ],
+  "short_term_debt_indicators": [
+    "ths_st_borrow_bond",
+    "ths_borrowing_funds_bond",
+    "ths_tradable_fnncl_liab_bond",
+    "ths_derivative_fnncl_liab_bond",
+    "ths_bill_payable_bond",
+    "ths_fnncl_assets_sold_for_repur_bond",
+    "ths_noncurrent_liab_due_in1y_bond",
+    "ths_st_bond_payable_new_bond"
+  ],
+  "long_term_debt_indicators": [
+    "ths_lt_loan_bond",
+    "ths_bond_payable_bond",
+    "ths_perpetual_capital_sec_bond",
+    "ths_preferred_bond",
+    "ths_lease_libilities_bond"
+  ],
+  "parameters": {
+    "FINANCING_COST_MIN": 2.0,
+    "FINANCING_COST_MAX": 8.0,
+    "BOND_COST_MAX": 20.0
+  },
+  "search_keywords_used": [
+    "宏观指标库",
+    "金融数据库管理",
+    "最佳实践"
+  ],
+  "search_findings": {
+    "main_financial_databases": [
+      "CSMAR - 中国领先的金融研究数据库",
+      "RESSET - 提供高频数据和国际经济金融数据",
+      "BvD - 全球财务分析和宏观经济指标",
+      "原点参数 - 全球产业链分析平台"
+    ],
+    "industry_trends": [
+      "金融行业正在经历从传统数据库向国产化、分布式数据库的转型",
+      "异构数据库管理和语法兼容是关键技术挑战",
+      "历史交易记录处理是核心环节"
+    ],
+    "best_practices": [
+      "需要评估成本效益与后期支持",
+      "数据库技术需考虑安全性和合规性"
+    ]
+  },
+  "recommended_focus": [
+    "有息债务计算逻辑的完整实现与验证",
+    "融资成本插值算法的准确性和稳定性优化",
+    "数据库连接的健壮性和异常处理",
+    "指标数据质量校验机制",
+    "可视化分析的扩展性"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "项目概述",
+      "content": "介绍指标库整理项目的背景和目标"
+    },
+    {
+      "section": "技术架构",
+      "content": "双数据库架构设计、连接管理方案"
+    },
+    {
+      "section": "核心功能",
+      "subsections": [
+        "有息债务规模计算",
+        "融资成本线性插值",
+        "数据可视化分析",
+        "数据库存储操作"
+      ]
+    },
+    {
+      "section": "指标体系",
+      "content": "短期债务指标（8类）和长期债务指标（5类）的详细说明"
+    },
+    {
+      "section": "参数配置",
+      "content": "融资成本范围限制、债券成本上限等关键参数"
+    },
+    {
+      "section": "行业对比",
+      "content": "与CSMAR、RESSET等主流金融数据库的对比分析"
+    },
+    {
+      "section": "优化建议",
+      "content": "数据处理效率、算法优化、异常处理等改进方向"
+    }
+  ]
+}

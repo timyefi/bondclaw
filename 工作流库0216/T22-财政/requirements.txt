@@ -1,0 +1,17 @@
+# 财政 依赖
+# 生成时间: 2026-02-15
+# 任务ID: T22
+
+# 核心依赖
+pandas>=1.5.0
+numpy>=1.21.0
+
+# 数据库
+sqlalchemy>=1.4.0
+pymysql>=1.0.0
+
+# Excel文件处理
+openpyxl>=3.1.0
+
+# 日期处理
+python-dateutil>=2.8.0

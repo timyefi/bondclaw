@@ -1,0 +1,111 @@
+{
+  "project_id": "T08",
+  "project_name": "汇率因子检验",
+  "project_type": "分析研究/可视化",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "README.md",
+    "config.py",
+    "requirements.txt",
+    "src/data_preparation.py",
+    "src/correlation_analysis.py",
+    "重构.ipynb"
+  ],
+  "directory_structure": "T08-汇率因子检验/\n├── 重构.ipynb          # 主重构Notebook (核心分析文件)\n├── config.py           # 配置参数 (数据库连接、分析参数、可视化设置)\n├── requirements.txt    # Python依赖列表\n├── README.md           # 项目说明\n├── src/                # 原始代码文件备份\n│   ├── data_preparation.py      # 数据获取与预处理\n│   └── correlation_analysis.py  # 相关性分析与报告生成\n├── data/               # 数据文件\n├── assets/             # 图片等资源\n└── output/             # 输出目录\n    ├── processed_data.parquet           # 处理后的数据文件\n    └── correlation_analysis.html        # 相关性分析HTML报告",
+  "unique_points": {
+    "research_problem": "该项目专注于研究人民币汇率与债券市场之间的相关性关系。与传统的债券研究项目（关注收益率曲线、信用利差等内部因子）不同，本项目从宏观视角出发，将汇率作为核心因子，分析汇率变化对资金利率（DR007/GC007）、股指（沪深300/恒生指数等）、债券收益率（国债/城投债）的传导机制和影响程度，识别高相关性时期，为债券投资决策提供汇率维度的参考。",
+    "technical_feature": "1. 多维度因子体系：涵盖汇率(USD/CNY)、资金利率(DR007/GC007)、股指(沪深300/万得全A/中小板/恒生)、债券收益率(1年/10年国债/5年城投债)等4大类9个因子\n2. 双层相关性分析：同时计算静态整体相关性和60日滚动相关性，捕捉相关性的时变特征\n3. 高相关性时期识别：自动识别相关系数>=0.5的正相关时期，并标记连续高相关期的时间段和平均相关系数\n4. 交互式HTML报告：生成包含图表下载功能的可视化报告，每个因子独立展示时间序列对比图和高相关性时期阴影标注",
+    "application_scenario": "1. 择时策略：根据汇率与债券收益率的相关性变化，调整债券配置时机\n2. 风险管理：对冲汇率风险，控制汇率敏感头寸\n3. 投资决策：根据汇率因子分析结果调整投资组合久期和品种\n4. 宏观研究：研究汇率-利率传导机制，理解市场联动关系",
+    "core_insight": "汇率是连接国内债市与国际市场的关键因子。本项目通过滚动相关性分析发现，汇率与不同资产的相关性存在明显的时变特征，某些时期呈现显著正相关，某些时期则相关性减弱甚至转负。识别这些高相关性时期有助于投资者理解汇率传导机制，在汇率敏感期调整投资策略。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "T03",
+      "similarity": "都涉及债券市场研究，都关注不同因子对债券收益的影响",
+      "difference": "T03关注债券内部因子（品种/久期/资质）在收益率下行周期的表现，T08关注外部宏观因子（汇率）与各类资产的相关性分析"
+    },
+    {
+      "project_id": "T07",
+      "similarity": "都使用MySQL/PostgreSQL数据库，都有滚动分析维度",
+      "difference": "T07专注于信用债收益率分位数指数构建，T08专注于汇率与多资产的跨市场相关性分析"
+    }
+  ],
+  "data_sources": [
+    {
+      "table": "edb.edbdata",
+      "description": "宏观指标数据，包含汇率(M0067855)、资金利率(M1006337/M1004515)、沪深300(M0020209)"
+    },
+    {
+      "table": "stock.indexcloseprice",
+      "description": "股指收盘价数据，包含万得全A(881001.WI)、中小板指(399101.SZ)、恒生指数(HSCI.HI)"
+    },
+    {
+      "table": "bond.marketinfo_curve",
+      "description": "债券收益率曲线数据，包含10年国债(L001619604)、1年国债(L001618296)、5年城投债(L003759264)"
+    }
+  ],
+  "factor_config": {
+    "target_variable": {
+      "name": "USD_CNY",
+      "code": "M0067855",
+      "description": "人民币兑美元即期汇率"
+    },
+    "factors": {
+      "DR007": {"code": "M1006337", "description": "银行间7天质押式回购利率"},
+      "GC007": {"code": "M1004515", "description": "上交所7天国债逆回购利率"},
+      "CSI300": {"code": "M0020209", "description": "沪深300指数"},
+      "WIND_ALL_A": {"code": "881001.WI", "description": "万得全A指数"},
+      "SME_INDEX": {"code": "399101.SZ", "description": "中小板指"},
+      "HANG_SENG": {"code": "HSCI.HI", "description": "恒生指数"},
+      "BOND_10Y": {"code": "L001619604", "description": "10年国债收益率"},
+      "BOND_1Y": {"code": "L001618296", "description": "1年国债收益率"},
+      "URBAN_BOND_5Y": {"code": "L003759264", "description": "5年城投债收益率"}
+    }
+  },
+  "analysis_methods": {
+    "rolling_correlation": {
+      "window": 60,
+      "description": "60个交易日滚动窗口计算Pearson相关系数"
+    },
+    "high_correlation_detection": {
+      "threshold": 0.5,
+      "description": "识别相关系数>=0.5的连续正相关时期"
+    },
+    "data_preprocessing": {
+      "missing_value": "前向填充+后向填充",
+      "stock_transformation": "100-原指标（反转股指方向）"
+    }
+  },
+  "search_keywords_used": [
+    "汇率因子 债券收益 相关性分析 2025 2026",
+    "人民币汇率 债券市场影响 利率传导"
+  ],
+  "search_findings": "根据2025-2026年市场研究：\n1. 汇率与利率的传导机制：人民币汇率和利率存在长期协整关系，汇率对利率的影响较为显著（单向传导效应）\n2. 2025年人民币汇率呈现'先弱后强、波动收窄'走势，年末升破7.0关键点位\n3. 2026年预计呈现'先升后稳'特征，人民币或进入中长期升值周期\n4. 中美利差是影响境外机构持有中债的重要因素，2026年美联储降息空间大于中国央行，有利于中美利差收敛\n5. 汇率升值对债市影响：人民币升值时央行货币政策操作空间扩大，有利于债券市场",
+  "recommended_focus": [
+    "汇率与债券收益率相关性的时变特征分析",
+    "高相关性时期的市场背景解读（如2015年811汇改、2020年疫情、2022年美联储加息等）",
+    "汇率-利率传导机制的实证验证",
+    "滚动相关性分析的技术实现细节",
+    "HTML交互式报告的可视化设计",
+    "与其他项目的差异化定位（宏观因子vs内部因子）"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "研究问题：汇率因子在债券投资中的重要性",
+      "因子体系设计：4大类9个因子的选择逻辑",
+      "相关性分析方法：滚动相关性与高相关性时期识别",
+      "核心发现：汇率与各因子的相关性特征",
+      "应用价值：择时策略与风险管理"
+    ],
+    "skip_chapters": [
+      "数据库连接代码细节",
+      "基础环境配置",
+      "每个因子的详细统计描述"
+    ],
+    "word_allocation": {
+      "核心章节（研究问题+因子设计+相关性分析）": "50%",
+      "心得要点（汇率因子的独特视角）": "15%",
+      "其他章节（技术实现+应用场景）": "35%"
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "project_id": "T64",
+  "project_name": "用益信托",
+  "project_type": "数据采集与分析",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "file_name": "T64_用益信托.ipynb",
+      "file_type": "Jupyter Notebook",
+      "description": "主要数据采集和分析Notebook，包含用益信托网数据爬取、解析、存储和规模统计功能"
+    },
+    {
+      "file_name": "config.py",
+      "file_type": "Python配置文件",
+      "description": "数据库连接配置和用益信托API配置，包含请求头、超时设置等"
+    },
+    {
+      "file_name": "requirements.txt",
+      "file_type": "依赖文件",
+      "description": "项目依赖包：requests, pandas, sqlalchemy, pymysql, beautifulsoup4, lxml"
+    }
+  ],
+  "directory_structure": {
+    "root": "T64-用益信托",
+    "files": [
+      "T64_用益信托.ipynb",
+      "config.py",
+      "requirements.txt"
+    ],
+    "total_files": 3,
+    "has_readme": false
+  },
+  "unique_points": [
+    "专注于用益信托网(usetrust.com)的数据采集",
+    "采集标品信托相关产品数据（分类ID: 1050240046）",
+    "实现了文章内容提取的正则表达式解析",
+    "包含MySQL存储过程用于统计产品市场存续规模",
+    "使用AJAX API接口获取数据列表",
+    "实现增量采集机制（INSERT IGNORE）"
+  ],
+  "data_sources": [
+    {
+      "name": "用益信托网",
+      "url": "https://www.usetrust.com",
+      "api_url": "https://www.usetrust.com/Action/AjaxAction.ashx",
+      "detail_url": "https://www.usetrust.com/Studio/Details.aspx",
+      "description": "中国信托业第一门户网站，提供信托产品数据、市场分析、研究报告"
+    }
+  ],
+  "search_keywords_used": [
+    "用益信托 信托产品数据 信托市场 usetrust.com",
+    "用益信托网 数据采集 信托产品规模 市场分析 2024"
+  ],
+  "search_findings": {
+    "website_overview": "用益信托网是中国信托行业第一门户网站，全面覆盖信托业发展、银行、证券、基金、保险、期货等资管行业信息",
+    "data_available": [
+      "集合信托产品数据库（2002年至今）",
+      "信托产品快报",
+      "每周信托市场评述",
+      "数据信托等前沿研究"
+    ],
+    "market_data_2024": {
+      "trust_asset_scale": "27万亿元（2024年Q2）",
+      "securities_market_investment": "10.27万亿元（2024年末）",
+      "fund_trust_scale": "19.95万亿元，同比增长27.1%"
+    },
+    "research_topics": [
+      "数据产权和数据信托",
+      "企业数据资产服务信托",
+      "数据信托助推新质生产力发展"
+    ]
+  },
+  "recommended_focus": [
+    "项目核心功能是从用益信托网采集标品信托相关文章数据",
+    "主要分析目标是产品市场存续规模（通过正则匹配'产品规模'关键字）",
+    "数据存储在MySQL数据库的'信托数据'表中",
+    "可扩展采集更多分类的产品数据",
+    "存储过程可用于定期统计市场规模变化趋势"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "1. 项目概述",
+      "content": "介绍T64-用益信托项目的目标和定位"
+    },
+    {
+      "section": "2. 数据源分析",
+      "content": "用益信托网站结构和API接口说明"
+    },
+    {
+      "section": "3. 数据采集方案",
+      "content": "采集流程、解析方法、存储设计"
+    },
+    {
+      "section": "4. 核心功能模块",
+      "content": "YongsTrustCollector类、数据存储函数、存储过程"
+    },
+    {
+      "section": "5. 数据处理流程",
+      "content": "从列表获取到内容解析的完整流程"
+    },
+    {
+      "section": "6. 市场规模统计",
+      "content": "基于正则表达式的产品规模提取方法"
+    },
+    {
+      "section": "7. 扩展建议",
+      "content": "增加采集分类、优化解析逻辑、数据可视化等"
+    }
+  ],
+  "technical_stack": {
+    "language": "Python 3.10",
+    "data_processing": ["pandas", "numpy"],
+    "web_scraping": ["requests", "beautifulsoup4", "lxml"],
+    "database": ["sqlalchemy", "pymysql", "MySQL"],
+    "storage": "阿里云RDS MySQL"
+  },
+  "database_config": {
+    "type": "MySQL",
+    "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+    "database": "yq",
+    "main_table": "信托数据"
+  }
+}

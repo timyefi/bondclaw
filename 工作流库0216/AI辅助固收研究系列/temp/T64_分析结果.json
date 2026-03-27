@@ -1,0 +1,212 @@
+{
+  "project_id": "T64",
+  "project_name": "用益信托",
+  "analysis_date": "2026-02-16",
+  "research_background": {
+    "industry_context": "中国信托行业正处于深度转型期，信托资产规模首次突破32万亿元（2025年6月末达32.43万亿元，同比增长20.11%）。标品信托业务成为行业转型的重要方向，证券投资信托规模从2023年末的5.8万亿元增长至2024年末的10.99万亿元，标品信托数量较上年增长46.93%。",
+    "data_source_value": "用益信托网（usetrust.com）是中国信托业第一门户网站，提供2002年至今的集合信托产品数据库，涵盖信托产品快报、每周信托市场评述、数据信托等前沿研究。",
+    "project_motivation": "项目旨在通过自动化数据采集，获取标品信托相关文章和市场规模数据，为固收研究提供数据支撑。"
+  },
+  "core_methodology": {
+    "approach": "基于API接口的数据采集 + 正则表达式内容解析 + 存储过程数据统计",
+    "key_techniques": [
+      {
+        "name": "AJAX API数据采集",
+        "description": "通过用益信托网的AjaxAction.ashx接口，以POST方式请求文章列表数据，支持分页和分类筛选",
+        "code_snippet": "post_data = {'pageIndex': str(page_index), 'mode': 'ListArticle', 'pageSize': str(page_size), 'parentId': parent_id}"
+      },
+      {
+        "name": "正则表达式内容提取",
+        "description": "使用正则表达式从网页文本中提取中文内容，定位'责任编辑'和'打印文章'之间的内容区域",
+        "code_snippet": "pattern = re.compile(r'责任编辑(.*?)打印文章', re.S); chinese_pattern = re.compile(r'[\\u4e00-\\u9fa50-9.，。%-、]+')"
+      },
+      {
+        "name": "增量采集机制",
+        "description": "使用INSERT IGNORE语句实现增量采集，避免重复插入已存在的文章记录",
+        "code_snippet": "INSERT IGNORE INTO 用益信托 (ROWID, C_ID, ...) VALUES (:ROWID, :C_ID, ...)"
+      },
+      {
+        "name": "存储过程规模统计",
+        "description": "创建MySQL存储过程，使用游标遍历文章内容，通过LOCATE函数查找'成立规模'关键字，结合'标品信托'上下文识别提取规模数值",
+        "code_snippet": "SET @pos = LOCATE('成立规模', content_text, @pos); IF @sub_content LIKE '%标品信托%' THEN SET @scale_value = CAST(SUBSTRING_INDEX(@scale_text, '亿', 1) AS DECIMAL(10,2))"
+      }
+    ],
+    "data_flow": "API请求 -> JSON解析 -> DataFrame转换 -> 详情页获取 -> 正则提取内容 -> MySQL存储 -> 存储过程统计"
+  },
+  "key_findings": [
+    {
+      "title": "API接口设计灵活可控",
+      "content": "用益信托网提供了统一的AJAX API接口（AjaxAction.ashx），通过mode参数区分不同操作（如ListArticle获取文章列表），支持分页和分类筛选，使数据采集更加规范和可控。",
+      "significance": "这种API设计模式可复用于其他类似网站的数据采集，体现了'单一入口+模式分发'的接口设计思想"
+    },
+    {
+      "title": "JSON格式修复技巧",
+      "content": "API返回的JSON数据存在格式问题（pageIndex:1而非\"pageIndex\":\"1\"），项目通过字符串替换进行修复：corrected_text = text.replace(f\"pageIndex:{page_index}\", f'\"pageIndex\":\"{page_index}\"')",
+      "significance": "展示了处理非标准API响应的实用技巧，在对接第三方数据源时常见且必要"
+    },
+    {
+      "title": "双层正则解析策略",
+      "content": "内容提取采用双层正则策略：第一层定位目标区域（责任编辑...打印文章），第二层过滤有效字符（中文、数字、标点），有效去除了网页噪音。",
+      "significance": "这种'先定位后过滤'的解析策略提高了数据提取的准确性和可维护性"
+    },
+    {
+      "title": "存储过程实现复杂文本分析",
+      "content": "项目使用MySQL存储过程实现文本内容的遍历和关键字匹配，通过游标+循环+LOCATE函数的组合，在数据库层面完成规模数据的提取和统计。",
+      "significance": "展示了在数据库层面进行文本分析的可行性，但这种方式在大数据量场景下可能存在性能瓶颈"
+    }
+  ],
+  "insights": [
+    {
+      "insight_id": "I1",
+      "title": "金融数据采集的'三层架构'思维",
+      "description": "本项目体现了金融数据采集的三层架构：(1)接口层-通过标准化API获取结构化数据；(2)解析层-通过正则/BFSOUP提取非结构化内容；(3)存储层-通过数据库存储和存储过程进行二次加工。这种分层设计使得每个环节可以独立优化和替换。",
+      "application_scenario": "可应用于各类金融数据源的采集项目，特别是需要从网页中提取特定指标的场景"
+    },
+    {
+      "insight_id": "I2",
+      "title": "增量采集与幂等设计的重要性",
+      "description": "项目使用INSERT IGNORE实现增量采集，确保同一文章不会被重复插入。这种幂等设计对于长期运行的数据采集任务至关重要，可以支持定时任务的无忧执行。",
+      "application_scenario": "所有需要定期更新的数据采集任务，特别是爬虫类项目"
+    },
+    {
+      "insight_id": "I3",
+      "title": "正则表达式解析的边界与替代方案",
+      "description": "项目使用正则表达式解析文章内容并提取规模数据，这种方式简单直接但存在局限性：(1)对格式变化敏感；(2)难以处理复杂嵌套结构；(3)可维护性较差。对于生产环境，建议考虑更robust的方案如XPath/CSS选择器或NLP技术。",
+      "application_scenario": "需要评估解析方案的成本效益比，简单的正则适合快速原型，复杂的解析需求需要更专业的工具"
+    }
+  ],
+  "application_guide": {
+    "direct_use": [
+      "修改DEFAULT_PARENT_ID参数可采集其他分类的信托产品数据",
+      "调整page_count参数控制采集的数据量范围",
+      "存储过程可定期执行以更新标品信托成立规模统计"
+    ],
+    "extension_suggestions": [
+      {
+        "direction": "数据源扩展",
+        "description": "可扩展采集用益信托网的其他数据分类，如基础产业信托、房地产信托、工商企业信托等",
+        "priority": "高"
+      },
+      {
+        "direction": "解析能力增强",
+        "description": "当前仅提取'成立规模'指标，可扩展提取更多关键字段如收益率、期限、投资策略等",
+        "priority": "中"
+      },
+      {
+        "direction": "可视化展示",
+        "description": "结合采集的数据开发数据可视化看板，展示信托市场规模变化趋势",
+        "priority": "中"
+      },
+      {
+        "direction": "自动化调度",
+        "description": "将采集脚本部署到定时任务系统，实现每日/每周自动更新",
+        "priority": "低"
+      }
+    ],
+    "code_reusability": {
+      "score": "高",
+      "reason": "YongsTrustCollector类设计独立，config.py集中管理配置，存储过程可独立复用，整体架构清晰易于移植"
+    }
+  },
+  "limitations": [
+    {
+      "limitation": "正则解析脆弱性",
+      "description": "内容解析依赖'责任编辑'和'打印文章'这两个标记，如果网站改版可能失效",
+      "impact": "中等",
+      "mitigation": "建议增加多种解析模式的容错机制"
+    },
+    {
+      "limitation": "存储过程性能",
+      "description": "存储过程使用游标遍历全表，数据量增大后性能会下降",
+      "impact": "中等",
+      "mitigation": "建议在Python层进行文本分析，或使用全文索引优化"
+    },
+    {
+      "limitation": "单一数据源",
+      "description": "仅采集用益信托网数据，可能存在数据覆盖不全的问题",
+      "impact": "低",
+      "mitigation": "可扩展其他信托数据源进行交叉验证"
+    },
+    {
+      "limitation": "规模提取准确性",
+      "description": "规模提取依赖'成立规模'关键字和'亿'单位的组合，可能存在误提取或漏提取",
+      "impact": "中等",
+      "mitigation": "建议增加人工校验环节或使用NLP技术提高准确率"
+    }
+  ],
+  "report_structure": {
+    "suggested_sections": [
+      {
+        "section": "1. 项目概述",
+        "content": "项目背景、目标、技术栈概览",
+        "estimated_length": "500字"
+      },
+      {
+        "section": "2. 用益信托网站分析",
+        "content": "网站结构、API接口、数据分类说明",
+        "estimated_length": "800字"
+      },
+      {
+        "section": "3. 数据采集方案设计",
+        "content": "采集流程、YongsTrustCollector类设计、增量采集机制",
+        "estimated_length": "1000字"
+      },
+      {
+        "section": "4. 内容解析技术",
+        "content": "双层正则策略、JSON格式修复、异常处理",
+        "estimated_length": "800字"
+      },
+      {
+        "section": "5. 数据存储与统计",
+        "content": "MySQL表结构、存储过程设计、规模统计逻辑",
+        "estimated_length": "1000字"
+      },
+      {
+        "section": "6. 行业背景与数据价值",
+        "content": "信托行业发展趋势、标品信托市场分析、数据应用场景",
+        "estimated_length": "800字"
+      },
+      {
+        "section": "7. 方法论总结",
+        "content": "三层架构思维、增量采集设计、解析方案选择",
+        "estimated_length": "600字"
+      },
+      {
+        "section": "8. 扩展建议与局限性",
+        "content": "功能扩展方向、已知限制、改进建议",
+        "estimated_length": "500字"
+      }
+    ],
+    "total_estimated_length": "6000字"
+  },
+  "search_references": [
+    {
+      "topic": "2025年信托市场规模",
+      "source": "用益信托网、中国信托业协会",
+      "key_data": "信托资产规模32.43万亿元（2025年6月末），同比增长20.11%",
+      "url": "https://www.usetrust.com"
+    },
+    {
+      "topic": "标品信托发展趋势",
+      "source": "证券时报、中信集团",
+      "key_data": "标品信托数量增长46.93%，证券投资信托规模达10.99万亿元",
+      "url": "https://www.yanglee.com/studio/"
+    },
+    {
+      "topic": "资产管理行业报告",
+      "source": "中信金控《2025年度国内资产管理行业报告》",
+      "key_data": "资管行业规模184.53万亿元，同比增长13.1%",
+      "url": "https://www.citic.com"
+    }
+  ],
+  "quality_checklist": {
+    "code_reviewed": true,
+    "config_analyzed": true,
+    "search_conducted": true,
+    "insights_extracted": true,
+    "limitations_identified": true,
+    "extension_suggestions_provided": true,
+    "report_structure_designed": true,
+    "market_data_integrated": true
+  }
+}

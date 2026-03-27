@@ -1,0 +1,286 @@
+{
+  "project_info": {
+    "project_id": "T36",
+    "project_name": "同花顺excel导入债券估值",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值",
+    "explore_date": "2026-02-16"
+  },
+  "project_overview": {
+    "description": "同花顺iFinD债券估值批量处理系统，用于从同花顺Excel插件批量获取债券估值数据并导入数据库",
+    "core_functions": [
+      "批量生成Excel模板：从数据库查询日期+债券代码组合，生成Excel模板文件",
+      "批量填充iFinD公式：在Excel模板中批量插入同花顺iFinD数据提取公式",
+      "批量计算并保存为值：执行Excel公式计算，将结果保存为静态值",
+      "数据验证与入库：验证数据质量并回传数据库"
+    ],
+    "data_flow": "数据库查询 -> Excel模板生成 -> 添加iFinD公式 -> Excel计算 -> 保存为值 -> (待实现：回传数据库)"
+  },
+  "file_structure": {
+    "main_files": [
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\重构.ipynb",
+        "type": "notebook",
+        "description": "主重构Notebook，包含完整的工作流代码",
+        "size": 36568
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\config.py",
+        "type": "python",
+        "description": "配置参数文件，包含数据库连接、Excel处理、iFinD指标等配置",
+        "size": 4774
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\requirements.txt",
+        "type": "text",
+        "description": "Python依赖列表",
+        "size": 239
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\README.md",
+        "type": "markdown",
+        "description": "项目说明文档",
+        "size": 4373
+      }
+    ],
+    "src_files": [
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\src\\批量获得excel表格所需dttradecode.txt",
+        "description": "原始SQL查询代码，查询存续期内债券的日期+代码组合"
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\src\\批量excel填充自定义公式.txt",
+        "description": "原始代码，在Excel中填充iFinD公式"
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\src\\批量excel计算及保存为值.txt",
+        "description": "原始代码，执行Excel计算并保存为静态值"
+      }
+    ],
+    "data_files": [
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T36-同花顺excel导入债券估值\\data\\1.xlsx",
+        "type": "excel",
+        "size": 3462248
+      }
+    ],
+    "directories": [
+      "src/",
+      "data/",
+      "assets/",
+      "output/"
+    ]
+  },
+  "technical_details": {
+    "language": "Python 3.8+",
+    "dependencies": [
+      "pandas>=1.5.0",
+      "numpy>=1.21.0",
+      "openpyxl>=3.0.0",
+      "pymysql>=1.0.0",
+      "sqlalchemy>=1.4.0",
+      "pywin32>=300",
+      "tqdm>=4.60.0"
+    ],
+    "database": {
+      "type": "MySQL",
+      "tables": {
+        "credit": "basicinfo_credit - 信用债基础信息表",
+        "finance": "basicinfo_finance - 金融债基础信息表",
+        "abs": "basicinfo_abs - ABS基础信息表"
+      },
+      "temp_tables": {
+        "credit": "temp_credit - 信用债临时去重表",
+        "finance": "temp_finance - 金融债临时去重表"
+      }
+    },
+    "excel_technology": {
+      "template_generation": "openpyxl",
+      "formula_execution": "win32com (Excel COM接口)",
+      "platform_limitation": "Excel COM功能仅Windows可用"
+    },
+    "ifind_integration": {
+      "plugin": "同花顺iFinD Excel插件",
+      "formula_format": "=@thsiFinD(\"指标名\", trade_code单元格, dt单元格, [参数])"
+    }
+  },
+  "data_indicators": {
+    "columns": {
+      "A": "dt - 日期",
+      "B": "trade_code - 债券代码"
+    },
+    "ifind_indicators": [
+      {
+        "name": "ths_bond_balance_bond",
+        "column": "C",
+        "description": "债券余额",
+        "params": null
+      },
+      {
+        "name": "ths_evaluate_yield_yy_bond",
+        "column": "D",
+        "description": "银行间收益率",
+        "params": null
+      },
+      {
+        "name": "ths_cb_market_implicit_rating_bond",
+        "column": "E",
+        "description": "隐含评级",
+        "params": null
+      },
+      {
+        "name": "ths_evaluate_yield_cb_bond_exercise",
+        "column": "F",
+        "description": "交易所收益率",
+        "params": 102
+      },
+      {
+        "name": "ths_evaluate_modified_dur_cb_bond_exercise",
+        "column": "G",
+        "description": "修正久期",
+        "params": 102
+      }
+    ]
+  },
+  "bond_selection_logic": {
+    "description": "债券存续期筛选条件",
+    "conditions": [
+      "起息日 < 当前日期 OR 起息日 IS NULL OR 起息日 = '0000-00-00'",
+      "到期日 > 当前日期 OR 到期日 IS NULL OR 到期日 = '0000-00-00'",
+      "退市日 > 当前日期 OR 退市日 IS NULL OR 退市日 = '0000-00-00'",
+      "排除发行失败的债券 (ths_is_issuing_failure_bond != '是')"
+    ],
+    "deduplication": "排除已有估值数据的债券（通过临时表去重）"
+  },
+  "configuration": {
+    "excel_settings": {
+      "max_rows_per_file": 300000,
+      "ifind_wait_time": "60秒",
+      "retry_attempts": 5,
+      "retry_delay": "30秒"
+    },
+    "data_validation": {
+      "yield_min": 0,
+      "yield_max": 50,
+      "required_columns": ["dt", "trade_code", "ths_bond_balance_bond", "ths_evaluate_yield_yy_bond", "ths_cb_market_implicit_rating_bond"]
+    },
+    "environment_variables": [
+      "DB_HOST",
+      "DB_PORT",
+      "DB_USER",
+      "DB_PASSWORD",
+      "DB_NAME",
+      "DB_CHARSET",
+      "IFIND_USERNAME",
+      "IFIND_PASSWORD"
+    ]
+  },
+  "workflow_steps": [
+    {
+      "step": 1,
+      "name": "查询数据库",
+      "function": "query_dt_trade_code()",
+      "description": "从数据库查询指定日期内存续的债券代码"
+    },
+    {
+      "step": 2,
+      "name": "生成Excel模板",
+      "function": "generate_excel_templates()",
+      "description": "按日期+债券代码生成Excel文件（每30万行一个文件）"
+    },
+    {
+      "step": 3,
+      "name": "填充iFinD公式",
+      "function": "add_formulas_to_excel()",
+      "description": "在Excel中批量插入同花顺数据提取公式"
+    },
+    {
+      "step": 4,
+      "name": "Excel计算",
+      "function": "process_excel_files_with_com()",
+      "description": "打开Excel执行公式计算，等待数据加载，将公式结果保存为静态值"
+    },
+    {
+      "step": 5,
+      "name": "数据验证",
+      "function": "validate_batch()",
+      "description": "检查数据完整性和合理性"
+    }
+  ],
+  "key_classes_and_functions": {
+    "classes": [
+      {
+        "name": "ExcelCOMApp",
+        "description": "Excel COM操作类，封装win32com对Excel的操作，提供重试机制",
+        "methods": ["open_workbook", "calculate_worksheet", "save_as_values_copy_paste", "save_as_values_cell_by_cell", "save_workbook", "close_workbook", "quit"]
+      }
+    ],
+    "functions": [
+      {
+        "name": "build_survival_bond_query()",
+        "description": "构建查询存续期内债券的SQL语句"
+      },
+      {
+        "name": "build_union_query()",
+        "description": "构建多债券类型联合查询的SQL语句"
+      },
+      {
+        "name": "query_dt_trade_code()",
+        "description": "查询日期+债券代码组合"
+      },
+      {
+        "name": "generate_excel_templates()",
+        "description": "将查询结果分割并保存为多个Excel文件"
+      },
+      {
+        "name": "build_ifind_formula()",
+        "description": "构建iFinD公式字符串"
+      },
+      {
+        "name": "add_ifind_formulas_to_sheet()",
+        "description": "向工作表批量添加iFinD公式"
+      },
+      {
+        "name": "retry()",
+        "description": "重试装饰器"
+      },
+      {
+        "name": "validate_excel_data()",
+        "description": "验证Excel数据完整性"
+      },
+      {
+        "name": "validate_batch()",
+        "description": "批量验证文件夹中的Excel文件"
+      },
+      {
+        "name": "run_full_workflow()",
+        "description": "执行完整工作流"
+      }
+    ]
+  },
+  "notes_and_limitations": [
+    "Excel计算功能需要在Windows环境下运行，并安装Microsoft Excel",
+    "需要预先安装同花顺iFinD Excel插件并登录",
+    "iFinD数据加载需要时间，默认等待60秒",
+    "单文件超过30万行会自动分割为多个文件",
+    "Excel COM接口可能不稳定，已内置重试机制",
+    "回传数据库功能尚未实现"
+  ],
+  "original_vs_refactored": {
+    "original_files": {
+      "count": 3,
+      "description": "原始代码分散在3个独立的txt文件中"
+    },
+    "refactored_structure": {
+      "main_file": "重构.ipynb",
+      "description": "重构后整合为单个Jupyter Notebook，采用模块化设计",
+      "improvements": [
+        "统一的配置管理（config.py）",
+        "环境变量管理敏感信息",
+        "模块化的函数设计",
+        "完善的重试机制",
+        "数据验证功能",
+        "详细的文档和注释"
+      ]
+    }
+  }
+}

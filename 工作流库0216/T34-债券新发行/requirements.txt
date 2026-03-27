@@ -1,0 +1,27 @@
+# T34 - 债券新发行 依赖包
+# Python >= 3.8
+
+# 数据处理
+pandas>=1.5.0
+numpy>=1.21.0
+
+# 数据库
+pymysql>=1.0.0
+sqlalchemy>=1.4.0
+
+# API客户端 (需要单独安装)
+# WindPy - Wind金融终端API，需要安装Wind终端
+# iFinDPy - 同花顺iFinD API，需要联系同花顺获取
+
+# 数据处理工具
+chardet>=5.0.0
+requests>=2.28.0
+
+# 日志
+logging-config>=1.0.0
+
+# 可选：性能优化
+# Cython>=0.29.0
+
+# 可选：数据验证
+# pydantic>=1.10.0

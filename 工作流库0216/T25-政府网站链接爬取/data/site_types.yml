@@ -1,0 +1,190 @@
+# 网站类型配置
+version: 1.0
+
+# 政府网站类型
+government:
+  features:
+    keywords:
+      - gov.cn
+      - zwgk
+      - zfxxgk
+      - govinfo
+      - zhengfu
+      - zfhy
+      - zfbg
+    patterns:
+      - gov\.(cn|com)
+      - zwgk
+      - [省市区]政府
+      - [省市区]发改委
+      - [省市区]工信
+    selectors:
+      title: .gov-info-title
+      content: .gov-info-content
+      date: .gov-info-date
+      attachment: .gov-info-attachment
+  weight: 1.0
+  min_confidence: 0.7
+
+# 发改委网站
+development:
+  features:
+    keywords:
+      - fgw
+      - fagaiwei
+      - reform
+      - development
+    patterns:
+      - fgw\.(gov|com)
+      - [省市区]发改委
+      - [省市区]发展改革
+    selectors:
+      title: .gov-info-title
+      content: .gov-info-content
+      date: .gov-info-date
+      attachment: .gov-info-attachment
+  weight: 0.9
+  min_confidence: 0.7
+
+# 工信部门网站
+industry:
+  features:
+    keywords:
+      - gxj
+      - gxw
+      - industry
+      - miit
+    patterns:
+      - gxj\.(gov|com)
+      - [省市区]工信
+      - [省市区]工业和信息��
+    selectors:
+      title: .gov-info-title
+      content: .gov-info-content
+      date: .gov-info-date
+      attachment: .gov-info-attachment
+  weight: 0.9
+  min_confidence: 0.7
+
+# 新闻网站
+news:
+  features:
+    keywords:
+      - news
+      - xinwen
+      - xwzx
+      - press
+      - media
+    patterns:
+      - news
+      - xinwen
+      - (新闻|资讯)
+      - press
+    selectors:
+      title: .gov-info-title
+      content: .gov-info-content
+      date: .gov-info-date
+      attachment: .gov-info-attachment
+  weight: 0.8
+  min_confidence: 0.6
+
+# 通用网站
+general:
+  features:
+    keywords: []
+    patterns: []
+    selectors:
+      title: .title
+      content: .content
+      date: .date
+      attachment: .attachment
+  weight: 0.5
+  min_confidence: 0.5
+
+# 特征学习配置
+learning:
+  enabled: true
+  min_samples: 10
+  learning_rate: 0.1
+  feature_threshold: 0.7
+  max_features: 1000
+  update_interval: 3600  # 秒
+
+# 优化配置
+optimization:
+  enabled: true
+  check_interval: 3600  # 秒
+  metrics:
+    - success_rate
+    - extraction_quality
+    - performance
+  thresholds:
+    success_rate: 0.8
+    extraction_quality: 0.7
+    performance: 0.8
+
+# 监控配置
+monitoring:
+  enabled: true
+  metrics:
+    - success_rate
+    - response_time
+    - error_rate
+  thresholds:
+    success_rate: 0.8
+    response_time: 1000  # ms
+    error_rate: 0.1 
+
+# 网站类型配置
+site_types:
+  gov_info:
+    selectors:
+      title: 
+        - ".gov-info-title"
+        - ".zwgk-title"
+        - ".article-title"
+      content:
+        - ".gov-info-content"
+        - ".zwgk-content"
+        - ".article-content"
+      date:
+        - ".gov-info-date"
+        - ".zwgk-date"
+        - ".article-date"
+      department:
+        - ".gov-info-department"
+        - ".zwgk-department"
+        - ".article-department"
+    patterns:
+      title: 
+        - "关于.*的通知"
+        - ".*实施方案"
+        - ".*工作要点"
+      url:
+        - "/zwgk/"
+        - "/govinfo/"
+        - "/xxgk/"
+
+  notice:
+    selectors:
+      title:
+        - ".notice-title"
+        - ".announcement-title"
+      content:
+        - ".notice-content"
+        - ".announcement-content"
+      date:
+        - ".notice-date"
+        - ".announcement-date"
+      department:
+        - ".notice-department"
+        - ".announcement-department"
+    patterns:
+      title:
+        - "公告"
+        - "通告"
+        - "公示"
+      url:
+        - "/tzgg/"
+        - "/notice/"
+        - "/gonggao/"

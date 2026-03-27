@@ -1,0 +1,43 @@
+import os
+import win32com.client as win32
+from datetime import datetime
+from openpyxl import load_workbook
+
+# 指定文件夹路径
+folder_path = 'C:\\Users\\Administrator\\Desktop\\新建文件夹\\'  # 例如 '2/'
+
+# 假设files是你的文件列表
+files = [file for file in os.listdir(folder_path) if file.endswith('.xlsx')]
+
+# 获取 Excel 应用实例
+excel = win32.gencache.EnsureDispatch('Excel.Application')
+
+for filename in files:
+    file_path = os.path.join(folder_path, filename)
+    # 使用win32com重新打开Excel文件，执行公式并保存结果
+    wb = excel.Workbooks.Open(file_path)
+    ws = wb.Worksheets(1)
+
+    # 获取日期，从文件名中提取，然后转换格式
+    date_str = filename.split('.')[0]  # 假设文件名格式为"20220630.xlsx"
+    date_obj = datetime.strptime(date_str, '%Y%m%d')
+    formatted_date = date_obj.strftime('%Y-%m-%d')
+
+    # 获取最右列的列号
+    last_column = ws.Cells(1, ws.Columns.Count).End(win32.constants.xlToLeft).Column
+
+    # 设置第一行的最右列的值为 formatted_date
+    ws.Range(ws.Cells(2, last_column), ws.Cells(ws.UsedRange.Rows.Count, last_column)).Value = formatted_date
+    # 以第一行为标准，向下填充到整个列
+    # for col in range(2, last_column-1):
+    col=last_column-1
+    source_range = ws.Range(ws.Cells(2, col), ws.Cells(2, col))
+    destination_range = ws.Range(ws.Cells(2, col), ws.Cells(ws.UsedRange.Rows.Count, col))
+    source_range.AutoFill(destination_range, win32.constants.xlFillDefault)
+
+    # 保存并关闭工作簿
+    wb.Save()
+    wb.Close()
+
+# 关闭 Excel 应用实例
+excel.Quit()

@@ -1,0 +1,267 @@
+{
+  "project_id": "T57",
+  "project_name": "企业预警通爬取",
+  "project_type": "爬虫项目",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "filename": "README.md",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\README.md",
+      "description": "项目说明文档,包含功能特性和使用方法"
+    },
+    {
+      "filename": "config.py",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\config.py",
+      "description": "配置文件,包含数据库连接、爬虫配置和数据模块定义"
+    },
+    {
+      "filename": "requirements.txt",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\requirements.txt",
+      "description": "Python依赖包列表"
+    },
+    {
+      "filename": "重构.ipynb",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\重构.ipynb",
+      "description": "主Notebook,包含完整的爬取流程代码"
+    },
+    {
+      "filename": "src/qyyjt_spider.py",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\src\\qyyjt_spider.py",
+      "description": "API爬虫核心模块,实现登录、请求和数据获取"
+    },
+    {
+      "filename": "src/selenium_spider.py",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\src\\selenium_spider.py",
+      "description": "Selenium爬虫模块,作为API方式的备选方案"
+    },
+    {
+      "filename": "src/__init__.py",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T57-企业预警通爬取\\src\\__init__.py",
+      "description": "模块初始化文件,导出核心爬虫类"
+    }
+  ],
+  "directory_structure": {
+    "root": "T57-企业预警通爬取/",
+    "folders": [
+      "src/",
+      "data/",
+      "assets/",
+      "output/"
+    ],
+    "main_files": [
+      "重构.ipynb",
+      "config.py",
+      "requirements.txt",
+      "README.md"
+    ],
+    "source_files": [
+      "src/__init__.py",
+      "src/qyyjt_spider.py",
+      "src/selenium_spider.py"
+    ]
+  },
+  "unique_points": [
+    {
+      "point": "双模式爬取方案",
+      "description": "同时支持API方式和Selenium方式爬取,API方式更高效,Selenium方式作为备选"
+    },
+    {
+      "point": "完整的Token管理机制",
+      "description": "实现了登录状态检测和自动重新登录功能,token失效时可自动刷新"
+    },
+    {
+      "point": "反爬虫策略",
+      "description": "内置随机延时(0.5-2秒)、请求重试机制(最多3次)、模拟人类输入等反爬策略"
+    },
+    {
+      "point": "企业预警通专属数据模块",
+      "description": "针对市场化经营主体、退出平台、市场化经营等债券相关数据模块进行了配置"
+    },
+    {
+      "point": "数据库直存功能",
+      "description": "支持将爬取数据直接存储到MySQL数据库,并添加爬取时间戳"
+    },
+    {
+      "point": "模块化设计",
+      "description": "爬虫核心逻辑封装为独立类,便于复用和扩展"
+    }
+  ],
+  "data_sources": {
+    "primary_source": "企业预警通(www.qyyjt.cn)",
+    "source_type": "金融数据平台",
+    "api_endpoint": "https://www.qyyjt.cn/getData.action",
+    "supported_modules": [
+      {
+        "key": "market_entity",
+        "name": "市场化经营主体",
+        "url": "/bond/newExitTopic/mark",
+        "dataid": "578"
+      },
+      {
+        "key": "exit_platform",
+        "name": "退出平台",
+        "url": "/bond/newExitTopic/exit",
+        "dataid": "579"
+      },
+      {
+        "key": "market_operation",
+        "name": "市场化经营",
+        "url": "/bond/newExitTopic/mark",
+        "dataid": "580"
+      }
+    ],
+    "target_database": {
+      "type": "MySQL",
+      "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+      "database": "yq"
+    }
+  },
+  "technical_details": {
+    "language": "Python",
+    "main_dependencies": [
+      "requests>=2.31.0",
+      "pandas>=2.0.0",
+      "numpy>=1.24.0",
+      "sqlalchemy>=2.0.0",
+      "pymysql>=1.1.0",
+      "selenium>=4.15.0"
+    ],
+    "crawler_classes": [
+      {
+        "name": "QYYJTSpider",
+        "type": "API爬虫",
+        "features": [
+          "Session管理",
+          "自动重试",
+          "Token认证",
+          "请求头伪装"
+        ]
+      },
+      {
+        "name": "QYYJTSeleniumSpider",
+        "type": "Selenium爬虫",
+        "features": [
+          "Edge浏览器驱动",
+          "人类输入模拟",
+          "元素等待机制",
+          "表格数据解析"
+        ]
+      }
+    ],
+    "config_parameters": {
+      "request_delay_min": 0.5,
+      "request_delay_max": 2.0,
+      "max_retries": 3,
+      "timeout": 30
+    }
+  },
+  "search_keywords_used": [
+    "企业预警通 债券数据爬取 API 2024 2025"
+  ],
+  "search_findings": {
+    "summary": "搜索结果显示企业预警通是国内重要的金融数据平台,被多家研究机构(如中证鹏元)作为债券数据来源引用",
+    "key_points": [
+      "企业预警通被用于城投债发行数据获取",
+      "包含产业债主题、股东穿透报告等功能",
+      "在金融数据应用领域有广泛应用",
+      "未找到官方API文档,主要依赖网页端数据获取"
+    ],
+    "sources": [
+      "https://www.cspengyuan.com/api/files/6960d39c42b27b2bdc799e78",
+      "https://pdf.dfcfw.com/pdf/H3_AP202602031819645515_1.pdf"
+    ]
+  },
+  "recommended_focus": [
+    {
+      "priority": "高",
+      "topic": "爬虫稳定性优化",
+      "reason": "当前项目依赖网页端API,网站更新可能导致接口变化,需要持续维护"
+    },
+    {
+      "priority": "高",
+      "topic": "数据模块扩展",
+      "reason": "企业预警通包含丰富的债券数据,可扩展更多数据模块的爬取"
+    },
+    {
+      "priority": "中",
+      "topic": "代理IP池集成",
+      "reason": "README提到建议使用代理IP池,当前代码未实现"
+    },
+    {
+      "priority": "中",
+      "topic": "数据清洗与标准化",
+      "reason": "爬取的原始数据可能需要进一步清洗和标准化处理"
+    },
+    {
+      "priority": "低",
+      "topic": "定时任务调度",
+      "reason": "可增加自动化定时爬取功能"
+    }
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "项目概述",
+      "content": [
+        "项目背景与目标",
+        "企业预警通平台介绍",
+        "数据价值与应用场景"
+      ]
+    },
+    {
+      "section": "技术架构",
+      "content": [
+        "双模式爬取方案设计",
+        "API爬虫实现细节",
+        "Selenium备选方案",
+        "反爬虫策略分析"
+      ]
+    },
+    {
+      "section": "数据模块",
+      "content": [
+        "市场化经营主体数据",
+        "退出平台数据",
+        "市场化经营数据",
+        "数据字段说明"
+      ]
+    },
+    {
+      "section": "使用指南",
+      "content": [
+        "环境配置",
+        "登录凭据设置",
+        "运行流程",
+        "数据存储"
+      ]
+    },
+    {
+      "section": "优化建议",
+      "content": [
+        "稳定性提升方案",
+        "功能扩展方向",
+        "最佳实践建议"
+      ]
+    }
+  ],
+  "project_status": {
+    "development_stage": "重构阶段",
+    "notebook_name": "重构.ipynb",
+    "created_date": "2024-03",
+    "last_updated": "未知",
+    "completeness": {
+      "api_spider": "完整",
+      "selenium_spider": "完整",
+      "database_integration": "完整",
+      "documentation": "基础",
+      "test_coverage": "未覆盖"
+    }
+  },
+  "environment_variables": [
+    "DB_HOST",
+    "DB_PORT",
+    "DB_USER",
+    "DB_PASSWORD",
+    "QYYJT_USERNAME",
+    "QYYJT_PASSWORD"
+  ]
+}

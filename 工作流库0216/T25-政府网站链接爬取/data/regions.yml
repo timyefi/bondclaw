@@ -1,0 +1,353 @@
+# 区域配置文件
+version: 1.0
+
+# 全局设置
+settings:
+  auto_discovery: true  # 自动发现新网站
+  dynamic_update: true  # 动态更新配置
+  validation:
+    enabled: true
+    check_interval: 3600  # 秒
+    retry_count: 3
+  monitoring:
+    enabled: true
+    metrics:
+      - availability
+      - response_time
+      - update_frequency
+    thresholds:
+      availability: 0.95
+      response_time: 2000  # ms
+      update_frequency: 86400  # 秒
+
+# 中央部委网站
+central_government:
+  - name: 国家发改委
+    domain: ndrc.gov.cn
+    priority: 1
+    update_frequency: 3600  # 秒
+    retry_strategy:
+      max_retries: 3
+      interval: 300  # 秒
+    urls:
+      - url: https://www.ndrc.gov.cn/xwdt/tzgg/
+        type: notice
+        priority: 1
+        check_interval: 1800  # 秒
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+      - url: https://www.ndrc.gov.cn/xwdt/gzdt/
+        type: news
+        priority: 2
+        check_interval: 3600  # 秒
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 工信部
+    domain: miit.gov.cn
+    priority: 1
+    update_frequency: 3600
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.miit.gov.cn/gzcy/
+        type: news
+        priority: 1
+        check_interval: 1800
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 商务部
+    domain: mofcom.gov.cn
+    priority: 1
+    update_frequency: 3600
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.mofcom.gov.cn/article/gzdongtai/
+        type: news
+        priority: 1
+        check_interval: 1800
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+
+# 地方政府门户
+local_government:
+  - name: 北京市
+    domain: beijing.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.beijing.gov.cn/ywdt/zwzt/yqfk/
+        type: news
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 上海市
+    domain: sh.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: https://www.sh.gov.cn/shhome/xwb/
+        type: news
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 广州市
+    domain: gz.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.gz.gov.cn/xw/zwlb/
+        type: news
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+
+# 地方发改委
+local_development:
+  - name: 北京市发改委
+    domain: fgw.beijing.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://fgw.beijing.gov.cn/zwxx/tztg/
+        type: notice
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 上海市发改委
+    domain: fgw.sh.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: https://fgw.sh.gov.cn/gzdt2136/
+        type: news
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 广州市发改委
+    domain: fgw.gz.gov.cn
+    priority: 2
+    update_frequency: 7200
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://fgw.gz.gov.cn/gkmlpt/
+        type: news
+        priority: 1
+        check_interval: 3600
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+# 主流媒体
+major_media:
+  - name: 新华网
+    domain: xinhuanet.com
+    priority: 3
+    update_frequency: 1800
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.xinhuanet.com/fortune/
+        type: news
+        priority: 1
+        check_interval: 900
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 澎湃新闻
+    domain: thepaper.cn
+    priority: 3
+    update_frequency: 1800
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: https://www.thepaper.cn/channel_25950
+        type: news
+        priority: 1
+        check_interval: 900
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 财新网
+    domain: caixin.com
+    priority: 3
+    update_frequency: 1800
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: https://economy.caixin.com/
+        type: news
+        priority: 1
+        check_interval: 900
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+
+# 地方媒体
+local_media:
+  - name: 北京日报
+    domain: bjd.com.cn
+    priority: 3
+    update_frequency: 3600
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://jjrb.bjd.com.cn/
+        type: news
+        priority: 1
+        check_interval: 1800
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 解放日报
+    domain: jfdaily.com.cn
+    priority: 3
+    update_frequency: 3600
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: https://www.jfdaily.com.cn/news/economy
+        type: news
+        priority: 1
+        check_interval: 1800
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+  
+  - name: 羊城晚报
+    domain: ycwb.com
+    priority: 3
+    update_frequency: 3600
+    retry_strategy:
+      max_retries: 3
+      interval: 300
+    urls:
+      - url: http://www.ycwb.com/economy/
+        type: news
+        priority: 1
+        check_interval: 1800
+        selectors:
+          title: ".list-title"
+          date: ".list-date"
+          content: ".article-content"
+
+# 动态发现规则
+discovery_rules:
+  - type: domain_pattern
+    pattern: "*.gov.cn"
+    priority: 1
+    auto_add: true
+  
+  - type: content_pattern
+    pattern: "政府门户网站"
+    priority: 2
+    auto_add: true
+  
+  - type: link_pattern
+    pattern: "/zwgk/"
+    priority: 1
+    auto_add: true
+
+# 监控规则
+monitoring_rules:
+  - type: availability
+    check_interval: 300  # 秒
+    threshold: 0.95
+    alert_threshold: 0.9
+  
+  - type: response_time
+    check_interval: 300
+    threshold: 2000  # ms
+    alert_threshold: 3000
+  
+  - type: update_frequency
+    check_interval: 3600
+    threshold: 86400  # 秒
+    alert_threshold: 172800
+
+# 优化规则
+optimization_rules:
+  - type: priority_adjustment
+    enabled: true
+    metrics:
+      - update_frequency
+      - content_quality
+      - user_feedback
+    adjustment_interval: 86400  # 秒
+  
+  - type: resource_allocation
+    enabled: true
+    metrics:
+      - priority
+      - response_time
+      - success_rate
+    adjustment_interval: 3600
+  
+  - type: crawl_strategy
+    enabled: true
+    metrics:
+      - content_update_pattern
+      - resource_usage
+      - error_rate
+    adjustment_interval: 3600

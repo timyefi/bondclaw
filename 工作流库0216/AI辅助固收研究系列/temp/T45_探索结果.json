@@ -1,0 +1,204 @@
+{
+  "project_info": {
+    "project_id": "T45",
+    "project_name": "曲线",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T45-曲线",
+    "description": "债券收益率曲线计算系统",
+    "created_date": "2026-02-15",
+    "last_modified": "2026-02-15"
+  },
+  "file_structure": {
+    "total_files": 4,
+    "files": [
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T45-曲线\\README.md",
+        "type": "markdown",
+        "size_bytes": 3344,
+        "description": "项目说明文档"
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T45-曲线\\config.py",
+        "type": "python",
+        "size_bytes": 4429,
+        "description": "配置参数文件"
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T45-曲线\\requirements.txt",
+        "type": "text",
+        "size_bytes": 424,
+        "description": "Python依赖列表"
+      },
+      {
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T45-曲线\\重构.ipynb",
+        "type": "jupyter_notebook",
+        "size_bytes": 38754,
+        "description": "主重构Notebook（核心代码）"
+      }
+    ],
+    "directories": [
+      "src/",
+      "data/",
+      "assets/",
+      "output/"
+    ]
+  },
+  "dependencies": {
+    "core": [
+      "numpy>=1.20.0",
+      "pandas>=1.3.0",
+      "sqlalchemy>=1.4.0",
+      "pymysql>=1.0.0"
+    ],
+    "database": [
+      "sqlalchemy-utils>=0.37.0",
+      "psycopg2-binary>=2.9.0"
+    ],
+    "data_processing": [
+      "scipy>=1.7.0"
+    ],
+    "utilities": [
+      "tqdm>=4.60.0",
+      "matplotlib>=3.4.0"
+    ]
+  },
+  "core_functionality": {
+    "main_features": [
+      "收益率曲线构建：基于中债曲线数据，使用Hermite插值法计算任意期限的收益率",
+      "多维度分类：支持城投/产业、公募/私募、永续/非永续等多种分类维度",
+      "信用债利差计算：计算信用债相对于基准曲线的利差",
+      "标准化收益率调整：将任意期限债券的收益率调整到标准期限"
+    ],
+    "algorithms": {
+      "hermite_interpolation": {
+        "name": "三次Hermite插值",
+        "formula": "y(x) = y1*H1(t) + y2*H2(t) + d1*H3(t) + d2*H4(t)",
+        "basis_functions": {
+          "H1": "1 - 3t^2 + 2t^3",
+          "H2": "3t^2 - 2t^3",
+          "H3": "t - 2t^2 + t^3",
+          "H4": "-t^2 + t^3"
+        },
+        "notes": "保持曲线光滑（导数连续），避免龙格现象"
+      },
+      "derivative_calculation": {
+        "method": "中心差分",
+        "formula": "d1 = (y2 - y11) / (2 * (x2 - x11))"
+      },
+      "standardized_yield": {
+        "formula": "目标期限收益率 = 中债行权估值 + (目标期限曲线收益率 - 原期限曲线收益率)"
+      }
+    }
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "name": "bond.marketinfo_curve",
+        "description": "曲线市场数据",
+        "key_fields": ["DT", "trade_code", "CLOSE"]
+      },
+      {
+        "name": "bond.basicinfo_curve",
+        "description": "曲线基础信息",
+        "key_fields": ["trade_code", "SEC_NAME", "classify2"]
+      },
+      {
+        "name": "bond.marketinfo_credit",
+        "description": "信用债市场数据",
+        "key_fields": ["dt", "trade_code", "估值", "久期"]
+      },
+      {
+        "name": "bond.basicinfo_credit",
+        "description": "信用债基础信息",
+        "key_fields": ["trade_code", "发行方式", "是否城投"]
+      },
+      {
+        "name": "yq.目标期限1",
+        "description": "目标期限配置",
+        "key_fields": ["term"]
+      }
+    ]
+  },
+  "configuration": {
+    "database": {
+      "mysql": {
+        "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+        "port": 3306,
+        "database": "bond"
+      },
+      "postgresql": {
+        "host": "139.224.107.113",
+        "port": 18032,
+        "database": "tsdb"
+      }
+    },
+    "standard_terms": {
+      "count": 18,
+      "values": [0, 0.083333333, 0.24999999899999997, 0.49999999799999995, 0.749999997, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30],
+      "description": "标准曲线期限点（年）"
+    },
+    "target_terms": [0.5, 1.0, 1.75, 2.0, 3.0, 4.0, 5.0],
+    "bond_categories": ["城投", "产业", "金融", "ABS"],
+    "issue_methods": ["公募", "私募"],
+    "perpetual_options": ["是", "否"],
+    "rating_levels": ["AAA+", "AAA", "AAA-", "AA+", "AA", "AA(2)", "AA-"],
+    "interpolation_parameters": {
+      "precision": 4,
+      "term_difference_tolerance": 2
+    }
+  },
+  "core_functions": {
+    "data_acquisition": [
+      "get_curve_data(dt) - 获取中债曲线数据",
+      "get_credit_bond_data(dt, ratings) - 获取信用债市场数据",
+      "get_target_term_data() - 获取目标期限配置"
+    ],
+    "data_processing": [
+      "clean_curve_data(df) - 清洗曲线数据",
+      "clean_credit_bond_data(df) - 清洗信用债数据",
+      "correct_city_invest_flag(df) - 修正是否城投标识"
+    ],
+    "core_algorithms": [
+      "hermite_interpolation(x, x1, x2, y1, y2, d1, d2, precision) - 三次Hermite插值",
+      "find_anchor_points(term_values, terms) - 查找插值锚点",
+      "calculate_curve(data_curve, data_target) - 计算曲线收益率",
+      "calculate_standardized_yield(data_main, data_curve) - 计算标准化收益率"
+    ],
+    "utilities": [
+      "calculate_weighted_yield(df, group_cols) - 计算加权平均收益率",
+      "get_date_range(start_date, end_date) - 获取日期范围内的交易日列表",
+      "filter_by_term_difference(df, tolerance) - 过滤期限差异过大的数据",
+      "adjust_10year_node(df) - 调整10年节点"
+    ]
+  },
+  "key_design_decisions": [
+    {
+      "decision": "Hermite插值选择",
+      "reason": "保持曲线光滑（导数连续），避免龙格现象"
+    },
+    {
+      "decision": "4个锚点插值",
+      "reason": "使用中心差分计算导数，提高精度"
+    },
+    {
+      "decision": "债券余额加权",
+      "reason": "反映市场真实情况"
+    },
+    {
+      "decision": "期限差异容忍度设为2年",
+      "reason": "平衡数据覆盖率和准确性"
+    }
+  ],
+  "output_results": {
+    "types": [
+      "曲线收益率表：包含任意期限的收益率曲线数据",
+      "信用债利差：各债券相对于基准曲线的利差",
+      "标准化收益率：调整到标准期限后的收益率"
+    ]
+  },
+  "notes": [
+    "所有敏感信息（数据库密码等）应通过环境变量配置",
+    "插值误差随期限距离增大而增大，建议在容忍度范围内使用",
+    "边界情况（如30年附近）需要特殊处理",
+    "信用债数据处理可能需要数据库连接才能完成"
+  ]
+}

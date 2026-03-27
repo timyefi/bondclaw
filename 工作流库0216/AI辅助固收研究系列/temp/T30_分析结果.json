@@ -1,0 +1,380 @@
+{
+  "project_info": {
+    "project_id": "T30",
+    "project_name": "城投利差监控地图",
+    "analysis_date": "2026-02-16",
+    "analysis_type": "深度代码分析"
+  },
+  "technical_analysis": {
+    "architecture": {
+      "description": "采用前后端分离架构，后端使用Python进行数据处理，前端使用Highcharts进行地图可视化",
+      "backend": {
+        "language": "Python",
+        "core_modules": [
+          {
+            "module": "config.py",
+            "purpose": "集中管理所有配置参数，包括数据库连接、日期范围、业务参数",
+            "design_pattern": "配置类模式(Config Class Pattern)",
+            "key_features": [
+              "环境变量处理敏感信息",
+              "默认值后备机制",
+              "配置字典生成方法"
+            ]
+          },
+          {
+            "module": "src/main.py",
+            "purpose": "主执行程序，负责数据转换与输出",
+            "key_functions": [
+              "clean_province_name - 省份名称标准化",
+              "run_source_query - 复杂SQL查询执行",
+              "main - 主流程控制"
+            ]
+          },
+          {
+            "module": "src/run_query.py",
+            "purpose": "数据查询模块，从MySQL获取目标格式数据",
+            "dependency": "common.utils.database.DatabaseManager"
+          },
+          {
+            "module": "src/regional_spread_chart.py",
+            "purpose": "区域利差图表数据生成",
+            "key_functions": [
+              "get_regional_spread_data - 获取区域利差数据",
+              "_generate_raw1 - 生成省级数据",
+              "_generate_raw2 - 生成市级数据"
+            ]
+          }
+        ]
+      },
+      "frontend": {
+        "library": "Highcharts",
+        "file": "src/图表js代码.js",
+        "features": [
+          "中国地图可视化(China Map)",
+          "省级到市级下钻功能(Drilldown)",
+          "动态颜色轴(ColorAxis)调整",
+          "GeoJSON动态加载(通过geojson.cn API)"
+        ]
+      },
+      "database": {
+        "primary": {
+          "type": "PostgreSQL",
+          "name": "tsdb",
+          "tables": [
+            "hzcurve_credit - 城投债曲线数据主表",
+            "tc最新所属曲线 - 债券曲线归属关系表",
+            "曲线代码 - 曲线代码映射表",
+            "basicinfo_xzqh_ct - 城投区域行政区划表"
+          ]
+        },
+        "reference": {
+          "type": "MySQL",
+          "name": "bond",
+          "tables": [
+            "stock.temp_5843 - 省级利差临时表(目标格式参考)",
+            "stock.temp_5857 - 市级利差临时表(目标格式参考)"
+          ]
+        }
+      }
+    },
+    "key_algorithms": {
+      "weighted_average_calculation": {
+        "description": "按债券余额加权的收益率计算",
+        "formula": "SUM(stdyield * balance) / SUM(balance)",
+        "sql_implementation": "LAST_VALUE(SUM(A.stdyield*A.balance)/SUM(A.balance)) OVER (PARTITION BY region ORDER BY A.dt)",
+        "python_implementation": "np.average(x['stdyield'], weights=x['balance'])"
+      },
+      "window_functions": {
+        "description": "PostgreSQL窗口函数用于计算时间序列变化",
+        "functions": [
+          {
+            "name": "FIRST_VALUE",
+            "usage": "获取时间窗口起始值",
+            "window_7d": "RANGE BETWEEN INTERVAL '7 days' PRECEDING AND CURRENT ROW",
+            "window_30d": "RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW"
+          },
+          {
+            "name": "LAST_VALUE",
+            "usage": "获取时间窗口结束值(当前值)"
+          }
+        ]
+      },
+      "province_name_normalization": {
+        "description": "省份名称标准化处理，统一为2-3字简称",
+        "steps": [
+          "1. 移除行政区划后缀(省、市、自治区、回族自治区、维吾尔自治区、壮族自治区)",
+          "2. 取前两个字作为简称",
+          "3. 特殊处理：内蒙->内蒙古，黑龙->黑龙江"
+        ],
+        "regex_pattern": "r'省|市|自治区|回族自治区|维吾尔自治区|壮族自治区'"
+      }
+    },
+    "data_flow": {
+      "description": "完整的数据处理流程",
+      "steps": [
+        {
+          "step": 1,
+          "action": "日期范围确定",
+          "detail": "从hzcurve_credit表获取指定期限的交易日，确定数据起始和结束日期"
+        },
+        {
+          "step": 2,
+          "action": "多表关联查询",
+          "detail": "hzcurve_credit LEFT JOIN tc最新所属曲线 LEFT JOIN 曲线代码 LEFT JOIN basicinfo_xzqh_ct"
+        },
+        {
+          "step": 3,
+          "action": "加权平均计算",
+          "detail": "按余额加权计算区域收益率，使用窗口函数处理时间序列"
+        },
+        {
+          "step": 4,
+          "action": "利差变化计算",
+          "detail": "使用FIRST_VALUE和LAST_VALUE计算7天和1个月变化(bp)"
+        },
+        {
+          "step": 5,
+          "action": "名称标准化",
+          "detail": "省份和城市名称标准化处理"
+        },
+        {
+          "step": 6,
+          "action": "数据输出",
+          "detail": "生成CSV和JSON格式文件，供前端可视化使用"
+        }
+      ]
+    }
+  },
+  "code_quality_analysis": {
+    "strengths": [
+      {
+        "aspect": "配置集中管理",
+        "description": "所有配置参数集中在config.py中，使用环境变量处理敏感信息，遵循12-Factor App原则"
+      },
+      {
+        "aspect": "SQL查询优化",
+        "description": "使用CTE(WITH子句)和窗口函数高效计算时间序列数据，减少多次查询"
+      },
+      {
+        "aspect": "模块化设计",
+        "description": "功能按模块划分清晰，省级和市级数据生成逻辑分离"
+      },
+      {
+        "aspect": "前后端分离",
+        "description": "Python处理后端数据，JavaScript处理前端可视化，职责清晰"
+      },
+      {
+        "aspect": "文档完善",
+        "description": "README.md和代码注释详细，Jupyter Notebook结构清晰"
+      }
+    ],
+    "improvement_areas": [
+      {
+        "aspect": "错误处理",
+        "description": "数据库连接和查询的错误处理可以更完善，增加重试机制"
+      },
+      {
+        "aspect": "单元测试",
+        "description": "缺少正式的单元测试覆盖，建议添加pytest测试用例"
+      },
+      {
+        "aspect": "日志记录",
+        "description": "可以增加结构化日志记录，便于问题排查和监控"
+      },
+      {
+        "aspect": "数据验证",
+        "description": "可以增加数据质量验证步骤，如异常值检测、数据完整性检查"
+      }
+    ]
+  },
+  "frontend_analysis": {
+    "highcharts_implementation": {
+      "chart_type": "mapChart",
+      "map_area": "China",
+      "key_features": [
+        {
+          "feature": "Drilldown机制",
+          "description": "点击省份后下钻到市级地图，通过geojson.cn API动态加载省份GeoJSON数据",
+          "api_endpoint": "https://geojson.cn/api/china/{province_filename}.json"
+        },
+        {
+          "feature": "动态颜色轴",
+          "description": "下钻时根据当前省份数据动态调整颜色范围，返回时恢复全国范围",
+          "implementation": "chart.update({colorAxis: {min: province_min, max: province_max}})"
+        },
+        {
+          "feature": "数据标签",
+          "description": "显示省份名称，支持下钻的省份有特殊样式"
+        },
+        {
+          "feature": "提示框",
+          "description": "悬浮显示省份名称、利差值(BP)和日期"
+        }
+      ],
+      "color_scheme": {
+        "min_color": "#00FF00",
+        "max_color": "#FF0000",
+        "meaning": "绿色表示低利差(风险较低)，红色表示高利差(风险较高)"
+      }
+    }
+  },
+  "business_value_analysis": {
+    "primary_use_cases": [
+      {
+        "use_case": "城投债投资分析",
+        "description": "通过地图可视化快速识别各区域城投债利差水平，辅助投资决策",
+        "value": "直观展示区域利差分布，便于比较不同区域的投资价值"
+      },
+      {
+        "use_case": "区域风险评估",
+        "description": "监控各省份和城市的利差变化趋势，评估区域信用风险",
+        "value": "利差变化反映市场对区域信用状况的预期变化"
+      },
+      {
+        "use_case": "利差套利策略",
+        "description": "发现不同区域间的利差异常，寻找套利机会",
+        "value": "7天和1个月变化数据帮助识别短期和中期趋势"
+      }
+    ],
+    "key_metrics": {
+      "spread_value": {
+        "description": "区域加权平均收益率",
+        "unit": "BP(基点)",
+        "calculation": "按债券余额加权平均"
+      },
+      "7d_change": {
+        "description": "近7天收益率变化",
+        "unit": "BP",
+        "usage": "短期趋势监控"
+      },
+      "1m_change": {
+        "description": "近1个月收益率变化",
+        "unit": "BP",
+        "usage": "中期趋势分析"
+      }
+    }
+  },
+  "insights_and_tips": {
+    "data_processing_insights": [
+      {
+        "insight": "双数据库架构设计",
+        "description": "PostgreSQL作为主要数据源存储业务数据，MySQL作为参考数据源提供目标格式模板，这种设计便于数据迁移和格式验证",
+        "tip": "在新项目中可以复用这种模式，用MySQL存储目标格式作为验证基准"
+      },
+      {
+        "insight": "窗口函数的时间窗口设计",
+        "description": "使用RANGE BETWEEN INTERVAL '7 days' PRECEDING而不是ROWS，可以正确处理非交易日的情况",
+        "tip": "处理金融时间序列数据时，优先使用RANGE而不是ROWS来处理交易日历问题"
+      },
+      {
+        "insight": "省份名称处理的完整性",
+        "description": "考虑到中国行政区划的复杂性，特别是5个少数民族自治区和4个直辖市的不同命名规则",
+        "tip": "处理中国行政区划数据时，需要特别关注内蒙古、黑龙江等3字简称情况"
+      }
+    ],
+    "visualization_insights": [
+      {
+        "insight": "动态颜色轴的重要性",
+        "description": "全国地图和省级地图的利差范围差异很大，如果不动态调整颜色轴，省级地图可能无法有效区分不同城市",
+        "tip": "实现地图下钻功能时，必须根据下钻层级动态调整颜色轴范围"
+      },
+      {
+        "insight": "GeoJSON动态加载",
+        "description": "通过API动态加载省份地图数据，减少初始加载体积，提高用户体验",
+        "tip": "使用geojson.cn等公共服务时，需要考虑服务稳定性和网络延迟，添加加载状态提示"
+      }
+    ],
+    "sql_insights": [
+      {
+        "insight": "多层嵌套子查询结构",
+        "description": "使用三层嵌套结构：内层聚合->窗口函数计算->外层汇总，清晰分离数据处理逻辑",
+        "tip": "复杂SQL查询建议使用CTE(WITH子句)提高可读性，本项目main.py中有很好的示例"
+      },
+      {
+        "insight": "最新曲线归属的获取方式",
+        "description": "使用子查询SELECT MAX(日期)获取最新曲线归属日期，确保数据时效性",
+        "tip": "对于缓慢变化维(SCD)数据，始终使用最新快照进行关联"
+      }
+    ]
+  },
+  "report_structure_suggestion": {
+    "title": "城投利差监控地图项目技术分析报告",
+    "sections": [
+      {
+        "section": "1. 项目概述",
+        "content": ["项目背景与目标", "主要功能列表", "应用场景说明"]
+      },
+      {
+        "section": "2. 系统架构",
+        "content": ["整体架构图", "技术栈说明", "数据库设计"]
+      },
+      {
+        "section": "3. 核心算法解析",
+        "content": ["加权平均收益率计算", "窗口函数时间序列分析", "省份名称标准化算法"]
+      },
+      {
+        "section": "4. 数据流程详解",
+        "content": ["数据获取流程", "数据处理步骤", "数据输出格式"]
+      },
+      {
+        "section": "5. 前端可视化实现",
+        "content": ["Highcharts地图配置", "下钻功能实现", "动态颜色轴机制"]
+      },
+      {
+        "section": "6. 代码质量评估",
+        "content": ["设计亮点", "改进建议", "最佳实践"]
+      },
+      {
+        "section": "7. 业务价值与应用",
+        "content": ["投资分析场景", "风险评估应用", "关键指标说明"]
+      },
+      {
+        "section": "8. 技术心得与复用建议",
+        "content": ["可复用模式总结", "注意事项清单", "扩展方向建议"]
+      }
+    ]
+  },
+  "reusable_patterns": [
+    {
+      "pattern_name": "配置类模式",
+      "description": "使用Config类集中管理配置，支持环境变量覆盖和默认值",
+      "code_reference": "config.py",
+      "applicability": "所有需要多环境部署的项目"
+    },
+    {
+      "pattern_name": "加权平均计算",
+      "description": "使用余额作为权重计算区域平均收益率",
+      "code_reference": "src/regional_spread_chart.py _generate_raw1/_generate_raw2",
+      "applicability": "金融数据分析中需要考虑规模权重的场景"
+    },
+    {
+      "pattern_name": "省份名称标准化",
+      "description": "统一的省份名称处理逻辑，处理各种行政区划后缀",
+      "code_reference": "src/main.py clean_province_name",
+      "applicability": "所有涉及中国行政区划数据处理的项目"
+    },
+    {
+      "pattern_name": "地图下钻与动态颜色轴",
+      "description": "从全国到省级的下钻功能，配合动态颜色范围调整",
+      "code_reference": "src/图表js代码.js",
+      "applicability": "中国地图可视化项目"
+    }
+  ],
+  "reference_sources": [
+    {
+      "topic": "城投债利差分析",
+      "sources": [
+        "中债资信 - 解码湖南化债进展：城投有息债务增速放缓，区域利差下行显著(2025)",
+        "财联社 - 盘点2025城投债：净融资额仅4亿，存量时代来临",
+        "惠誉博华 - 2025年信用展望"
+      ]
+    },
+    {
+      "topic": "地图可视化技术",
+      "sources": [
+        "Highcharts官方文档 - Map Collection",
+        "geojson.cn API - 中国省份GeoJSON数据"
+      ]
+    }
+  ]
+}

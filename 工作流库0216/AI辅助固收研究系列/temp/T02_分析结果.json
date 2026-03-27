@@ -1,0 +1,287 @@
+{
+  "project_id": "T02",
+  "project_name": "每日脚本任务",
+  "analysis_date": "2026-02-15",
+  "key_components": [
+    {
+      "component_id": "KC-001",
+      "name": "舆情监控模块(yuqing.py/jrzyq.py)",
+      "description": "集成RatingDog第三方API获取舆情数据，使用timai模块进行AI内容摘要和敏感词过滤",
+      "files": ["src/yuqing.py", "src/jrzyq.py"],
+      "key_functions": ["pro_id()", "pro_yyinfo()", "summarize_content()", "filter_sensitive_words()"]
+    },
+    {
+      "component_id": "KC-002",
+      "name": "债券指数计算模块(qxqyb.py)",
+      "description": "基于SQL复杂查询从债券基础信息中提取曲线样本，支持城投/产业债、公募/私募、永续/非永续等多维度分类",
+      "files": ["src/qxqyb.py"],
+      "key_functions": ["CROSS JOIN目标期限表", "SUBSTRING隐含评级提取"]
+    },
+    {
+      "component_id": "KC-003",
+      "name": "数据获取模块(td.py/thslc.py等)",
+      "description": "通过THS API(同花顺)获取各类金融数据，支持债券市场规模、期限结构等多维度数据采集",
+      "files": ["src/td.py", "src/thslc.py", "src/zhaishiguimo.py"],
+      "key_functions": ["THS_DR()", "THS_iFinDLogin()"]
+    },
+    {
+      "component_id": "KC-004",
+      "name": "理财收益跟踪模块(licaishouyi.py)",
+      "description": "计算理财产品净值年化增长率，并跟踪纯债基金业绩表现，支持增量更新",
+      "files": ["src/licaishouyi.py"],
+      "key_functions": ["净值年化计算", "纯债基金业绩聚合"]
+    },
+    {
+      "component_id": "KC-005",
+      "name": "土地数据采集模块",
+      "description": "从landchina.com API获取土地交易数据，支持代理IP轮换和错误重试机制",
+      "files": ["src/td.py"],
+      "key_functions": ["get_list()", "get_content()", "insert_land()"]
+    }
+  ],
+  "data_flow": {
+    "description": "数据从多源采集经过清洗转换后入库的完整流程",
+    "sources": [
+      {"name": "THS API(同花顺)", "type": "金融数据API", "update_frequency": "每日多次"},
+      {"name": "RatingDog API", "type": "舆情数据API", "update_frequency": "每日4次"},
+      {"name": "上交所API", "type": "交易所数据", "update_frequency": "每日"},
+      {"name": "landchina.com", "type": "土地数据API", "update_frequency": "每日"}
+    ],
+    "processing_stages": [
+      {"stage": "数据获取", "description": "通过API或爬虫获取原始数据"},
+      {"stage": "数据清洗", "description": "处理缺失值、类型转换、格式标准化"},
+      {"stage": "AI处理", "description": "舆情内容的AI摘要和敏感词过滤(仅舆情数据)"},
+      {"stage": "数据入库", "description": "使用SQLAlchemy进行增量更新(ON DUPLICATE KEY UPDATE)"}
+    ],
+    "storage": {
+      "type": "MySQL数据库",
+      "databases": ["yq(舆情库)", "bond(债券库)", "fund(基金库)"],
+      "update_strategy": "INSERT ... ON DUPLICATE KEY UPDATE"
+    }
+  },
+  "algorithms": [
+    {
+      "algorithm_id": "ALG-001",
+      "name": "AI辅助舆情摘要",
+      "description": "使用大语言模型对舆情内容进行智能摘要",
+      "input": "舆情原始内容(含涉及公司、负面类型、发生日期、具体内容)",
+      "output": "结构化摘要文本",
+      "implementation": "调用timai模块的summarize_content()函数，type参数设为'舆情'"
+    },
+    {
+      "algorithm_id": "ALG-002",
+      "name": "敏感词过滤",
+      "description": "基于AC自动机的敏感词检测和替换",
+      "input": "原始文本",
+      "output": "过滤后的文本",
+      "implementation": "使用timai模块的filter_sensitive_words()函数，配合automaton自动机"
+    },
+    {
+      "algorithm_id": "ALG-003",
+      "name": "发行人模糊匹配",
+      "description": "使用fuzzywuzzy进行发行人名称的模糊匹配",
+      "input": "发行人列表、舆情关键词列表",
+      "output": "匹配度>=95%的发行人-关键词映射",
+      "implementation": "fuzz.ratio(issuer, kw.strip()) >= 95"
+    },
+    {
+      "algorithm_id": "ALG-004",
+      "name": "滚动窗口统计",
+      "description": "计算近180天负面舆情出现次数",
+      "input": "按日期分组的舆情计数序列",
+      "output": "滚动180天累计值",
+      "implementation": "issuer_counts.rolling(window=180, min_periods=1).sum()"
+    },
+    {
+      "algorithm_id": "ALG-005",
+      "name": "净值年化计算",
+      "description": "将期间收益率转换为年化收益率",
+      "input": "期间净值增长率、期间天数",
+      "output": "年化收益率",
+      "implementation": "年化收益率 = 期间收益率 * 365 / 期间天数"
+    }
+  ],
+  "insights": [
+    {
+      "insight_id": "INS-001",
+      "title": "研究基础设施的工程化思维",
+      "category": "架构设计",
+      "background": "传统固收研究依赖大量手动数据收集，效率低下且容易出错。该项目将20+个数据采集和处理脚本整合为自动化系统，体现了'把脏活累活自动化'的工程思维。",
+      "approach": "1. 按功能将脚本分类为数据获取(7个)、指标计算(7个)、行为分析(4个)、工具(2个)四大类\n2. 根据数据更新频率配置多时段执行(如05:30/09:00/19:30/23:30等)\n3. 统一使用SQLAlchemy进行数据库操作，配合ON DUPLICATE KEY UPDATE实现增量更新",
+      "why_works": "工程化思维将重复性工作自动化，让研究员专注于策略分析。定时调度确保数据及时更新，增量更新机制避免数据冗余。",
+      "principle": "研究基础设施的价值在于降低边际成本，提升整体效率。好的基础设施应该是'透明的'——研究员不需要关心数据从哪里来，只需要知道数据在哪里。",
+      "reusability": "适用于任何需要定期获取和处理数据的金融研究场景，如量化研究、风险管理、合规监控等。",
+      "related_insights": ["INS-002", "INS-003"]
+    },
+    {
+      "insight_id": "INS-002",
+      "title": "AI辅助内容处理的分层架构",
+      "category": "算法设计",
+      "background": "舆情数据通常是HTML格式的长文本，包含大量噪声和敏感信息，直接入库不利于后续分析。",
+      "approach": "1. 第一层：HTML解析 - get_html_text_and_images()提取纯文本和图片文字\n2. 第二层：敏感词过滤 - filter_sensitive_words()基于AC自动机过滤\n3. 第三层：AI摘要 - summarize_content()调用大语言模型生成结构化摘要\n4. 第四层：入库存储 - 将原始内容和AI摘要分别存储",
+      "why_works": "分层处理确保每一步都有明确的职责边界。敏感词过滤在AI处理前进行，既保护合规性又减少AI处理负担。AI摘要保留关键信息，便于快速浏览和后续分析。",
+      "principle": "内容处理pipeline应该遵循'先清洗后分析'的原则，每层只做一件事，层与层之间通过标准化接口通信。",
+      "reusability": "适用于任何需要处理非结构化文本的场景，如新闻监控、客户反馈分析、合规文档审查等。",
+      "related_insights": ["INS-001", "INS-004"]
+    },
+    {
+      "insight_id": "INS-003",
+      "title": "增量更新的幂等性设计",
+      "category": "数据采集",
+      "background": "定时任务可能因网络问题需要重试，或者数据源可能更新历史数据，需要确保多次执行不会产生重复数据。",
+      "approach": "使用MySQL的INSERT ... ON DUPLICATE KEY UPDATE语法：\n1. 设置主键(通常是dt+其他业务键)\n2. 插入时如果主键冲突则更新已有记录\n3. 每次执行前查询已有数据的日期范围，只补充缺失日期",
+      "why_works": "幂等性设计确保脚本可以安全地多次执行而不会产生副作用。这对于定时任务和手动补数据都非常重要。",
+      "principle": "ETL脚本应该是幂等的——相同的输入产生相同的输出，多次执行不会改变最终状态。这需要结合业务键设计和数据库约束来实现。",
+      "reusability": "适用于所有定时数据采集场景，特别是需要回填历史数据或处理数据源修正的情况。",
+      "related_insights": ["INS-001", "INS-005"]
+    },
+    {
+      "insight_id": "INS-004",
+      "title": "多数据源整合的适配器模式",
+      "category": "架构设计",
+      "background": "不同数据源API的认证方式、返回格式、调用限制各不相同，直接在业务代码中处理会导致代码混乱。",
+      "approach": "1. THS API：使用iFinDPy官方SDK，统一的THS_DR()函数\n2. RatingDog API：手动构造headers和登录流程，获取accessToken后使用Bearer认证\n3. 交易所API：构造特定headers(Referer/User-Agent)，处理JSONP响应\n4. 每个数据源封装独立的获取函数，返回标准化的DataFrame",
+      "why_works": "适配器模式将不同API的差异封装在底层，业务代码只需要调用统一接口。当某个API变更时，只需要修改对应的适配器函数。",
+      "principle": "外部依赖应该通过适配器层与业务逻辑解耦。适配器的职责是将外部接口转换为内部标准接口，屏蔽外部系统的复杂性。",
+      "reusability": "适用于任何需要整合多个外部API的系统，特别是当API提供商可能变更时。",
+      "related_insights": ["INS-001", "INS-005"]
+    },
+    {
+      "insight_id": "INS-005",
+      "title": "错误处理与重试机制设计",
+      "category": "工程实践",
+      "background": "网络请求和数据库操作都可能失败，需要设计健壮的错误处理机制确保数据完整性。",
+      "approach": "1. 网络请求重试：设置max_retries(通常3次)，失败后sleep再重试\n2. 数据库事务：使用connection.begin()开启事务，失败时rollback\n3. 连接池重连：失败后重新创建engine和connection\n4. 代理IP轮换：检测到限流时自动切换代理IP\n5. 错误记录：将失败的请求参数记录到专门的错误表",
+      "why_works": "分层错误处理确保每层都有恢复机制。重试机制处理临时故障，代理切换处理限流，错误表记录便于后续排查和补录。",
+      "principle": "分布式系统必然存在失败，设计时应该'假设失败会发生'。重试、降级、记录是处理失败的三个层次。",
+      "reusability": "适用于所有涉及网络请求和数据库操作的场景，是系统健壮性的基础保障。",
+      "related_insights": ["INS-003", "INS-004"]
+    },
+    {
+      "insight_id": "INS-006",
+      "title": "模糊匹配的预处理优化",
+      "category": "算法设计",
+      "background": "需要将舆情中的公司名称与债券发行人进行匹配，但名称可能存在细微差异(如'有限公司'vs'有限责任公司')。",
+      "approach": "1. 预处理阶段：遍历所有发行人，为每个发行人建立匹配关键词集合\n2. 使用fuzzywuzzy的ratio()函数进行相似度计算，阈值设为95%\n3. 将匹配结果缓存到issuer_to_keywords字典\n4. 后续匹配直接使用缓存的集合，避免重复计算",
+      "why_works": "预处理将O(n*m)的匹配复杂度降低到O(n+m)。缓存机制避免每次查询都重新计算。95%的阈值在准确性和召回率之间取得平衡。",
+      "principle": "频繁执行的计算应该预处理并缓存。空间换时间是优化性能的常用策略。",
+      "reusability": "适用于任何需要模糊匹配的场景，如客户名称匹配、地址标准化、产品名称映射等。",
+      "related_insights": ["INS-002", "INS-004"]
+    },
+    {
+      "insight_id": "INS-007",
+      "title": "定时任务的时间窗口设计",
+      "category": "架构设计",
+      "background": "不同数据源的更新时间不同，需要合理安排任务执行时间以获取最新数据。",
+      "approach": "1. 早上5:30-6:00：执行舆情监控(yuqing.py)，获取前一日的舆情数据\n2. 上午9:00：执行理财数据更新(thslc.py, licaishouyi.py)，配合市场开盘\n3. 下午17:00-18:00：执行衍生品分析(yjfxct.py)，使用当日收盘数据\n4. 晚间20:00-23:30：执行资讯和投资者数据更新，获取当日完整数据\n5. 凌晨1:00-3:00：执行低优先级任务，避开业务高峰",
+      "why_works": "时间窗口设计考虑了数据源更新时间、业务需求时间、系统负载三个维度。早上获取隔夜数据，晚上获取当日数据，凌晨执行批处理。",
+      "principle": "定时任务的时间安排应该遵循'数据可用性原则'——在数据源更新后执行，以及'业务需求原则'——在用户需要前完成。",
+      "reusability": "适用于所有定时任务系统，特别是金融数据处理等对时效性要求高的场景。",
+      "related_insights": ["INS-001", "INS-003"]
+    },
+    {
+      "insight_id": "INS-008",
+      "title": "配置管理与敏感信息保护",
+      "category": "工程实践",
+      "background": "原始代码中将数据库密码、API密钥等敏感信息硬编码在脚本中，存在安全风险且不便于管理。",
+      "approach": "1. 创建config.py统一管理配置参数\n2. 敏感信息通过环境变量获取：os.environ.get('DB_PASSWORD', 'default')\n3. 提供默认值便于开发调试\n4. 配置集中化管理，便于部署到不同环境",
+      "why_works": "配置与代码分离提高安全性和可维护性。环境变量是业界标准的敏感信息管理方式。默认值确保开发环境无需额外配置即可运行。",
+      "principle": "敏感信息永远不应该硬编码在代码中。12-Factor App原则要求配置从环境中获取。",
+      "reusability": "适用于所有需要管理配置和敏感信息的项目，是软件工程的基础实践。",
+      "related_insights": ["INS-001", "INS-005"]
+    }
+  ],
+  "unique_value": {
+    "core_contribution": "将债券研究的'数据基础设施'工程化，让研究员从繁琐的数据收集工作中解放出来，专注于策略分析和投资决策。",
+    "technical_innovation": [
+      "AI辅助舆情分析：将大语言模型应用于金融舆情处理，实现内容摘要和敏感词过滤的自动化",
+      "多时段智能调度：根据数据源更新频率和业务需求，设计了精细化的定时任务时间表",
+      "模糊匹配预处理：通过缓存机制优化发行人名称匹配性能，支持大规模数据处理"
+    ],
+    "practical_value": [
+      "提升研究效率：自动化数据采集和处理，节省研究员每天数小时的数据整理时间",
+      "降低人为错误：标准化数据处理流程，减少手动操作带来的错误",
+      "增强风险监控：实时舆情监控帮助及时发现和预警潜在风险事件"
+    ],
+    "limitations": [
+      "代码耦合度较高，部分脚本包含硬编码的配置信息",
+      "缺乏统一的日志和监控体系",
+      "异常处理机制不够完善，部分场景需要手动干预"
+    ]
+  },
+  "report_structure_recommendation": {
+    "suggested_chapters": [
+      {
+        "chapter_id": "CH-01",
+        "title": "项目概述：研究基础设施的工程化思维",
+        "word_allocation": "15%",
+        "key_points": ["项目背景和目标", "脚本分类体系", "整体架构设计"]
+      },
+      {
+        "chapter_id": "CH-02",
+        "title": "数据采集层：多数据源整合技术",
+        "word_allocation": "20%",
+        "key_points": ["THS API集成", "RatingDog舆情API", "增量更新机制", "错误处理与重试"]
+      },
+      {
+        "chapter_id": "CH-03",
+        "title": "舆情监控系统：AI辅助内容处理",
+        "word_allocation": "25%",
+        "key_points": ["内容处理Pipeline", "敏感词过滤", "AI摘要生成", "发行人模糊匹配"]
+      },
+      {
+        "chapter_id": "CH-04",
+        "title": "指标计算与数据处理",
+        "word_allocation": "15%",
+        "key_points": ["债券指数样本计算", "理财收益年化处理", "滚动窗口统计"]
+      },
+      {
+        "chapter_id": "CH-05",
+        "title": "工程化最佳实践",
+        "word_allocation": "15%",
+        "key_points": ["配置管理", "定时调度设计", "幂等性保证", "监控与日志"]
+      },
+      {
+        "chapter_id": "CH-06",
+        "title": "心得要点总结",
+        "word_allocation": "10%",
+        "key_points": ["方法论提炼", "可复用模式", "改进建议"]
+      }
+    ],
+    "emphasis_areas": [
+      "AI辅助舆情分析的创新应用",
+      "研究基础设施的工程化思维",
+      "多数据源整合的适配器模式",
+      "增量更新的幂等性设计"
+    ],
+    "skip_areas": [
+      "具体数据字段的详细说明",
+      "每个脚本的逐行代码分析",
+      "与业务无关的技术细节",
+      "敏感的API密钥和数据库配置"
+    ]
+  },
+  "search_references": [
+    {
+      "topic": "舆情监控系统技术趋势",
+      "source": "网易",
+      "title": "2026年企业舆情管理工具选型指南与技术趋势报告",
+      "url": "https://www.163.com/dy/article/KL0HQO2N0538K0P0.html",
+      "key_finding": "2026年舆情监测进入多模态情感识别时代，支持视频画面、音频情绪波动实时分析"
+    },
+    {
+      "topic": "AI内容摘要与情感分析",
+      "source": "上海证券交易所",
+      "title": "大语言模型在投资者情绪分析中的应用",
+      "url": "https://www.sse.com.cn/services/tradingtech/transaction/c/10759678/files/b614f93b7d53473cb129d8bdb7f2905a.pdf",
+      "key_finding": "大语言模型可用于舆情情感分析，理解市场情绪和投资标的表现，辅助量化投资决策"
+    },
+    {
+      "topic": "数据管道ETL最佳实践",
+      "source": "CSDN",
+      "title": "大数据工程师必看：数据工程的核心技术与实战应用",
+      "url": "https://blog.csdn.net/weixin_51960949/article/details/157034071",
+      "key_finding": "数据管道构建涉及批处理和流处理架构设计，ETL是数据工程的核心技术"
+    }
+  ]
+}

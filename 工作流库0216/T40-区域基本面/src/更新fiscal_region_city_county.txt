@@ -1,0 +1,155 @@
+#更新fiscal_region_city_county
+
+--修正债务余额小于债券余额的
+UPDATE bond.fiscal_region_city_county 
+set 城投平台有息债务余额=城投债券余额
+WHERE 城投平台有息债务余额<城投债券余额;
+
+--更新市本级债务余额
+CREATE TEMPORARY TABLE temp_table AS
+SELECT b.`DT`, b.`省`, b.`市`, b.`城投平台有息债务余额` - SUM(c.`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county AS b
+LEFT JOIN fiscal_region_city_county AS c ON b.`DT` = c.`DT` AND b.`省` = c.`省` AND b.`市` = c.`市` AND c.`区县` != '' AND c.`区县` != '市本级'
+WHERE b.`区县` = ''
+GROUP BY b.`DT`, b.`省`, b.`市`;
+
+UPDATE fiscal_region_city_county AS a
+JOIN temp_table AS t ON a.`DT` = t.`DT` AND a.`省` = t.`省` AND a.`市` = t.`市`
+SET a.`城投平台有息债务余额` = t.`新的债务余额`
+WHERE a.`区县` = '市本级'
+and a.`城投平台有息债务余额`< t.`新的债务余额`;
+
+DROP TEMPORARY TABLE temp_table;
+
+
+--对于城投平台有息债务余额为0或者空值、NULL的，寻找其相同省、市、区县，不同日期的城投平台有息债务余额有没有>0,有的话，用最相邻日期的来填充；
+DROP TEMPORARY TABLE IF EXISTS temp_table1;
+DROP TEMPORARY TABLE IF EXISTS temp_table2;
+
+CREATE TEMPORARY TABLE temp_table1 AS
+SELECT `省`, `市`, `区县`, `DT`, `城投平台有息债务余额`
+FROM fiscal_region_city_county
+WHERE `城投平台有息债务余额` > 0;
+
+CREATE TEMPORARY TABLE temp_table2 AS
+SELECT a.`省`, a.`市`, a.`区县`, a.`DT`, MIN(ABS(CAST(a.`DT` AS SIGNED) - CAST(b.`DT` AS SIGNED))) AS min_diff
+FROM temp_table1 AS a
+JOIN fiscal_region_city_county AS b ON a.`省` = b.`省` AND a.`市` = b.`市` AND a.`区县` = b.`区县`
+WHERE b.`城投平台有息债务余额` = 0 OR b.`城投平台有息债务余额` IS NULL
+GROUP BY a.`省`, a.`市`, a.`区县`;
+
+UPDATE fiscal_region_city_county AS a
+JOIN temp_table2 AS b ON a.`省` = b.`省` AND a.`市` = b.`市` AND a.`区县` = b.`区县`
+JOIN temp_table1 AS c ON b.`省` = c.`省` AND b.`市` = c.`市` AND b.`区县` = c.`区县` AND ABS(CAST(c.`DT` AS UNSIGNED) - CAST(a.`DT` AS UNSIGNED)) = b.min_diff
+SET a.`城投平台有息债务余额` = c.`城投平台有息债务余额`
+WHERE (a.`城投平台有息债务余额` = 0 OR a.`城投平台有息债务余额` IS NULL);
+
+DROP TEMPORARY TABLE IF EXISTS temp_table1;
+DROP TEMPORARY TABLE IF EXISTS temp_table2;
+
+--修正全省、全市数据小于分项加总的
+
+CREATE TEMPORARY TABLE temp_table AS
+SELECT `DT`, `省`, `市`,'' as 区县, SUM(`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county
+WHERE `区县` != ''
+GROUP BY `DT`, `省`, `市`
+UNION
+SELECT `DT`, `省`, '' as 市,'' as 区县,SUM(`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county
+WHERE `市` != '' AND `区县` = ''
+GROUP BY `DT`, `省`;
+
+UPDATE bond.fiscal_region_city_county AS a
+JOIN temp_table AS t ON a.`DT` = t.`DT` AND a.`省` = t.`省` AND a.`市` = t.`市` AND a.`区县` = t.`区县`
+SET a.`城投平台有息债务余额` = t.`新的债务余额`
+WHERE a.`城投平台有息债务余额` < t.`新的债务余额`;
+
+DROP TEMPORARY TABLE temp_table;
+
+--再修正一次债务余额小于债券余额的
+UPDATE bond.fiscal_region_city_county 
+set 城投平台有息债务余额=城投债券余额
+WHERE 城投平台有息债务余额<城投债券余额;
+
+--再修正补市本级债务规模 与 总数和区县差值有差别的
+CREATE TEMPORARY TABLE temp_table AS
+SELECT b.`DT`, b.`省`, b.`市`, b.`城投平台有息债务余额` - SUM(c.`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county AS b
+LEFT JOIN fiscal_region_city_county AS c ON b.`DT` = c.`DT` AND b.`省` = c.`省` AND b.`市` = c.`市` AND c.`区县` != '' AND c.`区县` != '市本级'
+WHERE b.`区县` = ''
+GROUP BY b.`DT`, b.`省`, b.`市`;
+
+UPDATE fiscal_region_city_county AS a
+JOIN temp_table AS t ON a.`DT` = t.`DT` AND a.`省` = t.`省` AND a.`市` = t.`市`
+SET a.`城投平台有息债务余额` = t.`新的债务余额`
+WHERE a.`区县` = '市本级'
+and a.`城投平台有息债务余额`< t.`新的债务余额`;
+
+
+--填补城投债务数据为空的为地方债务规模2倍
+UPDATE bond.fiscal_region_city_county
+SET 城投平台有息债务余额 = 2*地方债务余额
+WHERE 城投平台有息债务余额='' or 城投平台有息债务余额 is NULL OR 城投平台有息债务余额=0
+
+DROP TEMPORARY TABLE temp_table;
+
+
+--！要重复运行几次，每次填充一个日期
+--对于城投平台有息债务余额为0或者空值、NULL的，寻找其相同省、市、区县，不同日期的城投平台有息债务余额有没有>0,有的话，用最相邻日期的来填充；
+DROP TEMPORARY TABLE IF EXISTS temp_table1;
+DROP TEMPORARY TABLE IF EXISTS temp_table2;
+
+CREATE TEMPORARY TABLE temp_table1 AS
+SELECT `省`, `市`, `区县`, `DT`, `城投平台有息债务余额`
+FROM fiscal_region_city_county
+WHERE `城投平台有息债务余额` > 0;
+
+CREATE TEMPORARY TABLE temp_table2 AS
+SELECT a.`省`, a.`市`, a.`区县`, a.`DT`, MIN(ABS(CAST(a.`DT` AS SIGNED) - CAST(b.`DT` AS SIGNED))) AS min_diff
+FROM temp_table1 AS a
+JOIN fiscal_region_city_county AS b ON a.`省` = b.`省` AND a.`市` = b.`市` AND a.`区县` = b.`区县`
+WHERE b.`城投平台有息债务余额` = 0 OR b.`城投平台有息债务余额` IS NULL
+GROUP BY a.`省`, a.`市`, a.`区县`;
+
+UPDATE fiscal_region_city_county AS a
+JOIN temp_table2 AS b ON a.`省` = b.`省` AND a.`市` = b.`市` AND a.`区县` = b.`区县`
+JOIN temp_table1 AS c ON b.`省` = c.`省` AND b.`市` = c.`市` AND b.`区县` = c.`区县` AND ABS(CAST(c.`DT` AS SIGNED) - CAST(a.`DT` AS SIGNED)) = b.min_diff
+SET a.`城投平台有息债务余额` = c.`城投平台有息债务余额`
+WHERE (a.`城投平台有息债务余额` = 0 OR a.`城投平台有息债务余额` IS NULL);
+
+
+
+DROP TEMPORARY TABLE IF EXISTS temp_table1;
+DROP TEMPORARY TABLE IF EXISTS temp_table2;
+
+
+--修正全省、全市数据小于分项加总的
+
+CREATE TEMPORARY TABLE temp_table AS
+SELECT `DT`, `省`, `市`,'' as 区县, SUM(`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county
+WHERE `区县` != ''
+GROUP BY `DT`, `省`, `市`
+UNION
+SELECT `DT`, `省`, '' as 市,'' as 区县,SUM(`城投平台有息债务余额`) as `新的债务余额`
+FROM bond.fiscal_region_city_county
+WHERE `市` != '' AND `区县` = ''
+GROUP BY `DT`, `省`;
+
+UPDATE bond.fiscal_region_city_county AS a
+JOIN temp_table AS t ON a.`DT` = t.`DT` AND a.`省` = t.`省` AND a.`市` = t.`市` AND a.`区县` = t.`区县`
+SET a.`城投平台有息债务余额` = t.`新的债务余额`
+WHERE a.`城投平台有息债务余额` < t.`新的债务余额`;
+
+DROP TEMPORARY TABLE temp_table;
+
+--update fiscal_region_city_county表格，若区县!=''，则地区级别='区县级'，若区县='' and 市!='' 则地区级别='地市级'，其他则为'省级'
+
+UPDATE bond.fiscal_region_city_county
+SET `地区级别` = CASE 
+    WHEN `区县` != '' THEN '区县级'
+    WHEN `区县` = '' AND `市` != '' THEN '地市级'
+    ELSE '省级'
+END;
+

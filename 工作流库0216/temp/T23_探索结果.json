@@ -1,0 +1,130 @@
+{
+  "project_info": {
+    "project_id": "T23",
+    "project_name": "韩国造船业",
+    "report_number": 23,
+    "task_document": "g:\\我的云端硬盘\\workspace\\projects\\github\\work_station\\项目任务化\\T23-韩国造船业.md",
+    "exploration_date": "2026-02-16"
+  },
+  "source_files": [
+    {
+      "path": "g:\\我的云端硬盘\\workspace\\projects\\github\\work_station\\2025\\韩国造船业\\反内卷专题：韩国造船业反内卷与转型升级的启示.md",
+      "type": "main_report",
+      "content_summary": "完整报告，涵盖韩国造船业内卷历史、政策转型、反内卷公式、服务化革命、双螺旋升级、价值链跃迁、绿色转型启示"
+    },
+    {
+      "path": "g:\\我的云端硬盘\\workspace\\projects\\github\\work_station\\2025\\韩国造船业\\文章思路.md",
+      "type": "outline",
+      "content_summary": "20个问题的构思框架，涵盖内卷根源、反内卷策略、挑战教训、启示与未来四个部分"
+    },
+    {
+      "path": "g:\\我的云端硬盘\\workspace\\projects\\github\\work_station\\2025\\韩国造船业\\文章草稿.md",
+      "type": "draft",
+      "content_summary": "部分章节草稿，包括绿色转型、现代重工案例、服务化革命、双螺旋升级等"
+    }
+  ],
+  "key_themes": {
+    "involution_background": {
+      "description": "韩国造船业内卷历史",
+      "key_points": [
+        "2014年价格战：散货船从3500万降至2800万美元，低于物料成本",
+        "2008年后全球产能过剩超50%",
+        "三星重工船坞闲置8个月，日维护成本数十万美元",
+        "海岬型散货船从8000万跌至3500万美元，跌幅56%",
+        "2012年韩国手持订单占全球35%，但利润率从两位数跌至不足3%"
+      ]
+    },
+    "government_policy": {
+      "description": "政策三步转型",
+      "stages": [
+        {
+          "stage": "托底救助",
+          "action": "通过KDB等政策性金融机构紧急救助",
+          "intent": "保留产业火种，避免产业链崩溃",
+          "side_effect": "催生道德风险，僵尸企业续命"
+        },
+        {
+          "stage": "施压改革",
+          "action": "债转股、关闭40%冗余船坞、设立订单盈利审查委员会",
+          "intent": "休克疗法，从保规模转为保利润"
+        },
+        {
+          "stage": "补贴转向",
+          "action": "精准滴灌支持创新，专项基金支持智能船厂、绿色船舶研发",
+          "intent": "锻造技术护城河"
+        }
+      ]
+    },
+    "anti_involution_formulas": {
+      "formula_1": {
+        "title": "30%的产能创造70%的利润",
+        "mechanisms": [
+          "利润分级订单筛选系统：现金牛级(<5%利润率，限20%)、利润级(5%-15%)、未来级(>15%)",
+          "研发-销售强捆绑KPI",
+          "政府资金精准滴灌"
+        ]
+      },
+      "formula_2": {
+        "title": "每保留1个岗位需创造3倍附加值",
+        "data": {
+          "period": "2015-2023",
+          "workforce_change": "12.78万→12.73万（微降500人）",
+          "traditional_workers_decline": "焊工等锐减40%（9.2万→5.5万）",
+          "high_skill_engineers_growth": "飙升210%（1.1万→3.4万）",
+          "average_salary_growth": "29%",
+          "per_capita_output_growth": "3.7倍"
+        }
+      },
+      "formula_3": {
+        "title": "制造利润(5%)+金融服务溢价(15%)+全生命周期管理(10%)",
+        "description": "服务化革命，利润中心从船坞转向会议室"
+      }
+    },
+    "upgrade_dual_helix": {
+      "process_upgrade": {
+        "title": "过程升级",
+        "examples": [
+          "现代重工数字孪生：虚拟调整节省48小时等待时间，省百万美元",
+          "三星重工机器人军团：焊接合格率99.8%，分段流转效率提升40%"
+        ]
+      },
+      "functional_upgrade": {
+        "title": "功能升级",
+        "examples": [
+          "打破法国GTT的LNG储罐垄断，蒸发率从0.15%压至0.07%",
+          "HiCBN 2.0标准被IACS采纳为行业强制规范"
+        ]
+      }
+    },
+    "green_transformation": {
+      "description": "环保法规成为反内卷武器",
+      "key_data": {
+        "LNG动力船市场份额": "86%",
+        "甲醇动力船市场份额": "91%",
+        "LPG动力船市场份额": "93%"
+      },
+      "cases": [
+        "卡塔尔能源200亿美元LNG船订单",
+        "马士基12艘甲醇动力集装箱船"
+      ]
+    }
+  },
+  "web_research": {
+    "industry_trends_2024_2025": {
+      "market_share": "韩国新船订单全球份额按CGT计降至不足20%",
+      "three_shipbuilders_profit": "2025年营业利润达278亿元，较2024年增长近3倍",
+      "samsung_orders": "2025年商船领域42艘、72亿美元",
+      "order_backlog": "五大船厂手持订单约147万亿韩元（约7700亿元人民币）"
+    },
+    "international_cooperation": {
+      "hii_partnership": "HD现代重工与HII签署分布式造船合作",
+      "us_navy_msra": "主要韩国船厂2024年与美国海军签署主船维修协议"
+    }
+  },
+  "report_requirements": {
+    "word_count": "5000-10000字",
+    "insights_proportion": "10-15%",
+    "focus": "业务价值导向，使用业务语言",
+    "avoid": ["技术实现细节", "代码片段", "API说明", "配置步骤"]
+  }
+}

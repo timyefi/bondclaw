@@ -1,0 +1,364 @@
+{
+  "project_info": {
+    "project_id": "T12",
+    "project_name": "理财产品权益配置",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T12-理财产品权益配置",
+    "analysis_date": "2026-02-16"
+  },
+  "code_analysis": {
+    "architecture": {
+      "pattern": "模块化配置驱动架构",
+      "components": [
+        {
+          "name": "config.py",
+          "role": "核心配置中心",
+          "description": "集中管理所有参数配置，包括风险等级、投资类型、权益比例限制、风险分析参数等",
+          "key_features": [
+            "环境变量驱动的数据库配置",
+            "R1-R5风险等级完整定义",
+            "风险-权益比例映射表",
+            "压力测试场景配置",
+            "配置验证函数"
+          ]
+        },
+        {
+          "name": "重构.ipynb",
+          "role": "主分析流程",
+          "description": "完整的Jupyter Notebook分析流程，包含数据获取、处理、分析和可视化",
+          "key_features": [
+            "数据库连接（SQLAlchemy + PyMySQL）",
+            "数据清洗与产品分类",
+            "收益与风险指标计算",
+            "多种可视化图表"
+          ]
+        },
+        {
+          "name": "analyze_volatility.py",
+          "role": "专业波动率分析",
+          "description": "独立的波动率分析脚本，专注于年化波动率分布的高级可视化",
+          "key_features": [
+            "Sturges和Scott规则的智能分组",
+            "点状分布图（带抖动）",
+            "智能圆圈分布图（非线性布局）",
+            "分位数驱动的螺旋布局"
+          ]
+        }
+      ]
+    },
+    "core_algorithms": {
+      "risk_metrics": {
+        "name": "风险指标计算",
+        "metrics": [
+          {
+            "name": "VaR（在险价值）",
+            "formula": "quantile(0.05) / quantile(0.01)",
+            "confidence_levels": ["95%", "99%"]
+          },
+          {
+            "name": "CVaR（条件在险价值）",
+            "formula": "mean(return[return <= VaR])",
+            "description": "计算超过VaR的尾部平均损失"
+          },
+          {
+            "name": "最大回撤",
+            "formula": "min((cumulative - running_max) / running_max)",
+            "description": "使用扩展窗口计算历史最大回撤"
+          },
+          {
+            "name": "夏普比率",
+            "formula": "(年化超额收益) / (年化波动率)",
+            "risk_free_rate": "2%"
+          }
+        ]
+      },
+      "smart_binning": {
+        "name": "智能分组算法",
+        "methods": [
+          {
+            "name": "Sturges规则",
+            "formula": "bins = ceil(log2(n) + 1)",
+            "purpose": "基于样本数量的分组建议"
+          },
+          {
+            "name": "Scott规则",
+            "formula": "bins = ceil(range / (3.5 * std / n^(1/3)))",
+            "purpose": "基于数据分布特征的分组建议"
+          },
+          {
+            "name": "综合策略",
+            "formula": "max(10, min(30, (sturges + scott) / 2))",
+            "purpose": "取两种规则的平均值，限制在10-30范围内"
+          }
+        ]
+      },
+      "nonlinear_visualization": {
+        "name": "非线性布局可视化",
+        "techniques": [
+          {
+            "name": "累积分布驱动X轴",
+            "description": "基于累积样本比例创建非线性横轴位置"
+          },
+          {
+            "name": "对数刻度Y轴",
+            "description": "样本数量取对数后映射到Y轴位置"
+          },
+          {
+            "name": "分位数映射布局",
+            "description": "根据波动率分位数（1%, 5%, 10%, 25%, 50%, 75%, 90%, 95%, 99%）创建X轴位置"
+          },
+          {
+            "name": "螺旋布局",
+            "description": "结合极坐标螺旋和样本密度分布，创造更直观的数据密度展示"
+          }
+        ]
+      }
+    },
+    "configuration_design": {
+      "risk_equity_mapping": {
+        "description": "风险等级与权益配置比例的映射关系",
+        "mapping": [
+          {"risk_level": "R1", "name": "低风险", "equity_range": "0%-10%", "strategy": "以固定收益为主，权益仅作点缀"},
+          {"risk_level": "R2", "name": "中低风险", "equity_range": "0%-20%", "strategy": "固收+策略，少量权益增强"},
+          {"risk_level": "R3", "name": "中等风险", "equity_range": "10%-40%", "strategy": "平衡配置，股债均衡"},
+          {"risk_level": "R4", "name": "中高风险", "equity_range": "20%-60%", "strategy": "权益为主，固收为辅"},
+          {"risk_level": "R5", "name": "高风险", "equity_range": "40%-80%", "strategy": "权益主导，追求高收益"}
+        ]
+      },
+      "equity_type_weights": {
+        "description": "不同权益资产类型的风险权重",
+        "weights": [
+          {"type": "股票", "weight": 0.50, "liquidity": "高"},
+          {"type": "股票指数", "weight": 0.30, "liquidity": "高"},
+          {"type": "股票基金", "weight": 0.20, "liquidity": "中"},
+          {"type": "股票期权", "weight": 0.80, "liquidity": "中"},
+          {"type": "权益衍生品", "weight": 0.90, "liquidity": "低"}
+        ]
+      },
+      "stress_test_scenarios": {
+        "mild": {"equity_shock": "-10%", "rate_shock": "+0.5%"},
+        "moderate": {"equity_shock": "-20%", "rate_shock": "+1%"},
+        "severe": {"equity_shock": "-30%", "rate_shock": "+2%"}
+      }
+    }
+  },
+  "methodology_insights": [
+    {
+      "insight_id": 1,
+      "title": "配置驱动的模块化架构设计",
+      "description": "项目采用独立的config.py集中管理所有配置参数，实现配置与逻辑分离",
+      "key_principles": [
+        "配置集中化：所有业务参数（风险等级、比例限制、压力场景）统一管理",
+        "环境变量敏感信息：数据库连接信息通过环境变量配置，避免硬编码",
+        "验证函数内置：config.py包含validate_config()和validate_equity_ratio()函数，实现配置自检",
+        "辅助函数封装：get_risk_class_name()、calculate_weighted_risk()等工具函数直接在配置文件中提供"
+      ],
+      "applicable_scenarios": [
+        "金融产品分析系统",
+        "多参数配置的研究项目",
+        "需要合规检查的量化分析"
+      ],
+      "value_proposition": "提高代码可维护性，便于参数调优和合规验证，降低出错风险"
+    },
+    {
+      "insight_id": 2,
+      "title": "智能分组与非线性可视化技术",
+      "description": "在波动率分布分析中，结合统计规则和数据驱动的非线性布局，创造更直观的数据展示",
+      "key_principles": [
+        "多规则融合：综合Sturges和Scott两种分组规则，取平均值并限制范围",
+        "非线性映射：使用累积分布和分位数驱动坐标轴，避免传统线性轴的数据拥挤问题",
+        "多维度编码：圆圈大小（样本数平方根）、颜色（样本数渐变）、位置（分位数映射）同时编码多个维度",
+        "螺旋布局：结合极坐标螺旋和样本密度，直观展示数据分布特征"
+      ],
+      "applicable_scenarios": [
+        "大规模数据分布分析",
+        "金融时间序列可视化",
+        "需要展示数据密度和分布特征的分析"
+      ],
+      "value_proposition": "突破传统直方图的局限，更有效地展示数据分布特征和异常点"
+    },
+    {
+      "insight_id": 3,
+      "title": "风险-配置联动的合规验证体系",
+      "description": "建立风险等级与权益配置比例的映射关系，实现配置的实时合规检查",
+      "key_principles": [
+        "映射表设计：R1-R5每个风险等级对应明确的权益比例范围",
+        "实时验证：validate_equity_ratio()函数可随时检查配置是否符合规范",
+        "分级预警：区分硬性限制（min/max）和建议范围（risk_equity_limits）",
+        "加权风险计算：calculate_weighted_risk()考虑不同资产类型的风险权重"
+      ],
+      "applicable_scenarios": [
+        "理财产品配置审核",
+        "投资组合合规检查",
+        "风险等级重新评定"
+      ],
+      "value_proposition": "确保产品配置与风险等级匹配，降低监管合规风险"
+    }
+  ],
+  "industry_benchmark": {
+    "market_overview_2025": {
+      "total_scale": "33.29万亿元",
+      "equity_asset_ratio": "1.85%",
+      "average_return": "1.98%",
+      "low_risk_ratio": "95.73%"
+    },
+    "trends": [
+      {
+        "trend": "权益配置占比下降",
+        "data": "从2.58%（2024）降至1.85%（2025）",
+        "implication": "市场趋向保守，风险偏好降低"
+      },
+      {
+        "trend": "收益率持续下滑",
+        "data": "2.94%（2023）→2.65%（2024）→1.98%（2025）",
+        "implication": "理财产品吸引力下降，需寻求差异化策略"
+      },
+      {
+        "trend": "产品结构优化",
+        "data": "封闭式产品占比增加，期限拉长",
+        "implication": "流动性风险管理加强"
+      }
+    ],
+    "best_practices": [
+      {
+        "practice": "客户风险评估优化",
+        "description": "采用动态问卷、客户行为分析等多维度数据，精准刻画客户风险偏好"
+      },
+      {
+        "practice": "风险等级集中管控",
+        "description": "95.73%产品集中在中低风险等级，严格控制高风险产品占比"
+      },
+      {
+        "practice": "期限结构优化",
+        "description": "封闭式产品占比增加，平均期限拉长，降低流动性风险"
+      }
+    ],
+    "global_methodology_2025": [
+      {
+        "source": "PwC",
+        "insight": "机构投资者资产配置策略转型，强调风险预算效率"
+      },
+      {
+        "source": "Goldman Sachs",
+        "insight": "Alpha Enhanced方法提高核心权益配置效率"
+      },
+      {
+        "source": "Invesco",
+        "insight": "更新风险模型方法，使用MSCI数据估算波动率和相关性"
+      },
+      {
+        "source": "Morgan Stanley",
+        "insight": "五级风险容忍度模型组合配置方案"
+      }
+    ]
+  },
+  "report_structure_suggestion": {
+    "title": "银行理财产品权益配置分析方法论研究",
+    "total_words_suggested": 8000,
+    "sections": [
+      {
+        "section_id": 1,
+        "title": "引言与背景",
+        "word_count": 800,
+        "key_points": [
+          "理财市场现状（33.29万亿规模，1.85%权益占比）",
+          "收益率下行趋势分析",
+          "研究意义与目标"
+        ]
+      },
+      {
+        "section_id": 2,
+        "title": "理财产品分类框架",
+        "word_count": 1200,
+        "key_points": [
+          "风险等级划分（R1-R5）",
+          "投资类型分类（固收/权益/混合）",
+          "期限分类标准",
+          "分类与监管要求的对应关系"
+        ]
+      },
+      {
+        "section_id": 3,
+        "title": "权益配置分析体系",
+        "word_count": 1500,
+        "key_points": [
+          "权益资产类型与风险权重",
+          "风险-权益比例映射设计",
+          "配置验证工具实现",
+          "加权风险暴露计算"
+        ]
+      },
+      {
+        "section_id": 4,
+        "title": "收益与风险指标计算",
+        "word_count": 1500,
+        "key_points": [
+          "收益率计算方法（日/累计/年化）",
+          "波动率计算与分组算法",
+          "VaR/CVaR计算逻辑",
+          "最大回撤与夏普比率"
+        ]
+      },
+      {
+        "section_id": 5,
+        "title": "高级可视化技术",
+        "word_count": 1200,
+        "key_points": [
+          "智能分组算法（Sturges/Scott规则）",
+          "非线性布局可视化",
+          "分位数驱动螺旋布局",
+          "多维度数据编码"
+        ]
+      },
+      {
+        "section_id": 6,
+        "title": "配置驱动架构设计",
+        "word_count": 1000,
+        "key_points": [
+          "配置与逻辑分离原则",
+          "环境变量安全管理",
+          "配置验证函数设计",
+          "模块化组织结构"
+        ]
+      },
+      {
+        "section_id": 7,
+        "title": "结论与展望",
+        "word_count": 800,
+        "key_points": [
+          "方法论核心价值总结",
+          "适用场景与局限性",
+          "未来优化方向"
+        ]
+      }
+    ]
+  },
+  "technical_highlights": {
+    "code_quality": {
+      "documentation": "完整的函数文档字符串和模块说明",
+      "modularity": "配置、逻辑、可视化分离",
+      "error_handling": "数据库连接失败时使用模拟数据降级",
+      "reproducibility": "固定随机种子保证结果可重复"
+    },
+    "visualization_excellence": [
+      "中文字体支持配置完整",
+      "多子图布局优化（2x2, 1x2）",
+      "统计信息文本框集成",
+      "高分辨率输出（300 DPI）"
+    ],
+    "config_management": [
+      "敏感信息环境变量化",
+      "配置验证函数内置",
+      "辅助工具函数封装",
+      "压力测试场景预设"
+    ]
+  },
+  "sources": [
+    {"type": "industry", "title": "银行理财市场年终盘点与展望", "source": "澎湃新闻", "date": "2025-12-31"},
+    {"type": "industry", "title": "银行理财市场深度分析", "source": "虎嗅网", "date": "2026-02"},
+    {"type": "industry", "title": "2025年银行理财年度报告解读", "source": "东方财富", "date": "2026-01-30"},
+    {"type": "global", "title": "Asset and Wealth Management Revolution 2025", "source": "PwC", "date": "2025-11"},
+    {"type": "global", "title": "2025 Global Wealth and Asset Management Outlook", "source": "EY", "date": "2025-01-28"},
+    {"type": "global", "title": "Boosting Efficiency Core Equity Allocations", "source": "Goldman Sachs AM", "date": "2025-10-27"},
+    {"type": "global", "title": "Global Asset Allocation 2025 Q3", "source": "Invesco", "date": "2025-06"}
+  ]
+}

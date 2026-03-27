@@ -1,0 +1,76 @@
+version: 25
+imports:
+- projectPath: DataCenter/EDB
+  revision: main
+  accessTokenSecret: JobSecretSubproject
+- projectPath: DataCenter/TaskRunner
+  revision: main
+  accessTokenSecret: JobSecretSubproject
+- projectPath: DataCenter/APIExecutors/m_wind
+  revision: main
+  accessTokenSecret: JobSecretSubproject
+- projectPath: DataCenter/APIExecutors/e_wind
+  revision: main
+  accessTokenSecret: JobSecretSubproject
+stepTemplates:
+- name: ALL_BOND_FETCH
+  steps:
+  - !UseTemplateStep
+    name: GET_CODE
+    templateName: GET BASE CODE
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: ALL_BOND_FETCH
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands:
+      - cd bond
+      - python ths_bond.py
+      - python ths_bond_basicinfo.py
+      - python ths_bond_delete_finance_in_rate.py
+      - python ths_bond_basicinfo_columns.py
+      - python ths_bond_finance_to_rate_migration.py
+      - python ths_bond_basicinfo_purge.py
+      - python basicinfo_postgres.py
+      - python ths_bond_marketinfo_columns.py
+      - python indexcloseprice.py
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+- name: ALL_BOND_CALC
+  steps:
+  - !UseTemplateStep
+    name: GET_CODE
+    templateName: GET BASE CODE
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: ALL_BOND_CALC
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands:
+      - cd bond
+      - python hzcurve.py
+      - python hzcurve_postgres.py
+      - python hzcurve_after.py
+      - python update_all_bond_after.py
+      - python ths_bond_basicinfo_credit外评.py
+      - python xyzgm.py
+      - python hzcurve_基础曲线构建.py
+      - python bond_曲线比价排名.py
+      - python 2_daily_bond_index_update.py
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+- name: ALL_BOND_FETCH-1
+  steps:
+  - !UseTemplateStep
+    name: GET_CODE
+    templateName: GET BASE CODE
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: ALL_BOND_FETCH-1
+    runInContainer: false
+    interpreter: !DefaultInterpreter
+      commands:
+      - cd bond
+      - python ths_bond_dealtinfo.py
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL

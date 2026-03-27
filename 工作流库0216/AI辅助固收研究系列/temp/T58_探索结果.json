@@ -1,0 +1,131 @@
+{
+  "project_id": "T58",
+  "project_name": "图片提取数据",
+  "project_type": "图像处理与数据提取工具",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "filename": "图片提取数据.ipynb",
+      "type": "Jupyter Notebook",
+      "description": "核心Notebook，包含完整的图像处理和数据提取流程"
+    },
+    {
+      "filename": "config.py",
+      "type": "配置文件",
+      "description": "包含数据库连接配置和图像处理参数"
+    },
+    {
+      "filename": "result.png",
+      "type": "图像文件",
+      "description": "处理结果可视化图像"
+    },
+    {
+      "filename": "detected_points.png",
+      "type": "图像文件",
+      "description": "检测到的数据点可视化图像"
+    }
+  ],
+  "directory_structure": {
+    "root": "T58-图片提取数据",
+    "files": [
+      "图片提取数据.ipynb (核心Notebook)",
+      "config.py (配置文件)",
+      "result.png (结果图)",
+      "detected_points.png (检测点图)"
+    ],
+    "subdirectories": []
+  },
+  "unique_points": [
+    "交互式ROI选择：使用OpenCV实现用户手动框选数据区域",
+    "多颜色样本点提取：支持用户点击选择多个曲线样本点，自动计算平均颜色",
+    "颜色容差掩码：基于颜色相似度创建掩码，提取特定颜色的曲线",
+    "坐标映射转换：将像素坐标转换为实际数值和日期",
+    "灰度曲线提取：提供简化的灰度值范围提取方法",
+    "数据库集成：支持将提取数据直接写入MySQL数据库",
+    "URL和本地文件支持：可从URL或本地路径读取图像"
+  ],
+  "data_sources": [
+    {
+      "type": "图像文件",
+      "format": "PNG/JPG",
+      "description": "包含曲线图表的研究报告截图或导出图像"
+    },
+    {
+      "type": "图像URL",
+      "format": "HTTP/HTTPS",
+      "description": "支持从网络URL直接获取图像"
+    }
+  ],
+  "search_keywords_used": [
+    "图表OCR数据提取",
+    "研究报告图表数字化"
+  ],
+  "search_findings": {
+    "market_trends": [
+      "2025年全球OCR市场约95亿美元",
+      "技术从传统OCR向AI驱动的智能文档处理(IDP)转变",
+      "IDP可达95%准确率"
+    ],
+    "technology_evolution": [
+      "多模态OCR与大模型结合",
+      "光学识别与长上下文处理相结合",
+      "DeepSeek、Google、腾讯等厂商发布新版OCR模型"
+    ],
+    "application_scenarios": [
+      "医疗病历解析",
+      "金融合同审核",
+      "研究报告数字化"
+    ],
+    "key_sources": [
+      "https://ocr.oldfish.cn/Article.aspx?slug=ocr-industry-report-2025",
+      "https://cloud.tencent.com/developer/article/2625112",
+      "https://juejin.cn/post/7600229327436496946"
+    ]
+  },
+  "recommended_focus": [
+    "增强颜色检测算法：可考虑使用HSV色彩空间提高颜色检测鲁棒性",
+    "自动化坐标轴识别：实现自动检测坐标轴刻度和标签",
+    "多曲线分离：支持从同一图表中提取多条不同颜色的曲线",
+    "抗噪处理：增强对背景网格、图例等干扰元素的处理能力",
+    "精度验证：添加提取数据的精度评估和验证机制"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "1. 项目概述",
+      "content": "介绍图片提取数据项目的目标和背景"
+    },
+    {
+      "section": "2. 技术方案分析",
+      "content": "详细分析当前实现的两种方法：交互式颜色提取和灰度值提取"
+    },
+    {
+      "section": "3. 核心功能解析",
+      "content": "ROI选择、样本点选择、颜色掩码、坐标转换等核心模块"
+    },
+    {
+      "section": "4. 行业趋势对比",
+      "content": "结合2025-2026年OCR行业发展，分析项目定位"
+    },
+    {
+      "section": "5. 优化建议",
+      "content": "基于搜索结果提出技术改进方向"
+    },
+    {
+      "section": "6. 应用场景拓展",
+      "content": "金融研究报告、宏观经济图表等实际应用"
+    }
+  ],
+  "technical_stack": {
+    "image_processing": ["OpenCV (cv2)", "NumPy"],
+    "data_handling": ["Pandas", "NumPy"],
+    "database": ["SQLAlchemy", "PyMySQL"],
+    "visualization": ["Matplotlib"],
+    "network": ["Requests"]
+  },
+  "code_quality": {
+    "modular_design": true,
+    "configuration_separation": true,
+    "error_handling": "基础级别",
+    "documentation": "中文注释，函数有docstring"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "project_id": "T36",
+  "project_name": "同花顺excel导入债券估值",
+  "project_type": "数据采集/工具集成",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "批量获得excel表格所需dttradecode.txt",
+    "批量excel填充自定义公式.txt",
+    "批量excel计算及保存为值.txt",
+    "1.xlsx"
+  ],
+  "directory_structure": "同花顺excel导入债券估值等/\n├── 批量获得excel表格所需dttradecode.txt  (模块一: 数据库查询生成Excel模板)\n├── 批量excel填充自定义公式.txt  (模块二: 填充iFinD公式)\n├── 批量excel计算及保存为值.txt  (模块三: Excel计算并保存为值)\n└── 1.xlsx  (示例Excel文件)",
+  "unique_points": {
+    "research_problem": "解决债券估值数据的批量获取问题。传统方式需要手动在iFinD终端逐个查询，本项目实现了通过Excel模板批量调用iFinD API自动获取债券余额、收益率、评级、久期等估值数据，大幅提升数据获取效率。",
+    "technical_feature": "1. **openpyxl与win32com混合架构**: 使用openpyxl进行轻量级的Excel读写和公式插入，使用win32com调用Excel COM接口执行公式计算和值保存。\n2. **iFinD Excel插件公式集成**: 利用=@thsiFinD()公式实现与同花顺数据源的对接。\n3. **重试机制设计**: 针对COM接口不稳定问题设计了最多5次重试的装饰器。\n4. **大数据分片处理**: 每30万行分割一个Excel文件，避免Excel行数限制。\n5. **存续期筛选逻辑**: 通过SQL JOIN实现按日期筛选存续期内的债券（信用债/金融债/ABS三类）。",
+    "application_scenario": "固收研究团队的日常数据更新工作流：每周/每月批量获取所有存续债券的历史估值数据，用于债券定价分析、信用利差研究、久期管理等。",
+    "core_insight": "这是一个典型的**数据采集自动化工具**，核心价值在于将人工耗时数小时的债券估值数据获取工作自动化为几分钟的批量处理。技术亮点是openpyxl+win32com的混合使用方案，以及针对iFinD API特性设计的60秒等待+重试机制。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "T37",
+      "project_name": "同花顺excel导入财务指标",
+      "similarity": "同样使用同花顺iFinD Excel插件、openpyxl和win32com技术栈，都是数据采集类工具",
+      "difference": "T37关注企业财务指标（资产负债表、利润表等），T36关注债券估值指标（收益率、久期、评级等）。T36有更复杂的存续期筛选逻辑和多债券类型（信用债/金融债/ABS）处理。"
+    },
+    {
+      "project_id": "T13",
+      "project_name": "债券指数研究",
+      "similarity": "同属固收研究领域，都涉及债券数据处理",
+      "difference": "T13是策略研究类项目，关注债券指数的构建和分析；T36是纯数据采集工具，为后续研究提供基础数据支持。"
+    },
+    {
+      "project_id": "T34",
+      "project_name": "债券新发行",
+      "similarity": "同属债券数据相关项目",
+      "difference": "T34关注新发行债券的数据采集；T36关注存量债券的估值数据更新。"
+    }
+  ],
+  "data_sources": [
+    "同花顺iFinD金融数据终端（通过Excel插件API）",
+    "本地数据库（basicinfo_credit/finance/abs基础信息表）",
+    "临时表（temp_dt日期列表、temp_credit/finance去重表）"
+  ],
+  "search_keywords_used": [
+    "同花顺iFinD 债券估值数据 Excel导入 固收研究 2025",
+    "债券估值数据工作流自动化 Python openpyxl win32com 2025"
+  ],
+  "search_findings": "1. iFinD Excel插件是同花顺官方提供的数据接口，支持=@thsiFinD()公式在Excel中直接获取金融数据。\n2. openpyxl+win32com是Python处理Excel的常用组合：openpyxl用于轻量级读写，win32com用于调用Excel COM接口实现公式计算等高级功能。\n3. iFinD拥有近50张债券相关报表，包含可转债、企业债、短期融资券等财务数据和估值统计。\n4. 债券估值数据是固收研究的核心数据之一，包括收益率、久期、凸性、信用利差等指标。",
+  "recommended_focus": [
+    "项目的三模块架构设计（模板生成→公式填充→计算保存）",
+    "openpyxl与win32com混合使用的技术方案",
+    "存续期筛选的SQL逻辑（起息日/到期日/退市日条件）",
+    "iFinD公式参数设计（银行间vs交易所的参数差异）",
+    "重试机制和异常处理设计",
+    "大数据分片处理策略"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "项目概述与技术架构",
+      "核心流程详解（三模块）",
+      "技术亮点（iFinD集成、重试机制、分片处理）",
+      "数据字典（估值指标含义）",
+      "使用心得与优化建议"
+    ],
+    "skip_chapters": [
+      "研究背景（可简写，非核心研究项目）",
+      "深度代码分析（保持概览级别即可）"
+    ],
+    "word_allocation": {
+      "核心章节（技术架构+流程详解+技术亮点）": "50%",
+      "心得要点（使用体验+优化建议）": "20%",
+      "其他章节（概述+背景+总结）": "30%"
+    }
+  },
+  "technical_details": {
+    "programming_language": "Python",
+    "key_libraries": [
+      "pandas",
+      "openpyxl",
+      "win32com.client (pywin32)"
+    ],
+    "database_tables": [
+      "basicinfo_credit",
+      "basicinfo_finance",
+      "basicinfo_abs",
+      "temp_dt",
+      "temp_credit",
+      "temp_finance"
+    ],
+    "ifind_fields": [
+      {
+        "field": "ths_bond_balance_bond",
+        "description": "债券余额"
+      },
+      {
+        "field": "ths_evaluate_yield_yy_bond",
+        "description": "银行间估值收益率"
+      },
+      {
+        "field": "ths_cb_market_implicit_rating_bond",
+        "description": "市场隐含评级"
+      },
+      {
+        "field": "ths_evaluate_yield_cb_bond_exercise",
+        "description": "交易所估值收益率（参数102）"
+      },
+      {
+        "field": "ths_evaluate_modified_dur_cb_bond_exercise",
+        "description": "交易所修正久期（参数102）"
+      }
+    ]
+  },
+  "execution_flow": {
+    "step1": "数据库查询 → 生成dt+trade_code Excel模板（每30万行一个文件）",
+    "step2": "openpyxl加载Excel → 添加表头和iFinD公式 → 保存",
+    "step3": "win32com打开Excel → 等待60秒（iFinD加载）→ 执行计算 → 保存为值 → 关闭",
+    "step4": "（待实现）回传数据库"
+  }
+}

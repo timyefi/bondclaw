@@ -1,0 +1,133 @@
+{
+  "project_id": "T60",
+  "project_name": "投资者行为",
+  "project_type": "数据分析项目",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "filename": "投资者行为.ipynb",
+      "type": "Jupyter Notebook",
+      "description": "核心分析Notebook，包含交易所债券投资者结构数据获取、清洗、可视化和存储功能"
+    },
+    {
+      "filename": "config.py",
+      "type": "Python配置文件",
+      "description": "项目配置文件，包含数据库连接、数据源URL模板（上交所、深交所、中债、上清所）"
+    },
+    {
+      "filename": "20240514.xlsx",
+      "type": "Excel数据文件",
+      "description": "输入数据文件"
+    },
+    {
+      "filename": "output.xlsx",
+      "type": "Excel数据文件",
+      "description": "输出数据文件"
+    },
+    {
+      "filename": "output.pdf",
+      "type": "PDF文档",
+      "description": "输出报告文档"
+    }
+  ],
+  "directory_structure": {
+    "root": "T60-投资者行为",
+    "files": [
+      "投资者行为.ipynb",
+      "config.py",
+      "20240514.xlsx",
+      "output.xlsx",
+      "output.pdf"
+    ],
+    "subdirectories": []
+  },
+  "unique_points": [
+    "多数据源整合：同时支持上交所(SSE)、深交所(SZSE)、中债(CCDC)、上清所(SHCH)四大债券市场数据源",
+    "JSONP数据处理：针对上交所API的JSONP响应格式进行专门解析",
+    "数据库持久化：支持将数据存储到MySQL数据库进行长期追踪",
+    "投资者结构可视化：提供持仓比例的横向条形图可视化功能",
+    "交易所债券市场聚焦：专注于交易所债券市场的投资者结构分析，而非银行间市场"
+  ],
+  "data_sources": [
+    {
+      "name": "上交所(SSE)",
+      "url_template": "http://query.sse.com.cn/commonQuery.do",
+      "api_type": "POST/JSONP",
+      "data_content": "债券投资者结构数据"
+    },
+    {
+      "name": "深交所(SZSE)",
+      "url_template": "https://bond.szse.cn/api/report/ShowReport/data",
+      "api_type": "GET/JSON",
+      "data_content": "债券投资者结构数据"
+    },
+    {
+      "name": "中债(CCDC)",
+      "url": "https://www.chinabond.com.cn/cbiw/GetMonthReport/GetDataByte",
+      "api_type": "未实现",
+      "data_content": "待扩展"
+    },
+    {
+      "name": "上清所(SHCH)",
+      "url": "https://www.shclearing.com.cn/shchapp/web/sdocClient/monthListPage",
+      "api_type": "未实现",
+      "data_content": "待扩展"
+    }
+  ],
+  "search_keywords_used": "债券市场投资者行为分析 机构行为研究 2024 2025",
+  "search_findings": {
+    "market_trends": [
+      "2024年债券市场呈单边下行牛市特征",
+      "2025年转向震荡市格局，呈现上有顶、下有底特征",
+      "机构欠配优质资产是推动债牛的重要因素"
+    ],
+    "institutional_behavior_research": [
+      "研究深入到负债行为层面：保险保费结构变化（分红险占比提高）、银行EVE限制对债券再投资的影响",
+      "境外投资者行为模式演变成为研究热点",
+      "不同机构在债券市场上的行为模式和策略偏好差异化明显"
+    ],
+    "key_institutions": [
+      "保险公司（保费结构变化影响配置行为）",
+      "商业银行（EVE限制、再投资需求）",
+      "境外投资者（双向开放背景下的行为演变）",
+      "基金公司（交易策略偏好）"
+    ]
+  },
+  "recommended_focus": [
+    "完善中债(CCDC)和上清所(SHCH)数据获取功能，实现全市场投资者行为覆盖",
+    "增加时间序列分析功能，追踪投资者结构变化趋势",
+    "引入机构分类比较分析，对比不同类型投资者的持仓偏好",
+    "结合境外投资者数据，分析双向开放背景下的行为演变",
+    "建立投资者行为预警指标体系"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "1. 项目概述",
+      "content": "项目背景、数据源介绍、分析目标"
+    },
+    {
+      "section": "2. 数据获取与处理",
+      "content": "四大交易所数据源说明、数据清洗流程、数据库存储方案"
+    },
+    {
+      "section": "3. 投资者结构分析",
+      "content": "上交所/深交所投资者持仓结构、投资者类型分布、持仓比例变化"
+    },
+    {
+      "section": "4. 机构行为研究",
+      "content": "保险/银行/基金/境外投资者行为特征、负债端与资产端联动分析"
+    },
+    {
+      "section": "5. 市场趋势与展望",
+      "content": "2024-2025年债券市场演变、投资者行为变化趋势、未来关注点"
+    },
+    {
+      "section": "6. 技术实现",
+      "content": "数据采集技术细节、可视化方案、数据库设计"
+    },
+    {
+      "section": "7. 结论与建议",
+      "content": "研究发现总结、政策建议、后续研究方向"
+    }
+  ]
+}

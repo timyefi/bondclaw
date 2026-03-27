@@ -1,0 +1,196 @@
+{
+  "project_id": "T19",
+  "project_name": "债券指数分析",
+  "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T19-债券指数分析",
+  "exploration_date": "2026-02-16",
+  "exploration_summary": {
+    "total_files": 4,
+    "file_types": {
+      "ipynb": 1,
+      "py": 1,
+      "txt": 1,
+      "example": 1
+    }
+  },
+  "project_overview": {
+    "description": "本项目主要研究债券指数的风险收益特征分析，包括债券指数数据获取、风险收益指标计算、分组分析、投资组合优化和三维分析等核心功能。",
+    "application_scenarios": [
+      "债券投资组合管理",
+      "风险对冲策略",
+      "投资决策支持"
+    ],
+    "data_source": {
+      "type": "MySQL数据库",
+      "host": "阿里云RDS",
+      "database": "bond",
+      "tables": [
+        "bond.indexcode",
+        "bond.indexcloseprice"
+      ]
+    }
+  },
+  "files_inventory": [
+    {
+      "filename": "重构.ipynb",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T19-债券指数分析\\重构.ipynb",
+      "type": "Jupyter Notebook",
+      "description": "主分析笔记本，包含完整的数据获取、处理、分析和可视化流程"
+    },
+    {
+      "filename": "config.py",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T19-债券指数分析\\config.py",
+      "type": "Python配置文件",
+      "description": "配置文件，包含数据库连接、分析参数、可视化参数和SQL查询模板"
+    },
+    {
+      "filename": "requirements.txt",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T19-债券指数分析\\requirements.txt",
+      "type": "依赖文件",
+      "description": "Python项目依赖，包含pandas、numpy、sqlalchemy、matplotlib、seaborn、plotly等"
+    },
+    {
+      "filename": ".env.example",
+      "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T19-债券指数分析\\.env.example",
+      "type": "环境变量示例",
+      "description": "数据库连接信息示例文件"
+    }
+  ],
+  "core_modules": {
+    "data_acquisition": {
+      "functions": [
+        "connect_database",
+        "get_bond_indices",
+        "get_price_data"
+      ],
+      "description": "从MySQL数据库获取债券指数基本信息和价格数据"
+    },
+    "indicator_calculation": {
+      "functions": [
+        "calculate_return",
+        "calculate_max_drawdown",
+        "calculate_volatility"
+      ],
+      "description": "计算收益率、最大回撤、年化波动率等核心指标"
+    },
+    "group_analysis": {
+      "functions": [
+        "create_bins",
+        "group_analysis"
+      ],
+      "description": "按收益率和久期进行分组统计分析"
+    },
+    "portfolio_optimization": {
+      "functions": [
+        "optimize_portfolio"
+      ],
+      "description": "跨久期分组进行组合搭配，优化风险收益"
+    },
+    "three_dimensional_analysis": {
+      "functions": [
+        "three_dimensional_analysis"
+      ],
+      "description": "生成收益-久期-最大回撤三维分组表"
+    },
+    "visualization": {
+      "functions": [
+        "plot_top_indices",
+        "plot_risk_return_scatter",
+        "plot_correlation_matrix",
+        "generate_summary_html"
+      ],
+      "description": "生成Top N指数图表、风险收益散点图、相关性矩阵和HTML汇总表"
+    }
+  },
+  "configuration_details": {
+    "time_periods": {
+      "30天": 30,
+      "3个月": 90,
+      "半年": 180,
+      "1年": 365
+    },
+    "group_parameters": {
+      "return_bin_size": "0.5%",
+      "duration_bin_size": "0.5年",
+      "drawdown_bin_size": "0.5%"
+    },
+    "optimization_parameters": {
+      "max_portfolio_size": 10,
+      "max_combinations": 10000,
+      "min_combo_size": 3
+    }
+  },
+  "dependencies": {
+    "data_processing": [
+      "pandas>=1.5.0",
+      "numpy>=1.21.0"
+    ],
+    "database": [
+      "sqlalchemy>=1.4.0",
+      "pymysql>=1.0.0"
+    ],
+    "visualization": [
+      "matplotlib>=3.5.0",
+      "seaborn>=0.11.0",
+      "plotly>=5.0.0"
+    ],
+    "other": [
+      "openpyxl>=3.0.0",
+      "python-dotenv>=0.19.0"
+    ]
+  },
+  "output_products": [
+    "bond_indices_results.csv - 各指数风险收益指标结果",
+    "return_group_analysis.csv - 收益率分组分析结果",
+    "duration_group_analysis.csv - 久期分组分析结果",
+    "portfolio_optimization_{period}.csv - 各周期投资组合优化结果",
+    "three_dim_analysis_{period}.csv - 三维分析结果",
+    "summary_table_styled.html - 交互式HTML汇总表",
+    "top_return_1y.png - Top N收益率图表",
+    "risk_return_1y.png - 风险收益散点图",
+    "correlation_1y.png - 相关性矩阵热力图"
+  ],
+  "industry_context": {
+    "current_trends": [
+      "久期分组管理成为债券投资的重要策略",
+      "动态最优化方法（抽样复制）被广泛用于债券指数基金管理",
+      "久期轮动策略通过国债期货信号优化固收组合",
+      "灵活调整组合久期是应对债市波动的关键"
+    ],
+    "key_concepts": [
+      "久期分组",
+      "风险收益优化",
+      "组合波动率控制",
+      "三维分析（收益-久期-最大回撤）"
+    ],
+    "sources": [
+      {
+        "title": "债券ETF的久期轮动策略",
+        "url": "https://finance.sina.com.cn/roll/2025-10-17/doc-infuexsm6206807.shtml"
+      },
+      {
+        "title": "2025年债市不再'躺赢' 久期分化加剧",
+        "url": "https://bond.eastmoney.com/a/202601053609249029.html"
+      }
+    ]
+  },
+  "uniqueness_assessment": {
+    "technical_highlights": [
+      "三维分组分析框架（收益-久期-最大回撤）",
+      "跨久期分组组合优化算法",
+      "多周期对比分析",
+      "完整的端到端分析流程"
+    ],
+    "differentiators": [
+      "针对中债财富指数的专项分析",
+      "久期维度的精细化分组",
+      "组合优化考虑超额收益和回撤控制双重目标",
+      "交互式HTML报告生成"
+    ],
+    "potential_improvements": [
+      "增加久期轮动策略回测",
+      "引入国债期货信号",
+      "增加浮息债分析模块",
+      "优化组合优化算法效率"
+    ]
+  }
+}

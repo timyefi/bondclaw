@@ -1,0 +1,146 @@
+{
+  "project_info": {
+    "project_id": "T43",
+    "project_name": "理财监测",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T43-理财监测",
+    "explored_date": "2026-02-16"
+  },
+  "overview": {
+    "description": "理财监测是一个持续追踪理财市场表现的数据采集和分析系统，主要监控理财产品的业绩表现、规模变化、期限分布以及纯债基金的收益情况。",
+    "main_notebook": "重构.ipynb",
+    "config_file": "config.py"
+  },
+  "directory_structure": {
+    "root_files": [
+      "重构.ipynb",
+      "README.md",
+      "config.py",
+      "requirements.txt"
+    ],
+    "src_directory": [
+      "licaishouyi.py",
+      "同花顺理财.py",
+      "理财规模.py",
+      "同花顺理财.ipynb",
+      "微信理财数据爬取.ipynb"
+    ],
+    "other_directories": [
+      "data/",
+      "assets/",
+      "output/"
+    ]
+  },
+  "functional_modules": [
+    {
+      "module_name": "理财业绩跟踪",
+      "data_source": "同花顺 iFinD p04838 接口",
+      "function": "获取理财产品业绩数据，计算年化收益率",
+      "output_table": "理财业绩跟踪",
+      "frequency": "每日",
+      "key_algorithm": "年化收益率转换: 今年以来 = 原始收益率 * (365 / 实际天数); 近1月 = * 365/30; 近3月 = * 365/90; 近6月 = * 365/180"
+    },
+    {
+      "module_name": "纯债基金业绩表现",
+      "data_source": "数据库 fund.marketinfo + fund.basicinfo",
+      "function": "获取纯债基金净值数据，计算滚动收益率",
+      "output_table": "fund.纯债基金业绩表现",
+      "frequency": "每日",
+      "key_algorithm": "滚动收益率计算: 近1月年化 = (NAV/NAV.shift(30)-1)*365/30; 近1年 = NAV/NAV.shift(365)-1"
+    },
+    {
+      "module_name": "理财规模跟踪",
+      "data_source": "证券之星网站爬虫 (https://news.stockstar.com/author_list/张菁.shtml)",
+      "function": "爬取理财市场规模数据",
+      "output_table": "理财规模",
+      "frequency": "每周",
+      "key_algorithm": "正则表达式提取规模数字和日期"
+    },
+    {
+      "module_name": "理财期限跟踪",
+      "data_source": "同花顺 iFinD p02186 接口",
+      "function": "获取理财产品期限分布数据",
+      "output_table": "理财期限跟踪",
+      "frequency": "每日",
+      "key_algorithm": "筛选合计行，提取期限分布统计"
+    }
+  ],
+  "dependencies": {
+    "core": [
+      "pandas>=1.5.0",
+      "numpy>=1.21.0"
+    ],
+    "database": [
+      "sqlalchemy>=1.4.0",
+      "pymysql>=1.0.0"
+    ],
+    "web": [
+      "requests>=2.28.0",
+      "beautifulsoup4>=4.12.0",
+      "lxml>=4.9.0"
+    ],
+    "external": [
+      "iFinDPy (同花顺iFinD，需单独安装)"
+    ]
+  },
+  "configuration": {
+    "database": {
+      "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+      "port": 3306,
+      "user": "hz_work",
+      "database": "yq",
+      "password_env": "DB_PASSWORD"
+    },
+    "ths": {
+      "username_env": "THS_USERNAME",
+      "password_env": "THS_PASSWORD"
+    },
+    "crawler": {
+      "scale_url": "https://news.stockstar.com/author_list/张菁.shtml"
+    }
+  },
+  "data_flow": {
+    "licaishouyi": "同花顺 p04838 -> 理财业绩数据 -> 年化转换 -> 理财业绩跟踪表",
+    "licaixian": "同花顺 p02186 -> 理财期限数据 -> 筛选合计 -> 理财期限跟踪表",
+    "scale": "证券之星网页 -> 爬取规模数据 -> 正则提取 -> 理财规模表",
+    "bond_fund": "数据库净值 -> 填充日期 -> 滚动计算 -> 纯债基金业绩表"
+  },
+  "key_functions": {
+    "重构.ipynb": [
+      "connect_ths() - 连接同花顺iFinD",
+      "create_db_engine() - 创建数据库连接",
+      "fetch_licaishouyi_data() - 获取理财业绩数据",
+      "annualize_return_rate() - 年化收益率转换",
+      "fetch_bond_fund_nav() - 获取纯债基金净值",
+      "fill_missing_dates() - 填充缺失日期",
+      "calculate_rolling_returns() - 计算滚动收益率",
+      "fetch_webpage_content() - 获取网页内容",
+      "extract_scale_data() - 提取规模数据",
+      "fetch_licaixian_data() - 获取理财期限数据"
+    ]
+  },
+  "output_tables": [
+    {
+      "table_name": "理财业绩跟踪",
+      "fields": ["公司名称", "dt", "今年以来净值年化增长率", "近1月净值年化增长率", "近3月净值年化增长率", "近6月净值年化增长率", "近1年净值年化增长率"]
+    },
+    {
+      "table_name": "理财期限跟踪",
+      "fields": ["dt", "1个月以内数量", "1个月以内占比", "1-3月数量", "1-3月占比", "3-6月数量", "3-6月占比", "6-12月数量", "6-12月占比", "12-24月数量", "12-24月占比", "24月以上数量", "24月以上占比", "未公布数量", "未公布占比", "总数"]
+    },
+    {
+      "table_name": "理财规模",
+      "fields": ["dt", "理财规模"]
+    },
+    {
+      "table_name": "fund.纯债基金业绩表现",
+      "fields": ["dt", "近1月年化收益率", "近1年收益率"]
+    }
+  ],
+  "special_notes": [
+    "年化转换: 今年以来收益率的天数计算从上一年12月31日开始",
+    "数据填充: 净值数据使用前向填充（ffill）处理缺失日期",
+    "UPSERT策略: 使用 ON DUPLICATE KEY UPDATE 避免重复数据",
+    "排除基金: 排除 511010.OF（国债ETF）等非纯债基金",
+    "敏感信息: 密码等敏感信息通过环境变量获取"
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "project_info": {
+    "project_id": "T30",
+    "project_name": "城投利差监控地图",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T30-城投利差监控地图",
+    "scan_date": "2026-02-16"
+  },
+  "project_summary": {
+    "description": "本项目用于监控和展示各地区城投债利差数据，支持省级和市级数据的获取、处理和可视化，实现地图展示功能。",
+    "main_functions": [
+      "城投利差数据获取：从PostgreSQL(tsdb)和MySQL(bond)数据库获取城投债曲线数据",
+      "区域利差分析：支持省级和市级两个层级的利差分析",
+      "利差变化监控：计算7天和1个月的利差变化",
+      "地图可视化数据生成：生成符合Highcharts地图可视化要求的数据格式(JSON/CSV)"
+    ],
+    "application_scenarios": [
+      "城投债投资分析",
+      "区域风险评估",
+      "利差套利策略"
+    ]
+  },
+  "directory_structure": {
+    "root_files": [
+      "重构.ipynb - 主重构Notebook，包含完整的数据处理流程",
+      "config.py - 配置文件，包含数据库连接、日期参数等配置",
+      "requirements.txt - Python依赖列表",
+      "README.md - 项目说明文档"
+    ],
+    "src_directory": [
+      "main.py - 主程序，数据转换与输出",
+      "run_query.py - 数据查询模块，从MySQL获取目标格式数据",
+      "regional_spread_chart.py - 区域利差图表数据生成",
+      "图表js代码.js - 前端Highcharts地图可视化代码",
+      "图表数据生成代码（范例）.py - 图表数据生成范例",
+      "需求.md - 项目需求文档",
+      "PROJECT_BOARD.md - 任务板，记录项目进度"
+    ],
+    "data_directory": "数据文件目录（当前为空）",
+    "output_directory": "输出目录（当前为空）",
+    "assets_directory": "图片等资源目录（当前为空）"
+  },
+  "technical_stack": {
+    "languages": ["Python", "JavaScript"],
+    "databases": {
+      "PostgreSQL (tsdb)": {
+        "tables": [
+          "hzcurve_credit - 城投债曲线数据",
+          "tc最新所属曲线 - 债券曲线归属信息",
+          "曲线代码 - 曲线代码映射表",
+          "basicinfo_xzqh_ct - 城投区域行政区划信息"
+        ],
+        "purpose": "主要数据源，存储城投债曲线和区域信息"
+      },
+      "MySQL (bond)": {
+        "tables": [
+          "stock.temp_5843 - 省级利差临时表",
+          "stock.temp_5857 - 市级利差临时表"
+        ],
+        "purpose": "参考数据源，用于获取目标数据格式"
+      }
+    },
+    "python_libraries": [
+      "numpy>=1.21.0",
+      "pandas>=1.3.0",
+      "SQLAlchemy>=1.4.0",
+      "pymysql>=1.0.0",
+      "psycopg2-binary>=2.9.0",
+      "python-dateutil>=2.8.0",
+      "matplotlib>=3.4.0",
+      "seaborn>=0.11.0",
+      "jupyter>=1.0.0"
+    ],
+    "frontend": {
+      "library": "Highcharts",
+      "features": [
+        "地图可视化(China Map)",
+        "下钻功能(Drilldown) - 从省级下钻到市级",
+        "动态颜色轴(ColorAxis)",
+        "GeoJSON数据处理"
+      ]
+    }
+  },
+  "data_flow": {
+    "description": "数据从PostgreSQL获取，经过清洗转换，输出为JSON/CSV格式供前端使用",
+    "steps": [
+      "1. 从PostgreSQL(tsdb)获取城投债曲线数据(hzcurve_credit)",
+      "2. 通过JOIN操作关联曲线代码表和行政区划表",
+      "3. 计算加权平均收益率(按余额加权)",
+      "4. 清理省份名称（移除行政区划后缀，处理特殊省份）",
+      "5. 计算利差变化（7天/1个月窗口函数）",
+      "6. 生成省级(raw1)和市级(raw2)两个层级的数据",
+      "7. 输出CSV和JSON格式文件"
+    ]
+  },
+  "output_formats": {
+    "province_data": {
+      "columns": ["name", "dt", "value"],
+      "description": "省级利差数据，name为2字省份简称（内蒙古、黑龙江为3字）",
+      "example": {"name": "广东", "dt": "2025-07-22", "value": 456}
+    },
+    "city_data": {
+      "columns": ["PROVINCE", "DT", "CITY", "CLOSE"],
+      "description": "市级利差数据，PROVINCE和CITY均为2字简称",
+      "example": {"PROVINCE": "广东", "DT": "2025-07-22", "CITY": "广州", "CLOSE": 423}
+    },
+    "change_data": {
+      "7d_change": "近7天收益率变化(bp)",
+      "1m_change": "近1个月收益率变化(bp)"
+    }
+  },
+  "key_algorithms": {
+    "weighted_average": {
+      "description": "按余额加权的收益率计算",
+      "formula": "SUM(stdyield * balance) / SUM(balance)"
+    },
+    "window_functions": {
+      "FIRST_VALUE_7d": "PARTITION BY region ORDER BY dt RANGE BETWEEN INTERVAL '7 days' PRECEDING AND CURRENT ROW",
+      "FIRST_VALUE_30d": "PARTITION BY region ORDER BY dt RANGE BETWEEN INTERVAL '30 days' PRECEDING AND CURRENT ROW",
+      "LAST_VALUE": "获取当前最新值"
+    },
+    "province_name_cleaning": {
+      "description": "省份名称标准化处理",
+      "rules": [
+        "移除后缀：省、市、自治区、回族自治区、维吾尔自治区、壮族自治区",
+        "取前两个字作为简称",
+        "特殊处理：内蒙->内蒙古，黑龙->黑龙江"
+      ]
+    }
+  },
+  "uniqueness_analysis": {
+    "unique_features": [
+      "双数据库架构：同时使用PostgreSQL(业务数据)和MySQL(参考数据)",
+      "地图下钻功能：支持从全国地图下钻到省级地图查看市级数据",
+      "动态颜色轴：下钻时根据当前省份数据动态调整颜色范围",
+      "窗口函数计算：使用PostgreSQL窗口函数高效计算时间序列变化",
+      "加权平均算法：按债券余额加权计算区域收益率"
+    ],
+    "technical_highlights": [
+      "复杂SQL查询：多层嵌套子查询和窗口函数",
+      "GeoJSON动态加载：通过API动态获取省份地图数据",
+      "省份名称智能处理：处理多种行政区划后缀和特殊省份",
+      "前后端分离：Python处理后端数据，JavaScript处理前端可视化"
+    ],
+    "business_value": [
+      "城投债区域利差可视化监控",
+      "支持投资决策的区域风险对比",
+      "利差变化趋势追踪"
+    ]
+  },
+  "code_structure": {
+    "config_module": {
+      "file": "config.py",
+      "classes": ["Config"],
+      "constants": ["PROVINCE_NAME_MAPPING", "PROVINCE_SUFFIXES", "TABLE_NAMES", "OUTPUT_FILES"]
+    },
+    "main_module": {
+      "file": "src/main.py",
+      "functions": ["clean_province_name", "run_source_query", "main"]
+    },
+    "query_module": {
+      "file": "src/run_query.py",
+      "functions": ["get_target_data"]
+    },
+    "chart_module": {
+      "file": "src/regional_spread_chart.py",
+      "functions": ["get_regional_spread_data", "_generate_raw1", "_generate_raw2"]
+    },
+    "notebook": {
+      "file": "重构.ipynb",
+      "sections": [
+        "环境配置",
+        "数据获取",
+        "数据处理",
+        "核心逻辑",
+        "执行与测试",
+        "数据输出",
+        "工具函数"
+      ]
+    }
+  },
+  "configuration": {
+    "environment_variables": [
+      "BOND_DB_HOST, BOND_DB_PORT, BOND_DB_NAME, BOND_DB_USER, BOND_DB_PASSWORD",
+      "TSDB_HOST, TSDB_PORT, TSDB_NAME, TSDB_USER, TSDB_PASSWORD",
+      "TARGET_TERM (默认: 2)",
+      "START_DATE, END_DATE"
+    ],
+    "default_parameters": {
+      "target_term": "2",
+      "date_range": "最近30天",
+      "excluded_dates": ["2023-01-03", "2023-05-10"]
+    }
+  },
+  "dependencies": {
+    "external_services": [
+      "geojson.cn API - 用于获取中国省份GeoJSON地图数据"
+    ],
+    "common_modules": [
+      "common.utils.database - 数据库管理器",
+      "common.config.database - 数据库配置"
+    ]
+  },
+  "status": {
+    "development_status": "已完成基本功能重构",
+    "last_update": "2026-02-15",
+    "tasks_completed": [
+      "数据源验证",
+      "目标格式获取",
+      "差异分析与转换方案设计",
+      "转换脚本编写",
+      "格式验证与输出"
+    ]
+  }
+}

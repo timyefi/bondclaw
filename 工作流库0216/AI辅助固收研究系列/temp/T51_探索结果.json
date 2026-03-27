@@ -1,0 +1,97 @@
+{
+  "project_id": "T51",
+  "project_name": "siyuan笔记集成",
+  "project_type": "工具集成",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "README.md",
+    "config.py",
+    "requirements.txt",
+    "src/1.js",
+    "src/siyuan笔记.ipynb",
+    "重构.ipynb"
+  ],
+  "directory_structure": "T51-siyuan笔记集成/\n├── 重构.ipynb         # 主重构Notebook（核心文件）\n├── README.md          # 项目说明\n├── requirements.txt   # Python依赖列表\n├── config.py          # 配置参数（API密钥、数据库连接等）\n├── src/               # 原始代码文件备份\n│   ├── 1.js           # JavaScript版本AI问答脚本（思源笔记挂件）\n│   └── siyuan笔记.ipynb  # 原始Notebook（旧版本）",
+  "unique_points": {
+    "research_problem": "将思源笔记（SiYuan Note）本地知识管理工具与大语言模型（通义千问qwen-long）集成，实现AI辅助的智能问答和文档分析功能，提升研究效率。同时整合财报文件OCR处理和企业舆情监控数据流。",
+    "technical_feature": "1. **双语言实现**：同时提供Python（Notebook）和JavaScript（挂件）两种实现方式\n2. **多系统整合**：集成思源笔记API、通义千问API、MySQL数据库、企业预警通API四个数据源\n3. **自动化工作流**：AI回答自动追加到思源笔记块中，实现无缝的知识管理闭环\n4. **文档问答能力**：利用qwen-long长上下文模型，支持上传文档后针对性提问",
+    "application_scenario": "1. 研究人员在思源笔记中撰写报告时，直接调用AI进行问答\n2. 批量下载财报PDF并进行OCR识别，存入数据库\n3. 获取企业预警通舆情数据，经AI摘要后存入数据库\n4. 将外部API数据自动同步到本地知识库",
+    "core_insight": "这个项目展示了一种**本地知识库+云端AI**的混合架构：利用思源笔记的本地优先特性保护数据隐私，同时借助通义千问等大模型提供智能分析能力，是个人知识管理工具AI化的典型案例。"
+  },
+  "similar_projects": [
+    {
+      "name": "思源笔记MCP服务器",
+      "description": "允许AI模型通过思源笔记API与笔记数据交互，可查询、编辑和管理笔记内容",
+      "url": "https://lobehub.com/mcp/galiais-siyuan-mcp-server"
+    },
+    {
+      "name": "siyuan-ai插件",
+      "description": "开源插件，支持聊天模式和指令模式，以思源笔记内容作为知识库",
+      "url": "https://github.com/Lizhen0628/siyuan-ai"
+    },
+    {
+      "name": "思源笔记+Cursor+MCP方案",
+      "description": "结合Cursor AI和MCP Server打造个人专属AI资料库",
+      "url": "https://zhuanlan.zhihu.com/p/26374360360"
+    }
+  ],
+  "data_sources": [
+    {
+      "name": "通义千问API",
+      "type": "LLM API",
+      "description": "使用qwen-long长上下文模型，支持文档上传和长文本分析",
+      "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    {
+      "name": "思源笔记API",
+      "type": "本地API",
+      "description": "笔记管理和内容操作，包括创建文档、追加块等功能",
+      "endpoint": "http://127.0.0.1:6806"
+    },
+    {
+      "name": "MySQL数据库",
+      "type": "数据库",
+      "description": "存储财报文件信息和舆情监控数据",
+      "tables": ["23年财报文件", "金融债舆情监控"]
+    },
+    {
+      "name": "企业预警通API",
+      "type": "第三方API",
+      "description": "获取企业舆情和负面信息",
+      "endpoint": "https://host.ratingdog.cn"
+    }
+  ],
+  "search_keywords_used": [
+    "思源笔记API SiYuan Note 知识管理工具集成 2025",
+    "SiYuan Note AI integration LLM qwen model knowledge base"
+  ],
+  "search_findings": "1. **思源笔记AI生态正在快速发展**：2025年已有多种AI集成方案，包括MCP服务器、DeepSeek集成、豆包AI知识库问答等\n2. **本项目属于早期探索**：项目创建于2025年2月，是思源笔记AI集成应用的早期实践\n3. **行业趋势**：本地知识库+云端AI的混合架构正在成为个人知识管理的主流方向\n4. **技术选型前瞻**：选用qwen-long长上下文模型具有前瞻性，适合处理长文档分析场景",
+  "recommended_focus": [
+    "双语言实现的技术考量（Python vs JavaScript挂件）",
+    "多系统整合的架构设计",
+    "本地知识库与云端AI的混合模式",
+    "财报OCR和舆情监控的数据流设计",
+    "通义千问qwen-long模型的文档问答能力"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "项目背景：思源笔记AI集成生态概览",
+      "技术架构：四系统整合设计",
+      "核心功能：AI问答与自动追加",
+      "数据流：财报OCR与舆情监控",
+      "创新价值：本地知识库+云端AI混合模式"
+    ],
+    "skip_chapters": [
+      "具体API调用细节（已有README）",
+      "代码逐行解析"
+    ],
+    "word_allocation": {
+      "项目概述": 300,
+      "技术架构": 500,
+      "核心功能": 600,
+      "应用场景": 400,
+      "创新价值": 400,
+      "行业对比": 300
+    }
+  }
+}

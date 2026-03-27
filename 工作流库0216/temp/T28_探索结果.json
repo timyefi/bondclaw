@@ -1,0 +1,155 @@
+{
+  "project_id": "T28",
+  "project_name": "图表复制工作流",
+  "project_type": "数据采集/工具集成",
+  "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T28-图表复制工作流",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "calculate_commodity_ratio.py",
+    "提取图片虚线数据.py",
+    "verify_results.py",
+    "1.md",
+    "requirements.txt",
+    "sample_points_cache.json",
+    "detected_points.png",
+    "实物资产比金融资产.png",
+    "农商行.png"
+  ],
+  "directory_structure": "图表复制工作流/\n├── 1.md                      # 需求文档\n├── calculate_commodity_ratio.py   # 商品比率计算主程序\n├── 提取图片虚线数据.py           # 图表图像数据提取程序\n├── verify_results.py         # 数据验证程序\n├── requirements.txt          # Python依赖\n├── sample_points_cache.json  # 样本点缓存\n├── detected_points.png       # 检测结果示例图像\n├── 农商行.png               # 测试用图片\n└── 实物资产比金融资产.png     # 测试用图片",
+  "unique_points": {
+    "research_problem": "解决了从研报图表图片中快速提取数据点的痛点问题。传统方式需要手动读取图表坐标值，本工具通过图像处理技术自动识别曲线并转换为时间序列数据，极大提高了研究效率。这是其他数据库直连或API采集项目无法解决的问题——当数据源只有图片时。",
+    "technical_feature": "1. 基于OpenCV的颜色识别+形态学操作提取曲线点\n2. 交互式ROI选择和样本点选取，支持断点续传\n3. 支持多种日期格式(YYYY/MM, YYYY-MM-DD)和频率(周/月/年)\n4. 颜色容差动态计算，基于样本点标准差自动调整\n5. 坐标到实际值的精确映射，包括微秒偏移避免日期重复\n6. 形态学操作(开运算去噪点、闭运算连接断线)优化提取效果",
+    "application_scenario": "1. 研究员需要从PDF研报中截取图表，提取其中的数据曲线\n2. 复制外部研报的指标数据到内部数据库(无法获取原始数据时)\n3. 计算'全球实物资产比金融资产'等复合指标并入库\n4. 处理历史图表图片中的数据归档需求",
+    "core_insight": "这是一个将'视觉数据'转换为'结构化数据'的实用工具，核心价值在于通过图像处理技术自动化了原本需要手工完成的数据转录工作，将单张图表处理时间从30分钟缩短到几分钟。相比商业OCR产品，本工具更轻量、灵活、零成本。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "传统数据采集项目",
+      "similarity": "都涉及从外部数据源获取数据并写入数据库",
+      "difference": "本项目通过图像处理提取数据，而非API或爬虫直接获取结构化数据"
+    },
+    {
+      "project_id": "合合信息表格OCR",
+      "similarity": "都致力于从图表图片中提取结构化数据",
+      "difference": "本工具基于OpenCV实现，更轻量免费；商业OCR产品使用深度学习，精度更高但需付费"
+    },
+    {
+      "project_id": "Qwen3-VL金融图表识别",
+      "similarity": "都是金融图表数据提取解决方案",
+      "difference": "本项目是传统CV方案，大模型方案精度更高但需要GPU资源部署"
+    }
+  ],
+  "data_sources": [
+    "图表图片(本地文件或URL)",
+    "EDB数据库(edb.edbdata表)",
+    "CRB CMDT Index(商品指数)",
+    "FLOT US Equity(金融资产)",
+    ".EARNREV G Index(盈利修正)"
+  ],
+  "search_keywords_used": [
+    "研报图表数据提取 AI工具 自动化 2025",
+    "金融图表识别 OCR 数据提取 技术方案"
+  ],
+  "search_findings": {
+    "industry_trends": "2025年行业正从传统OCR向AI大模型视觉语言模型演进(Qwen3-VL、华为盘古OCR等)。智能数据捕获技术可达95%+准确率，处理效率提升90%。",
+    "mainstream_tools": [
+      "合合信息表格OCR - 将PDF/图片中的柱状图、折线图、饼图转化为结构化数据",
+      "腾讯云智能结构化OCR - 交通、物流、金融、零售行业应用",
+      "华为盘古金融OCR大模型 - 字段识别精度从83.9%提升至91.0%",
+      "Qwen3-VL - 多模态视觉语言模型，支持金融图表识别"
+    ],
+    "efficiency_comparison": {
+      "traditional_method": "单张图表处理30分钟，数据点提取精度±5%",
+      "ai_tools": "单张图表处理3分钟，数据点提取精度±0.5%，效率提升90%"
+    },
+    "project_positioning": "本项目采用OpenCV+交互式选取的轻量方案，相比商业产品更灵活零成本但精度依赖用户操作，适合小规模、非高频使用场景。"
+  },
+  "recommended_focus": [
+    "图像处理算法的核心逻辑(颜色识别、形态学操作、坐标映射)",
+    "交互式操作设计(ROI选择、样本点选取、断点续传)",
+    "与商业OCR工具的对比分析(精度、效率、成本)",
+    "实际应用场景和效率提升数据",
+    "两种数据获取方式的对比(图表提取 vs 数据库计算)"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "图像处理技术实现(颜色掩码、形态学操作、轮廓检测)",
+      "交互式操作流程(ROI选择、样本点选取、参数配置)",
+      "数据处理与入库逻辑(比率计算、基准调整、周度转换)"
+    ],
+    "skip_chapters": [
+      "数据库连接细节",
+      "通用日志配置",
+      "基础pandas操作说明"
+    ],
+    "word_allocation": {
+      "核心技术(图像处理)": "35%",
+      "数据处理(比率计算)": "25%",
+      "使用场景与效率分析": "20%",
+      "心得要点": "15%",
+      "其他(环境配置等)": "5%"
+    }
+  },
+  "core_functionality": {
+    "function_1": {
+      "name": "图表数据提取",
+      "description": "通过OpenCV图像处理技术，从图表图片中识别曲线并提取数据点",
+      "features": [
+        "交互式选择数据区域和样本点",
+        "支持多种日期格式(YYYY/MM, YYYY-MM-DD)",
+        "支持不同频率的数据点(周度、月度、年度)",
+        "动态计算颜色容差",
+        "形态学操作清理噪点",
+        "断点续传功能(通过缓存文件)"
+      ]
+    },
+    "function_2": {
+      "name": "商品比率计算",
+      "description": "从EDB数据库获取指标数据，计算CRB商品指数与金融资产比率",
+      "formula": "CRB CMDT Index / (0.5 * (FLOT US Equity + .EARNREV G Index))",
+      "base_date": "2020-11-12",
+      "base_value": 0.09427710843373494",
+      "output_frequency": "周度"
+    }
+  },
+  "key_technical_components": {
+    "image_processing": {
+      "library": "OpenCV",
+      "techniques": [
+        "颜色掩码创建",
+        "形态学操作(开运算、闭运算)",
+        "轮廓检测",
+        "ROI选择"
+      ]
+    },
+    "data_processing": {
+      "library": "Pandas",
+      "techniques": [
+        "线性插值",
+        "日期重采样",
+        "基准调整"
+      ]
+    },
+    "database": {
+      "library": "SQLAlchemy",
+      "operations": [
+        "数据查询",
+        "数据插入",
+        "连接池管理"
+      ]
+    }
+  },
+  "workflow_steps": [
+    "1. 从edb.edbdata表查询三个指标数据",
+    "2. 合并数据并进行日度插值",
+    "3. 计算比值并按基准日期调整",
+    "4. 转换为周度数据(取每周最后一个自然日)",
+    "5. 插入到全球实物资产比金融资产表"
+  ],
+  "notes": [
+    "项目同时支持从数据库计算和从图表图像提取两种数据获取方式",
+    "图像提取功能需要交互式操作，适合处理无法直接获取源数据的场景",
+    "基准调整确保数据与原始图表完全对齐",
+    "相比商业OCR产品(合合信息、华为盘古等)，本工具更轻量灵活但精度依赖用户操作"
+  ]
+}

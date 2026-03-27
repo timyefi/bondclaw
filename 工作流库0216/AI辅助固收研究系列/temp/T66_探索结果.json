@@ -1,0 +1,157 @@
+{
+  "project_id": "T66",
+  "project_name": "负面舆情爬取",
+  "project_type": "数据采集与处理",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    {
+      "file_name": "T66_负面舆情爬取.ipynb",
+      "file_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T66-负面舆情爬取\\T66_负面舆情爬取.ipynb",
+      "description": "主程序Notebook，包含完整的负面舆情爬取流程"
+    },
+    {
+      "file_name": "config.py",
+      "file_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T66-负面舆情爬取\\config.py",
+      "description": "配置文件，包含数据库连接和Ratingdog API配置"
+    },
+    {
+      "file_name": "requirements.txt",
+      "file_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T66-负面舆情爬取\\requirements.txt",
+      "description": "依赖包列表"
+    }
+  ],
+  "directory_structure": {
+    "root": "T66-负面舆情爬取",
+    "files": [
+      "T66_负面舆情爬取.ipynb",
+      "config.py",
+      "requirements.txt"
+    ],
+    "total_files": 3,
+    "total_directories": 0
+  },
+  "unique_points": [
+    "使用Ratingdog(企业预警通PC版)作为数据源，获取专业的债券市场负面舆情数据",
+    "集成PaddleOCR进行图像文字识别，支持从舆情内容中的图片提取文字信息",
+    "实现Aho-Corasick自动机算法进行敏感词过滤，高效处理大量文本",
+    "支持HTML内容解析，自动提取文本和图像并分别处理",
+    "完整的API认证机制，包括Bearer Token和租户ID(Tenant ID)验证",
+    "支持按日期范围分页采集舆情数据，自动处理大数据量场景",
+    "图像预处理功能：使用OpenCV进行灰度化、二值化、形态学操作等",
+    "MySQL数据库存储，使用INSERT IGNORE避免重复数据"
+  ],
+  "data_sources": [
+    {
+      "name": "Ratingdog(企业预警通)",
+      "type": "API",
+      "description": "企业风险监控和预警平台，提供债券舆情、企业风险等金融数据",
+      "api_endpoints": [
+        "https://auth.ratingdog.cn/api/TokenAuth/Authenticate (登录认证)",
+        "https://host.ratingdog.cn/api/services/app/ResearchInfo/GetQueryPublicOpinionsForTenant (舆情列表)",
+        "https://host.ratingdog.cn/api/services/app/ResearchInfo/GetCiPublicOpinionForView (舆情详情)"
+      ]
+    },
+    {
+      "name": "MySQL数据库",
+      "type": "数据库",
+      "description": "存储舆情监控数据，目标表为舆情监控",
+      "connection": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com:3306/yq"
+    }
+  ],
+  "core_functions": {
+    "api_client": "RatingdogClient类：封装登录认证和舆情数据获取",
+    "ocr_processing": "recognize_image, preprocess_image, download_image, handle_base64_image：图像处理和OCR识别",
+    "content_parsing": "get_html_text_and_images, parse_opinion_detail：HTML解析和内容提取",
+    "sensitive_filter": "build_automaton, filter_sensitive_words：敏感词过滤",
+    "data_storage": "insert_opinion_to_db：数据库存储"
+  },
+  "search_keywords_used": [
+    "债券负面舆情监控 信用风险预警 2025 2026",
+    "Ratingdog 企业预警通 债券舆情数据 API"
+  ],
+  "search_findings": {
+    "industry_trends": [
+      "债券异动监控系统可在3秒内向用户推送预警",
+      "声誉风险可通过资金外流、融资受阻等渠道传导为流动性危机",
+      "负面舆情追踪是信用风险识别的重要手段",
+      "2025-2026年金融监管趋势强化，风险防控常态化"
+    ],
+    "data_sources_context": [
+      "企业预警通由上海大智慧财汇数据科技有限公司开发",
+      "覆盖8000万以上企业信息，提供企业风险监控和预警服务",
+      "支持APP、PC专业版、小程序等多端覆盖",
+      "Ratingdog为企业预警通PC版，提供专业的债券舆情数据"
+    ],
+    "technology_trends": [
+      "AI大模型应用于舆情内容总结和风险分析",
+      "OCR技术用于图像化舆情信息的提取",
+      "实时监控和快速预警成为行业标配"
+    ]
+  },
+  "recommended_focus": [
+    "深入了解Ratingdog API的完整功能，探索更多数据维度(如城投平台、区域经济数据)",
+    "优化OCR识别效果，考虑添加OCR模型微调功能",
+    "增强AI总结功能，集成大模型API实现更智能的舆情摘要",
+    "添加舆情情感分析和风险等级评估功能",
+    "实现舆情数据的定时自动采集和实时推送机制",
+    "扩展敏感词库并支持动态更新",
+    "添加舆情数据的统计分析和可视化功能"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "1. 项目概述",
+      "content": "项目背景、目标、数据源介绍"
+    },
+    {
+      "section": "2. 技术架构",
+      "content": "系统架构图、技术栈、模块划分"
+    },
+    {
+      "section": "3. 数据源分析",
+      "content": "Ratingdog平台介绍、API接口说明、数据字段解析"
+    },
+    {
+      "section": "4. 核心功能实现",
+      "content": "API认证、舆情采集、OCR识别、敏感词过滤、数据存储"
+    },
+    {
+      "section": "5. 行业应用价值",
+      "content": "债券市场信用风险预警、负面舆情监控实践"
+    },
+    {
+      "section": "6. 优化建议",
+      "content": "功能扩展方向、性能优化、AI增强"
+    },
+    {
+      "section": "7. 总结",
+      "content": "项目总结和未来展望"
+    }
+  ],
+  "dependencies": [
+    "requests>=2.28.0",
+    "pandas>=1.5.0",
+    "sqlalchemy>=1.4.0",
+    "pymysql>=1.0.0",
+    "beautifulsoup4>=4.11.0",
+    "lxml>=4.9.0",
+    "openai>=1.0.0",
+    "paddleocr>=2.6.0",
+    "paddlepaddle>=2.4.0",
+    "Pillow>=9.0.0",
+    "opencv-python>=4.5.0",
+    "numpy>=1.20.0",
+    "ahocorasick>=1.0.0"
+  ],
+  "output_target": {
+    "database_table": "舆情监控",
+    "key_fields": [
+      "list_keywords (涉及公司)",
+      "TypeInfo (负面信息类型)",
+      "happenDate (事件发生日期)",
+      "ContentInfo (具体负面信息内容)",
+      "ai_sum (AI总结)",
+      "cityFullNames (城市)",
+      "industryFullNames (行业)"
+    ]
+  }
+}

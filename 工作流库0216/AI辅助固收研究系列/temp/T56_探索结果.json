@@ -1,0 +1,260 @@
+{
+  "project_id": "T56",
+  "project_name": "企业预警通新闻爬取",
+  "project_type": "数据采集/网络爬虫",
+  "exploration_date": "2026-02-16",
+  "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T56-企业预警通新闻爬取",
+
+  "files_analyzed": {
+    "total_count": 7,
+    "main_files": [
+      {
+        "name": "重构.ipynb",
+        "type": "Jupyter Notebook",
+        "description": "主Notebook，包含7个章节：环境配置、数据库连接、API请求头配置、新闻爬取函数、执行爬取、数据存储、数据验证与导出"
+      },
+      {
+        "name": "config.py",
+        "type": "Python配置文件",
+        "description": "包含数据库连接配置、企业预警通API配置、爬虫配置和新闻类型配置"
+      },
+      {
+        "name": "src/news_spider.py",
+        "type": "Python模块",
+        "description": "NewsSpider类，封装了新闻爬取的核心逻辑，支持按日期范围和按小时爬取"
+      },
+      {
+        "name": "src/data_storage.py",
+        "type": "Python模块",
+        "description": "DataStorage类，处理数据存储、去重和数据库表结构管理"
+      },
+      {
+        "name": "requirements.txt",
+        "type": "依赖文件",
+        "description": "项目依赖：requests, pandas, numpy, sqlalchemy, pymysql, urllib3"
+      },
+      {
+        "name": "README.md",
+        "type": "文档",
+        "description": "项目说明文档，包含功能介绍、目录结构、使用方法和API说明"
+      }
+    ]
+  },
+
+  "directory_structure": {
+    "root": "T56-企业预警通新闻爬取/",
+    "folders": [
+      "src/",
+      "data/",
+      "assets/",
+      "output/"
+    ],
+    "tree": [
+      "T56-企业预警通新闻爬取/",
+      "├── 重构.ipynb",
+      "├── config.py",
+      "├── requirements.txt",
+      "├── README.md",
+      "├── src/",
+      "│   ├── __init__.py",
+      "│   ├── news_spider.py",
+      "│   └── data_storage.py",
+      "├── data/",
+      "├── assets/",
+      "└── output/"
+    ]
+  },
+
+  "unique_points": {
+    "data_source": "企业预警通(www.qyyjt.cn) - 专业金融舆情监控平台，被金融机构广泛用于债券发行核查和企业负面舆情监测",
+    "core_functionality": "定时爬取多种类型的新闻数据（地方政策新闻、债券市场新闻、政策动态），自动去重并存储到MySQL数据库",
+    "technical_highlights": [
+      "基于Cookie认证的API爬取（pcuss token机制）",
+      "支持按日期范围和按小时粒度的精确爬取",
+      "动态数据库表结构管理（自动检测并添加新列）",
+      "内置去重机制，避免重复数据入库",
+      "模块化设计，爬虫逻辑与存储逻辑分离"
+    ],
+    "target_audience": "固定收益研究人员、债券投资分析师、风险管理团队",
+    "value_proposition": "为固收研究提供及时的政策新闻和市场舆情数据，辅助债券投资决策和风险监控"
+  },
+
+  "data_sources": {
+    "primary": {
+      "name": "企业预警通",
+      "url": "https://www.qyyjt.cn",
+      "api_endpoint": "/getData.action",
+      "authentication": "Cookie Token (pcuss)",
+      "data_types": [
+        {
+          "code": "areaNews",
+          "description": "地方政策新闻"
+        },
+        {
+          "code": "bondMarket",
+          "description": "债券市场新闻"
+        },
+        {
+          "code": "policyDynamic",
+          "description": "政策动态"
+        }
+      ]
+    },
+    "storage": {
+      "type": "MySQL数据库",
+      "database": "yq",
+      "table": "地方政策新闻",
+      "connection": "SQLAlchemy + PyMySQL"
+    }
+  },
+
+  "search_keywords_used": [
+    "企业预警通舆情监控 债券负面新闻 2025"
+  ],
+
+  "search_findings": {
+    "summary": "企业预警通是专业的商业调查和舆情监控工具，拥有超过8000万企业信息数据库",
+    "industry_usage": [
+      "金融机构债券发行核查",
+      "企业负面舆情监测",
+      "上市公司和债券发行主体风险监控"
+    ],
+    "references": [
+      "国金证券债券发行核查报告",
+      "国元证券2025年半年度报告",
+      "江苏常熟农村商业银行2025年半年度报告"
+    ],
+    "market_position": "作为舆情核查工具被多家券商和银行在正式报告中引用"
+  },
+
+  "code_structure_analysis": {
+    "main_classes": [
+      {
+        "name": "NewsSpider",
+        "file": "src/news_spider.py",
+        "methods": [
+          "fetch_news() - 单次API请求获取新闻",
+          "fetch_news_by_date_range() - 按日期范围爬取",
+          "fetch_news_hourly() - 按小时粒度爬取"
+        ]
+      },
+      {
+        "name": "DataStorage",
+        "file": "src/data_storage.py",
+        "methods": [
+          "save_news() - 保存新闻到数据库",
+          "get_existing_ids() - 获取已存在ID",
+          "remove_duplicates() - 去除重复数据",
+          "add_column_if_not_exists() - 动态添加列"
+        ]
+      }
+    ],
+    "config_params": {
+      "spider": {
+        "request_delay_min": 0.5,
+        "request_delay_max": 2.0,
+        "max_retries": 3,
+        "timeout": 30,
+        "batch_size": 100
+      },
+      "news": {
+        "table_name": "地方政策新闻",
+        "default_pagesize": 15
+      }
+    }
+  },
+
+  "notebook_structure": {
+    "total_cells": 15,
+    "chapters": [
+      {
+        "chapter": 1,
+        "title": "环境配置与依赖导入",
+        "cells": 1
+      },
+      {
+        "chapter": 2,
+        "title": "数据库连接与爬虫初始化",
+        "cells": 1
+      },
+      {
+        "chapter": 3,
+        "title": "API请求头配置",
+        "cells": 1
+      },
+      {
+        "chapter": 4,
+        "title": "新闻数据爬取函数",
+        "cells": 1
+      },
+      {
+        "chapter": 5,
+        "title": "执行新闻爬取",
+        "cells": 1
+      },
+      {
+        "chapter": 6,
+        "title": "数据存储到数据库",
+        "cells": 1
+      },
+      {
+        "chapter": 7,
+        "title": "数据验证与导出",
+        "cells": 1
+      }
+    ]
+  },
+
+  "recommended_focus": [
+    "数据采集流程的完整性和稳定性",
+    "API认证机制和反爬策略的应对",
+    "数据质量控制（去重、清洗、验证）",
+    "与固收研究业务场景的结合应用",
+    "定时任务和增量更新的实现"
+  ],
+
+  "suggested_report_structure": [
+    {
+      "section": "项目背景与目标",
+      "content": "介绍企业预警通平台及其在固收研究中的价值"
+    },
+    {
+      "section": "技术架构",
+      "content": "爬虫架构设计、API接口分析、数据存储方案"
+    },
+    {
+      "section": "核心功能实现",
+      "content": "新闻爬取、数据处理、去重存储的详细实现"
+    },
+    {
+      "section": "业务应用场景",
+      "content": "地方政策新闻、债券市场新闻、政策动态的监测应用"
+    },
+    {
+      "section": "技术亮点",
+      "content": "动态表结构管理、按小时粒度爬取、模块化设计"
+    },
+    {
+      "section": "使用指南",
+      "content": "环境配置、Token获取、运行步骤"
+    }
+  ],
+
+  "dependencies": [
+    "requests>=2.31.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "sqlalchemy>=2.0.0",
+    "pymysql>=1.1.0",
+    "urllib3>=2.0.0"
+  ],
+
+  "environment_variables": [
+    "DB_HOST",
+    "DB_PORT",
+    "DB_USER",
+    "DB_PASSWORD",
+    "QYYJT_BASE_URL",
+    "QYYJT_PC_USS"
+  ]
+}

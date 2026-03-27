@@ -1,0 +1,136 @@
+{
+  "project_id": "T13",
+  "project_name": "债券指数研究",
+  "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T13-债券指数研究",
+  "exploration_date": "2026-02-16",
+
+  "project_structure": {
+    "files": [
+      "config.py",
+      "requirements.txt",
+      "重构.ipynb",
+      "README.md"
+    ],
+    "directories": [
+      "src/",
+      "data/",
+      "assets/",
+      "output/"
+    ]
+  },
+
+  "project_overview": {
+    "description": "一个完整的债券指数分析系统，主要功能包括数据获取、指标计算、多周期分析、分组统计、组合优化和结果可视化。",
+    "main_notebook": "重构.ipynb",
+    "data_source": "MySQL数据库 (bond.indexcode, bond.indexcloseprice)"
+  },
+
+  "core_features": [
+    {
+      "name": "数据获取",
+      "description": "从MySQL数据库获取债券指数列表和历史价格数据"
+    },
+    {
+      "name": "指标计算",
+      "description": "计算收益率、最大回撤、年化波动率等核心指标"
+    },
+    {
+      "name": "多周期分析",
+      "description": "支持30天、3个月、半年、1年等多个时间周期的分析"
+    },
+    {
+      "name": "分组统计",
+      "description": "按收益率和久期进行分组，统计各组的平均表现"
+    },
+    {
+      "name": "三维分组分析",
+      "description": "收益-久期-最大回撤三维分组分析"
+    },
+    {
+      "name": "投资组合优化",
+      "description": "跨久期分组进行组合搭配，优化风险收益比"
+    },
+    {
+      "name": "可视化展示",
+      "description": "生成收益率分布图、相关性矩阵、三维热图等分析图表"
+    }
+  ],
+
+  "technical_highlights": {
+    "database_integration": {
+      "engine": "SQLAlchemy + PyMySQL",
+      "tables": ["bond.indexcode", "bond.indexcloseprice"],
+      "security": "环境变量配置，无硬编码密码"
+    },
+    "analysis_parameters": {
+      "return_bin_size": "0.5%",
+      "duration_bin_size": "0.5年",
+      "drawdown_bin_size": "0.5%",
+      "periods": ["30天", "3个月", "半年", "1年"]
+    },
+    "portfolio_optimization": {
+      "min_combo_size": 3,
+      "max_combo_size": 10,
+      "optimization_target": "收益高于目标、回撤低于目标"
+    },
+    "visualization": {
+      "libraries": ["matplotlib", "seaborn", "plotly"],
+      "output_formats": ["PNG图片", "CSV数据"]
+    }
+  },
+
+  "uniqueness": {
+    "differentiators": [
+      "专注于债券指数的系统性研究，而非单一债券分析",
+      "提供了收益-久期-最大回撤三维分组分析方法",
+      "跨久期分组的投资组合优化思路独特",
+      "多时间周期的全面分析框架"
+    ],
+    "research_problems_solved": [
+      "如何系统性地评估和比较不同债券指数的表现",
+      "如何在收益、风险（最大回撤）和久期之间寻找最优平衡",
+      "如何通过组合优化提升债券指数投资的风险收益比"
+    ],
+    "technical_innovations": [
+      "三维分组分析方法（收益-久期-最大回撤）",
+      "基于目标收益和目标回撤的组合优化算法",
+      "模块化的配置管理系统（config.py）"
+    ]
+  },
+
+  "dependencies": {
+    "core": ["pandas>=1.5.0", "numpy>=1.23.0", "scipy>=1.9.0"],
+    "database": ["sqlalchemy>=1.4.0", "pymysql>=1.0.0"],
+    "visualization": ["matplotlib>=3.5.0", "seaborn>=0.12.0", "plotly>=5.10.0"],
+    "dashboard": ["dash>=2.5.0", "dash-bootstrap-components>=1.0.0"],
+    "utilities": ["tqdm>=4.64.0", "openpyxl>=3.0.0", "tabulate>=0.9.0"]
+  },
+
+  "output_files": [
+    "bond_indices_results.csv",
+    "return_group_analysis.csv",
+    "duration_group_analysis.csv",
+    "three_dim_analysis_*.csv",
+    "portfolio_optimization_*.csv",
+    "bond_index_analysis_*.png",
+    "correlation_matrix_*.png",
+    "three_dim_heatmap_*.png"
+  ],
+
+  "related_projects": ["T002-债券分析框架", "T003-可转债研究", "T004-对冲策略"],
+
+  "web_research_summary": {
+    "bond_index_compilation": {
+      "sources": [
+        "中债指数由中央国债登记结算有限责任公司编制",
+        "深证AAA信用债指数系列于2026年2月发布",
+        "上海清算所天津市国企信用债指数于2026年1月发布"
+      ],
+      "key_organizations": ["中央结算公司", "深圳证券信息有限公司", "上海清算所", "标普全球"]
+    },
+    "research_framework": {
+      "analysis_dimensions": ["基本面", "政策面", "资金面", "技术面", "供需面", "风险因子"],
+      "key_metrics": ["久期", "信用", "流动性因子暴露", "R007与DR007", "10年期国债收益率"]
+    }
+  }
+}

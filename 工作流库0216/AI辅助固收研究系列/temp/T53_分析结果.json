@@ -1,0 +1,275 @@
+{
+  "project_id": "T53",
+  "project_name": "yy区域数据整理",
+  "analysis_date": "2026-02-16",
+  "research_background": {
+    "context": "城投信用研究和固收投资决策需要标准化的区域经济数据支撑。企业预警通(Ratingdog)是上海大智慧财汇数据科技有限公司旗下的专业企业风险监控和区域经济数据平台，覆盖全国省级、市级、区县级经济数据。",
+    "motivation": "原始API返回的区域名称格式复杂，包含直辖市、省直辖县级市、国家新区等特殊情况，需要进行标准化处理以便后续分析使用。",
+    "application_scenarios": [
+      "城投信用风险评估",
+      "区域经济差异分析",
+      "固收投资决策支持",
+      "财政收入与GDP关系研究",
+      "隐性债务监测与分析"
+    ]
+  },
+  "core_methodology": {
+    "data_acquisition": {
+      "method": "RESTful API + Bearer Token认证",
+      "authentication": "通过企业预警通认证接口获取AccessToken，用于后续API调用",
+      "pagination": "分页获取数据，每页150条记录，通过SkipCount参数控制",
+      "dynamic_schema": "自动检测API返回的新字段并动态更新数据库表结构"
+    },
+    "region_standardization": {
+      "method": "基于行政级别的规则引擎",
+      "input_format": "{省}-{市}-{区县}格式的区域名称",
+      "output_format": "省-市-区县三级标准结构",
+      "special_cases": [
+        {
+          "type": "直辖市",
+          "examples": ["北京市", "上海市", "天津市", "重庆市"],
+          "processing": "市=省，区县从名称中提取"
+        },
+        {
+          "type": "省直辖县级行政区划",
+          "examples": ["济源市", "仙桃市", "天门市", "潜江市", "神农架林区", "海南省各县级市"],
+          "processing": "市标记为'省直辖县级行政区划'"
+        },
+        {
+          "type": "国家新区",
+          "examples": ["天府新区", "滨海新区"],
+          "processing": "根据所在省份类型分别处理"
+        },
+        {
+          "type": "省本级/市本级",
+          "examples": ["广东省本级", "广州市本级"],
+          "processing": "保留为特殊标识"
+        }
+      ]
+    },
+    "sql_processing": {
+      "string_functions": "使用SUBSTRING_INDEX函数解析区域名称层级",
+      "temp_tables": "使用临时表进行数据聚合和批量更新",
+      "data_aggregation": "按省-市-区县三级结构汇总土地出让收入等指标"
+    }
+  },
+  "key_findings": [
+    {
+      "id": 1,
+      "title": "多维度指标体系覆盖70+核心指标",
+      "description": "项目覆盖6大类70+区域经济指标，包括经济(7个)、财政(21个)、金融(6个)、隐性债务(11个)、房地产(6个)、基础设施(19个)",
+      "evidence": "config.py定义了ECONOMIC_INDICATORS、FISCAL_INDICATORS等6个指标列表，总计70个指标代码",
+      "significance": "为城投信用研究提供全面的区域经济数据支撑，覆盖债务限额、有息债务、隐性债务化解等关键指标"
+    },
+    {
+      "id": 2,
+      "title": "行政区域标准化算法解决复杂命名问题",
+      "description": "通过SQL的SUBSTRING_INDEX函数和规则引擎，将复杂的区域名称归整为省-市-区县三级标准结构",
+      "evidence": "行政区域归整.txt包含9个UNION ALL查询，处理Development Of Provincial、New District Of National、District等6种行政级别",
+      "significance": "解决了直辖市、省直辖县级市、国家新区等特殊区域的数据标准化问题，确保数据聚合分析的准确性"
+    },
+    {
+      "id": 3,
+      "title": "动态表结构适应API变化",
+      "description": "系统能够自动检测API新增字段并更新数据库表结构，无需手动维护",
+      "evidence": "原始代码和重构Notebook中都包含动态添加列的逻辑：ALTER TABLE ADD COLUMN",
+      "significance": "增强了系统的可维护性，降低了API变更带来的维护成本"
+    },
+    {
+      "id": 4,
+      "title": "土地数据三级汇总填补空白值",
+      "description": "通过临时表和批量更新，实现了省本级、市本级、区县级三级数据的自动汇总和空白值填补",
+      "evidence": "重新统计土地数据.txt展示了从区县到市、从市到省的逐级汇总逻辑",
+      "significance": "确保了各级区域数据的完整性，为分级债务分析提供数据基础"
+    }
+  ],
+  "insights": [
+    {
+      "id": 1,
+      "title": "配置与代码分离的最佳实践",
+      "description": "重构后的代码将敏感信息(API凭据、数据库连接)通过环境变量配置，实现了配置与代码分离",
+      "methodology": "使用os.environ.get()获取环境变量，config.py提供统一的配置入口和验证函数",
+      "application": "适用于所有涉及外部系统对接的项目，提高安全性和可维护性",
+      "code_reference": "config.py中的RATINGDOG_USERNAME、DB_HOST等变量均从环境变量获取"
+    },
+    {
+      "id": 2,
+      "title": "行政区划标准化的分层处理策略",
+      "description": "针对中国复杂的行政区划体系，采用分层处理策略：先识别特殊类型(直辖市、省直辖县)，再按通用规则解析",
+      "methodology": "1)定义特殊区域列表 2)优先匹配特殊类型 3)使用SQL字符串函数提取层级 4)通过UNION ALL合并结果",
+      "application": "可应用于任何需要处理中国行政区划数据的场景，如地址解析、区域统计分析等",
+      "code_reference": "config.py中的DIRECT_MUNICIPALITIES和PROVINCE_DIRECT_COUNTIES列表"
+    },
+    {
+      "id": 3,
+      "title": "增量数据处理的SQL批量更新模式",
+      "description": "使用临时表存储聚合结果，再通过UPDATE JOIN进行批量更新，避免逐行更新带来的性能问题",
+      "methodology": "CREATE TEMPORARY TABLE -> 聚合计算 -> UPDATE JOIN -> DROP TEMPORARY TABLE",
+      "application": "适用于大批量数据的聚合更新场景，特别是层级汇总(区县->市->省)",
+      "code_reference": "重新统计土地数据.txt中的temp_table使用模式"
+    }
+  ],
+  "application_guide": {
+    "prerequisites": [
+      "企业预警通账号(Ratingdog)",
+      "MySQL数据库(5.7+)",
+      "Python 3.8+环境"
+    ],
+    "setup_steps": [
+      "安装依赖: pip install -r requirements.txt",
+      "配置环境变量: RATINGDOG_USERNAME, RATINGDOG_PASSWORD, DB_HOST, DB_USER, DB_PASSWORD",
+      "运行数据采集: 执行重构.ipynb或src/yy区域数据.py",
+      "执行区域标准化: 运行data/行政区域归整.txt中的SQL脚本",
+      "汇总土地数据: 运行data/重新统计土地数据.txt中的SQL脚本"
+    ],
+    "output_tables": [
+      {
+        "name": "yq.yyqy",
+        "description": "原始区域数据表，存储API返回的完整数据",
+        "key_fields": ["Administrative Division Name", "Report Date", "GDP", "GeneralBudgetRevenue"]
+      },
+      {
+        "name": "yq.xzqh_yy",
+        "description": "行政区划归整表，存储区域名称与省-市-区县的映射关系",
+        "key_fields": ["区域", "省", "市", "区县"]
+      },
+      {
+        "name": "yq.yytd",
+        "description": "土地数据统计表，按省-市-区县三级汇总土地出让收入",
+        "key_fields": ["DT", "省", "市", "区县", "土地出让收入"]
+      }
+    ],
+    "usage_examples": [
+      {
+        "scenario": "查询某省所有地级市GDP数据",
+        "sql": "SELECT 市, SUM(GDP) as GDP FROM yyqy A JOIN xzqh_yy B ON A.`Administrative Division Name`=B.区域 WHERE B.省='广东省' AND B.区县='' GROUP BY B.市"
+      },
+      {
+        "scenario": "查询某市各区县土地出让收入",
+        "sql": "SELECT 区县, 土地出让收入 FROM yytd WHERE 省='浙江省' AND 市='杭州市' AND 区县!=''"
+      }
+    ]
+  },
+  "limitations": [
+    {
+      "id": 1,
+      "title": "缺少增量更新机制",
+      "description": "当前每次运行都是全量采集，未实现增量更新，可能导致数据冗余和重复",
+      "impact": "数据量增大时采集时间会显著增加，可能触发API限流",
+      "suggested_improvement": "增加last_update_time参数，只获取最新更新的数据"
+    },
+    {
+      "id": 2,
+      "title": "错误处理和重试机制不完善",
+      "description": "原始代码缺少网络错误、API限流等异常情况的处理",
+      "impact": "网络波动可能导致数据采集中断，需要手动重启",
+      "suggested_improvement": "添加requests Retry适配器，实现指数退避重试"
+    },
+    {
+      "id": 3,
+      "title": "数据验证逻辑缺失",
+      "description": "未对API返回数据进行完整性和有效性验证",
+      "impact": "可能引入异常数据，影响后续分析准确性",
+      "suggested_improvement": "添加GDP范围检查、重复记录检测、必填字段验证等"
+    },
+    {
+      "id": 4,
+      "title": "原始代码存在硬编码凭据",
+      "description": "src/yy区域数据.py中直接硬编码了数据库连接信息和API账号密码",
+      "impact": "存在安全风险，凭据泄露后需要修改代码",
+      "suggested_improvement": "已通过重构.ipynb解决，使用环境变量配置"
+    }
+  ],
+  "report_structure": {
+    "suggested_sections": [
+      {
+        "section": "1. 项目背景与目标",
+        "subsections": [
+          "1.1 企业预警通平台介绍",
+          "1.2 区域经济数据在固收研究中的价值",
+          "1.3 项目目标与范围"
+        ]
+      },
+      {
+        "section": "2. 数据源分析",
+        "subsections": [
+          "2.1 API接口规范与认证机制",
+          "2.2 数据指标体系(6大类70+指标)",
+          "2.3 数据更新频率与覆盖范围"
+        ]
+      },
+      {
+        "section": "3. 核心技术实现",
+        "subsections": [
+          "3.1 数据采集流程(分页、动态字段)",
+          "3.2 行政区域标准化算法",
+          "3.3 数据库设计与SQL处理逻辑"
+        ]
+      },
+      {
+        "section": "4. 数据处理流程",
+        "subsections": [
+          "4.1 原始数据存储(yyqy表)",
+          "4.2 行政区划归整(xzqh_yy表)",
+          "4.3 土地数据统计(yytd表)"
+        ]
+      },
+      {
+        "section": "5. 应用场景与案例",
+        "subsections": [
+          "5.1 城投信用风险评估",
+          "5.2 区域经济差异分析",
+          "5.3 债务限额与财政收入关系"
+        ]
+      },
+      {
+        "section": "6. 改进建议",
+        "subsections": [
+          "6.1 错误重试机制",
+          "6.2 数据验证函数",
+          "6.3 增量更新策略",
+          "6.4 性能优化方案"
+        ]
+      },
+      {
+        "section": "7. 总结",
+        "subsections": [
+          "7.1 项目成果",
+          "7.2 方法论总结",
+          "7.3 后续优化方向"
+        ]
+      }
+    ]
+  },
+  "search_references": [
+    {
+      "title": "城投化债下半场：重点省份分化逻辑与修复路径",
+      "url": "https://www.cspengyuan.com/api/files/6960d38b42b27b2bdc799e6c",
+      "relevance": "展示了企业预警通数据在城投研究中的应用场景"
+    },
+    {
+      "title": "6万亿置换债发行收官明年重在城投化债",
+      "url": "https://stcn.com/article/detail/3565109.html",
+      "relevance": "引用企业预警通数据进行城投公司统计"
+    },
+    {
+      "title": "全国行政区划数据完整SQL数据库设计与应用",
+      "url": "https://blog.csdn.net/weixin_42300144/article/details/153735606",
+      "relevance": "行政区划代码编制原则与数据库设计参考"
+    },
+    {
+      "title": "中华人民共和国行政区划代码 - 维基百科",
+      "url": "https://zh.wikipedia.org/zh-cn/中华人民共和国行政区划代码",
+      "relevance": "行政区划代码层级结构的标准参考"
+    }
+  ],
+  "quality_checklist": {
+    "exploration_reviewed": true,
+    "code_files_read": true,
+    "web_search_completed": true,
+    "insights_extracted": true,
+    "limitations_identified": true,
+    "report_structure_designed": true,
+    "json_format_valid": true
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "project_id": "T65",
+  "project_name": "自动总结文档内容",
+  "project_type": "AI文档处理与智能总结",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "T65_自动总结文档内容.ipynb",
+    "config.py",
+    "requirements.txt"
+  ],
+  "directory_structure": {
+    "root": "T65-自动总结文档内容",
+    "files": [
+      {
+        "name": "T65_自动总结文档内容.ipynb",
+        "type": "notebook",
+        "description": "主程序Notebook，包含完整文档处理流程"
+      },
+      {
+        "name": "config.py",
+        "type": "config",
+        "description": "配置文件，包含数据库、API、邮件等配置"
+      },
+      {
+        "name": "requirements.txt",
+        "type": "dependencies",
+        "description": "Python依赖包列表"
+      }
+    ]
+  },
+  "unique_points": [
+    "多格式文档支持：支持PDF、DOCX、TXT、图片（PNG/JPG/BMP/TIFF）等多种格式",
+    "双OCR引擎支持：优先使用PaddleOCR（支持GPU加速），备选Tesseract OCR",
+    "图像预处理增强：使用OpenCV进行灰度化、二值化、形态学操作等预处理提升OCR效果",
+    "阿里云Qwen-Long模型集成：利用长文本模型进行高质量文档总结",
+    "Aho-Corasick敏感词过滤：高效多模式匹配算法实现敏感词过滤",
+    "智能内容类型识别：根据文件名自动识别普通文档或群聊记录，使用不同提示词",
+    "完整工作流自动化：文档处理 -> OCR -> 敏感词过滤 -> AI总结 -> 数据库存储 -> 邮件通知",
+    "云盘文件夹监控：支持iCloud和WPS云盘文件夹自动监控处理"
+  ],
+  "data_sources": {
+    "input_folders": [
+      "C:\\Users\\Administrator\\iCloudDrive\\quickinfo",
+      "C:\\Users\\Administrator\\WPSDrive\\389717562\\WPS云盘\\WPS\\quick"
+    ],
+    "output_folder": "C:\\Users\\Administrator\\WPSDrive\\389717562\\WPS云盘\\WPS\\lib",
+    "databases": [
+      {
+        "name": "主数据库 (yq)",
+        "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+        "purpose": "主数据存储"
+      },
+      {
+        "name": "信息库 (timinfo)",
+        "host": "139.196.19.26",
+        "purpose": "存储文档总结元数据"
+      }
+    ],
+    "api_services": [
+      {
+        "name": "阿里云Qwen-Long",
+        "endpoint": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "purpose": "长文档智能总结"
+      }
+    ],
+    "sensitive_words_file": "C:\\daily\\sensitive_word_dict.txt"
+  },
+  "search_keywords_used": [
+    "AI文档摘要",
+    "LLM自动总结",
+    "2026 AI文档趋势"
+  ],
+  "search_findings": {
+    "industry_trends": [
+      "2026年企业文档从静态走向智能：会思考、能协作、可治理",
+      "MCP服务器实现文档实时更新与多模态化",
+      "多智能体协作将重塑文档形态",
+      "RAG技术深度解决LLM幻觉和知识截止难题"
+    ],
+    "related_tools": [
+      "NotebookLM - 文档快速总结",
+      "Manus/Genspark - 研究任务AI助手",
+      "腾讯云方案 - 大模型生成文档摘要"
+    ],
+    "technical_directions": [
+      "Context Engineering成为Agent时代核心战场",
+      "AI自动提取摘要并传递必要上下文实现跨团队协作",
+      "AI治理需应对AI错误、人工监督等挑战"
+    ]
+  },
+  "recommended_focus": [
+    "项目核心价值：自动化文档处理流程，实现从文档到智能总结的端到端解决方案",
+    "技术亮点：多OCR引擎支持、长文本模型应用、敏感词过滤、自动化工作流",
+    "应用场景：金融研究报告自动总结、群聊记录分析、信息库自动构建",
+    "改进方向：可考虑集成RAG技术提升总结准确性、支持更多文档格式、添加文档分类标签"
+  ],
+  "suggested_report_structure": [
+    {
+      "section": "项目概述",
+      "content": "项目背景、目标、整体架构"
+    },
+    {
+      "section": "技术实现",
+      "content": "OCR识别、AI总结、敏感词过滤、邮件通知模块详解"
+    },
+    {
+      "section": "数据流程",
+      "content": "从文档输入到总结输出的完整数据流"
+    },
+    {
+      "section": "配置与部署",
+      "content": "环境配置、依赖安装、运行说明"
+    },
+    {
+      "section": "行业对比",
+      "content": "与2026年AI文档趋势的对比分析"
+    },
+    {
+      "section": "优化建议",
+      "content": "功能扩展、性能优化、安全加固建议"
+    }
+  ],
+  "notebook_cells_summary": {
+    "total_cells": 16,
+    "markdown_cells": 7,
+    "code_cells": 9,
+    "key_functions": [
+      "read_sensitive_words - 读取敏感词列表",
+      "build_automaton - 构建Aho-Corasick自动机",
+      "filter_sensitive_words - 过滤敏感词",
+      "DocumentProcessor.recognize_and_draw - OCR识别",
+      "DocumentProcessor.process_file - 文档处理",
+      "upload_file_to_qwen - 上传文件到Qwen",
+      "summarize_content - Qwen总结内容",
+      "send_email - 发送邮件通知",
+      "process_files_in_folder - 批量处理文件夹",
+      "main - 主执行函数"
+    ]
+  },
+  "dependencies_categories": {
+    "data_processing": ["pandas", "numpy"],
+    "database": ["sqlalchemy", "pymysql"],
+    "ocr": ["paddleocr", "paddlepaddle", "pytesseract", "pdf2image"],
+    "document_processing": ["python-docx", "ebooklib", "tika", "PyMuPDF(fitz)"],
+    "image_processing": ["Pillow", "opencv-python"],
+    "ai_api": ["openai"],
+    "web_automation": ["selenium", "webdriver-manager", "beautifulsoup4", "lxml"],
+    "text_processing": ["ahocorasick"],
+    "network": ["requests"]
+  }
+}

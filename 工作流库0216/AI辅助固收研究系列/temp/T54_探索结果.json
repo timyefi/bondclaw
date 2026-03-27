@@ -1,0 +1,165 @@
+{
+  "project_id": "T54",
+  "project_name": "产业高频跟踪",
+  "project_type": "量化分析/宏观经济研究",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "README.md",
+    "config.py",
+    "requirements.txt",
+    "src/__init__.py",
+    "src/data_processor.py",
+    "src/wavelet_analyzer.py",
+    "src/industry_tracker.py",
+    "重构.ipynb"
+  ],
+  "directory_structure": {
+    "root": "T54-产业高频跟踪/",
+    "notebooks": ["重构.ipynb"],
+    "source_code": [
+      "src/__init__.py",
+      "src/data_processor.py",
+      "src/wavelet_analyzer.py",
+      "src/industry_tracker.py"
+    ],
+    "config": ["config.py"],
+    "documentation": ["README.md"],
+    "dependencies": ["requirements.txt"],
+    "auto_created_dirs": ["data/", "assets/", "output/"]
+  },
+  "unique_points": {
+    "differentiators": [
+      "使用小波分析(Wavelet Analysis)技术对高频产业数据进行周期分解",
+      "将高频指标转化为景气度分位点和趋势方向判断",
+      "支持多种数据处理方式：年同比、月同比、高频价格同比等",
+      "采用db2小波基进行多尺度信号分解与重构"
+    ],
+    "research_problems_solved": [
+      "高频经济指标的周期性识别与量化",
+      "产业景气度的实时跟踪与预警",
+      "通过小波分解去除高频噪声，提取主要周期信号",
+      "多行业指标的统一框架处理"
+    ],
+    "technical_highlights": [
+      "小波分解与重构算法实现周期分位点计算",
+      "IQR方法处理异常值",
+      "支持多数据库连接(MySQL/PostgreSQL)",
+      "模块化设计：数据处理、小波分析、行业跟踪独立封装",
+      "Plotly可视化实现行业景气度分布展示"
+    ]
+  },
+  "data_sources": {
+    "databases": [
+      {
+        "name": "bond",
+        "type": "MySQL",
+        "host": "阿里云RDS"
+      },
+      {
+        "name": "stock",
+        "type": "MySQL",
+        "host": "阿里云RDS",
+        "tables": ["edb.edbdata"]
+      },
+      {
+        "name": "yq",
+        "type": "MySQL",
+        "host": "阿里云RDS",
+        "tables": ["产业跟踪指标信息", "行业景气度跟踪"]
+      },
+      {
+        "name": "tsdb",
+        "type": "PostgreSQL",
+        "host": "阿里云服务器"
+      }
+    ],
+    "indicator_tables": [
+      "产业跟踪指标信息",
+      "edb.edbdata",
+      "行业景气度跟踪"
+    ]
+  },
+  "core_algorithms": {
+    "wavelet_analysis": {
+      "wavelet_type": "db2 (Daubechies 2)",
+      "decomposition_method": "pywt.wavedec",
+      "reconstruction_method": "pywt.waverec",
+      "output_metrics": ["周期分位点", "趋势方向(1/-1/0)"]
+    },
+    "data_processing": {
+      "outlier_handling": "IQR方法",
+      "interpolation": "线性插值",
+      "resampling": "月末重采样",
+      "transformations": [
+        "calculate_yoy_12ma (12月移动平均年同比)",
+        "monthly_yoy_12ma (月同比12个月移动平均)",
+        "highfreq_price_yoy (高频价格月均价年同比)"
+      ]
+    }
+  },
+  "search_keywords_used": ["产业高频数据跟踪", "宏观经济指标", "小波分析"],
+  "search_findings": {
+    "industry_context": [
+      "高频指标可及时跟踪经济边际变化，弥补官方低频数据滞后性",
+      "小波分析在金融时间序列中能有效捕捉短期极端波动和多尺度风险结构",
+      "高频数据与低频数据融合策略是量化投资的重要方向"
+    ],
+    "related_research": [
+      "经济冷暖高频先知框架",
+      "小波时频分析在金融风险检测中的应用",
+      "基于高频数据的波动率建模研究"
+    ]
+  },
+  "recommended_focus": {
+    "primary": "小波分析算法在产业景气度跟踪中的创新应用",
+    "secondary": [
+      "高频数据处理与周期分解的方法论",
+      "多行业景气度指标的统一量化框架",
+      "数据异常值处理与信号平滑技术"
+    ]
+  },
+  "suggested_report_structure": [
+    {
+      "section": "1. 项目概述",
+      "content": "项目目标、应用场景、整体架构"
+    },
+    {
+      "section": "2. 核心算法：小波分析",
+      "content": "小波分解原理、db2小波基选择、周期分位点计算方法"
+    },
+    {
+      "section": "3. 数据处理流程",
+      "content": "数据采集、异常值处理、同比转换、重采样"
+    },
+    {
+      "section": "4. 行业跟踪模块",
+      "content": "IndustryTracker类设计、多指标合并、标准化处理"
+    },
+    {
+      "section": "5. 可视化与输出",
+      "content": "Plotly景气度分布图、数据库存储、CSV导出"
+    },
+    {
+      "section": "6. 技术亮点总结",
+      "content": "方法论创新、工程实践、应用价值"
+    }
+  ],
+  "dependencies": {
+    "core": [
+      "pandas>=2.0.0",
+      "numpy>=1.24.0",
+      "scipy>=1.10.0",
+      "pywt>=1.5.0"
+    ],
+    "database": [
+      "sqlalchemy>=2.0.0",
+      "pymysql>=1.1.0",
+      "psycopg2-binary>=2.9.0"
+    ],
+    "visualization": [
+      "matplotlib>=3.7.0",
+      "plotly>=5.15.0",
+      "ipywidgets>=8.0.0"
+    ]
+  }
+}

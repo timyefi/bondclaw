@@ -1,0 +1,72 @@
+{
+  "project_id": "T07",
+  "project_name": "弘则信用债指数",
+  "project_type": "数据采集/分析研究/策略回测",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "重构.ipynb",
+    "config.py",
+    "src/bond_system_2.py",
+    "src/1_complete_bond_index_analysis.py",
+    "src/2_daily_bond_index_update.py",
+    "src/3_excel_bond_index_analysis.py",
+    "README.md",
+    "requirements.txt"
+  ],
+  "directory_structure": "T07-弘则信用债指数/\n├── 重构.ipynb         # 主重构Notebook (核心分析文件)\n├── config.py          # 配置参数(数据库连接、指数配置)\n├── requirements.txt   # Python依赖列表\n├── README.md          # 项目说明\n├── src/               # 原始代码文件备份\n│   ├── bond_system_2.py           # 基础版本类封装\n│   ├── 1_complete_bond_index_analysis.py  # 完整分析版本(带缓存)\n│   ├── 2_daily_bond_index_update.py       # 每日更新版本\n│   └── 3_excel_bond_index_analysis.py     # Excel版本\n├── data/              # 数据文件\n├── assets/            # 图片等资源\n├── output/            # 输出目录\n└── cache/             # 缓存目录(自动创建)",
+  "unique_points": {
+    "research_problem": "构建基于收益率分位数的信用债指数体系，通过将债券按收益率分为10个分位数组（0-10%, 10-20%, ..., 90-100%），揭示不同收益率区间的信用债表现差异。这与传统的信用等级分类不同，提供了一种基于市场定价（收益率）而非信用评级的市场视角。",
+    "technical_feature": "1. 双维度分类体系：债券类型（信用债/金融债）x 分位数组（10组）x 价格类型（全价/净价），共40个指数\n2. 余额加权计算：使用债券余额作为权重，更反映市场实际资金配置\n3. 双数据库架构：PostgreSQL(tsdb)存储收益率曲线数据，MySQL(bond)存储市场行情数据\n4. 完善的缓存机制：使用Parquet格式缓存中间结果，支持增量更新\n5. 模块化设计：DatabaseManager类封装数据库连接，支持每日更新和历史回填",
+    "application_scenario": "1. 信用债市场结构分析：通过不同分位数组的表现差异，分析市场分层特征\n2. 信用利差研究：高低分位数组的收益差异可反映信用风险溢价\n3. 投资策略构建：可基于分位数指数开发轮动策略或相对价值策略\n4. 每日监控：支持自动化每日更新，跟踪市场变化",
+    "core_insight": "按收益率分位数构建的信用债指数提供了一种独特的市场视角，不同于传统的信用评级分类，它直接反映市场对不同债券的风险定价，是研究信用债市场结构和信用利差的有效工具。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "待确认",
+      "similarity": "都涉及债券收益率曲线数据处理和指数构建",
+      "difference": "本项目专注于收益率分位数分组，而其他项目可能侧重于期限结构或信用评级分类"
+    }
+  ],
+  "data_sources": [
+    "PostgreSQL (tsdb) - hzcurve_credit: 信用债收益率曲线数据",
+    "PostgreSQL (tsdb) - basicinfo_credit: 信用债基础信息",
+    "PostgreSQL (tsdb) - basicinfo_finance: 金融债基础信息",
+    "MySQL (bond) - marketinfo_credit: 信用债市场行情",
+    "MySQL (bond) - marketinfo_finance: 金融债市场行情",
+    "MySQL (bond) - bond_indices: 指数存储表",
+    "MySQL (bond) - bond_index_constituents: 指数构成表"
+  ],
+  "search_keywords_used": [
+    "信用债指数研究 信用利差 分位数指数",
+    "弘则研究 信用债 债券指数",
+    "债券指数编制方法 收益率分位数 余额加权"
+  ],
+  "search_findings": "1. 弘则研究(hzinsights)是一家专业固收研究机构，在债券策略方面有深度研究，2026年债市策略围绕'慢熊'与'分岔'中的相对价值展开\n2. 2025年末信用利差约42.32bp，全年累计收窄24.01bp，处于历史较低区间\n3. 超90%信用债收益率在3%以下，信用利差呈现低位震荡格局\n4. 余额加权是债券指数编制的常用方法，中债指数体系采用类似方法\n5. 收益率分位数指标常用于衡量当前收益率在历史数据中的相对位置\n6. 市场上存在深证基准做市信用债指数、中债-1-3年国开行债券指数等类似产品",
+  "recommended_focus": [
+    "收益率分位数分组方法的独特性和与信用评级分类的对比",
+    "40个指数（4大类x10分位）的设计逻辑和应用价值",
+    "双数据库架构的技术实现和数据流转",
+    "余额加权计算的具体方法和与等权法的差异",
+    "从分位数指数视角解读信用利差变化",
+    "每日更新和历史回填的工程实现"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "研究问题与指数设计逻辑",
+      "收益率分位数分组方法",
+      "指数计算公式与余额加权",
+      "双数据库架构设计",
+      "分位数指数的市场解读"
+    ],
+    "skip_chapters": [
+      "数据库连接细节代码",
+      "缓存机制的技术实现",
+      "可视化代码实现"
+    ],
+    "word_allocation": {
+      "核心章节": "50%",
+      "心得要点": "15%",
+      "其他章节": "35%"
+    }
+  }
+}

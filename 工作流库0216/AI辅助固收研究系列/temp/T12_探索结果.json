@@ -1,0 +1,152 @@
+{
+  "project_info": {
+    "project_id": "T12",
+    "project_name": "理财产品权益配置",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T12-理财产品权益配置",
+    "exploration_date": "2026-02-16"
+  },
+  "project_structure": {
+    "files": [
+      {
+        "filename": "重构.ipynb",
+        "type": "Jupyter Notebook",
+        "description": "主要分析Notebook，包含完整的数据获取、处理、分析和可视化流程"
+      },
+      {
+        "filename": "analyze_volatility.py",
+        "type": "Python Script",
+        "description": "独立的波动率分析脚本，包含专业的点状分布图和圆圈分布图可视化"
+      },
+      {
+        "filename": "config.py",
+        "type": "Python Configuration",
+        "description": "配置文件，包含风险等级、投资类型、权益配置比例限制等核心参数"
+      }
+    ],
+    "total_files": 3
+  },
+  "core_functionality": {
+    "data_sources": [
+      "数据库连接（MySQL）",
+      "Excel文件读取"
+    ],
+    "analysis_modules": [
+      "产品信息获取与清洗",
+      "净值数据处理",
+      "资产配置数据获取",
+      "产品分类（按风险等级、投资类型、期限）"
+    ],
+    "key_metrics": [
+      "权益配置比例",
+      "日收益率/累计收益率/年化收益率",
+      "年化波动率",
+      "VaR（95%/99%）",
+      "CVaR（条件在险价值）",
+      "最大回撤",
+      "夏普比率"
+    ],
+    "visualization_types": [
+      "频数分布直方图",
+      "核密度估计图",
+      "箱线图",
+      "点状分布图（带抖动）",
+      "圆圈分布图（智能布局）",
+      "权益配置饼图",
+      "风险等级柱状图"
+    ]
+  },
+  "configuration_details": {
+    "risk_levels": ["R1", "R2", "R3", "R4", "R5"],
+    "risk_level_names": {
+      "R1": "低风险",
+      "R2": "中低风险",
+      "R3": "中等风险",
+      "R4": "中高风险",
+      "R5": "高风险"
+    },
+    "equity_ratio_limits_by_risk": {
+      "R1": {"min": 0.00, "max": 0.10},
+      "R2": {"min": 0.00, "max": 0.20},
+      "R3": {"min": 0.10, "max": 0.40},
+      "R4": {"min": 0.20, "max": 0.60},
+      "R5": {"min": 0.40, "max": 0.80}
+    },
+    "investment_types": ["固定收益类", "权益类", "混合类", "货币市场类", "商品类"],
+    "equity_types": ["股票", "股票指数", "股票基金", "股票期权", "权益衍生品"],
+    "wealth_product_config": {
+      "min_equity_ratio": 0.00,
+      "max_equity_ratio": 0.80,
+      "liquidity_requirement": 0.10,
+      "leverage_limit": 1.40,
+      "single_asset_limit": 0.10,
+      "single_industry_limit": 0.30
+    }
+  },
+  "uniqueness_analysis": {
+    "differences_from_other_projects": [
+      "专注于理财产品权益资产配置分析，而非传统固收研究",
+      "结合监管合规检查（风险等级与权益比例匹配）",
+      "完整的理财产品风险收益特征分析体系",
+      "包含压力测试场景配置"
+    ],
+    "unique_research_problems": [
+      "理财产品权益资产暴露程度测算",
+      "按风险等级的权益配置合规性验证",
+      "理财资金入市的配置策略分析",
+      "年化波动率分布特征研究（专门的分析脚本）"
+    ],
+    "technical_highlights": [
+      "专业的波动率分布可视化（点状图、圆圈分布图、螺旋布局）",
+      "基于Sturges和Scott规则的智能分组算法",
+      "分位数驱动的非线性布局可视化",
+      "完整的配置验证工具（风险等级与权益比例匹配）",
+      "模块化的配置管理（config.py集中管理所有参数）"
+    ]
+  },
+  "industry_context": {
+    "market_overview": {
+      "total_scale_2025": "33.29万亿元",
+      "equity_asset_scale_2025": "0.66万亿元",
+      "equity_asset_ratio_2025": "1.85%",
+      "average_return_2025": "1.98%"
+    },
+    "trends": [
+      "2024-2025年权益配置占比持续下降（从2.58%降至1.85%）",
+      "收益率连续下滑（2023年2.94% -> 2024年2.65% -> 2025年1.98%）",
+      "理财资金趋向保守，集中配置低风险资产",
+      "产品结构优化，封闭式产品占比增加"
+    ],
+    "regulatory_requirements": [
+      "开放式公募理财产品流动性受限资产不超过15%",
+      "权益类产品分级比例不超过1:1",
+      "固定收益类产品分级比例不超过3:1",
+      "单一资产投资不超过产品净资产10%"
+    ]
+  },
+  "key_code_patterns": {
+    "database_connection": "使用SQLAlchemy + PyMySQL连接MySQL数据库",
+    "data_cleaning": "去重、缺失值处理、标准化",
+    "risk_metrics": "VaR、CVaR、最大回撤、夏普比率完整实现",
+    "visualization_framework": "matplotlib + seaborn，支持中文字体"
+  },
+  "data_requirements": {
+    "excel_file": "银行理财权益测算.xlsx",
+    "required_sheets": ["年化波动率全量"],
+    "database_tables": [
+      "wealth_products（产品信息）",
+      "product_nav（净值数据）",
+      "product_allocation（资产配置）"
+    ]
+  },
+  "summary": {
+    "project_focus": "银行理财产品权益资产配置分析",
+    "core_value": "提供理财产品权益配置的完整分析框架，包括配置比例分析、收益风险计算、监管合规验证",
+    "target_audience": "理财投资研究人员、产品经理、风控人员",
+    "practical_applications": [
+      "理财产品权益配置策略制定",
+      "产品风险收益特征评估",
+      "监管合规性检查",
+      "投资组合优化建议"
+    ]
+  }
+}

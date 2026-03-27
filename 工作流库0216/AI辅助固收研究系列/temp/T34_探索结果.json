@@ -1,0 +1,311 @@
+{
+  "project_info": {
+    "project_id": "T34",
+    "project_name": "债券新发行",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行",
+    "refactor_date": "2026-02-14",
+    "status": "completed",
+    "document_quality": "A"
+  },
+  "project_description": {
+    "summary": "债券新发行系统是一个综合性的债券一级市场数据采集和分析工具，主要功能包括债券到期数据采集（Wind API）和债券新发行数据采集（同花顺iFinD API）。",
+    "core_functions": [
+      "债券到期数据采集：从Wind API获取各种类型债券的发行和到期数据",
+      "债券新发行分析：从同花顺iFinD API获取新发债券的详细信息",
+      "数据存储与管理：将数据存储到MySQL数据库，支持动态列管理",
+      "数据去重与清洗：自动识别和删除重复数据"
+    ]
+  },
+  "file_structure": {
+    "total_files": 15,
+    "files": [
+      {
+        "filename": "main.py",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\main.py",
+        "type": "python",
+        "description": "主程序入口，支持命令行参数执行债券到期数据采集和债券新发行数据采集"
+      },
+      {
+        "filename": "config.py",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\config.py",
+        "type": "python",
+        "description": "配置文件，包含数据库配置、API配置、业务参数配置"
+      },
+      {
+        "filename": "README.md",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\README.md",
+        "type": "markdown",
+        "description": "项目说明文档"
+      },
+      {
+        "filename": "requirements.txt",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\requirements.txt",
+        "type": "text",
+        "description": "Python依赖列表"
+      },
+      {
+        "filename": "report.json",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\report.json",
+        "type": "json",
+        "description": "重构报告"
+      },
+      {
+        "filename": "src/zqdq.py",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\src\\zqdq.py",
+        "type": "python",
+        "description": "原始债券到期数据采集脚本"
+      },
+      {
+        "filename": "src/zqfx.py",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\src\\zqfx.py",
+        "type": "python",
+        "description": "原始债券新发行数据采集脚本"
+      },
+      {
+        "filename": "src/SELECT.sql",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\src\\SELECT.sql",
+        "type": "sql",
+        "description": "SQL查询语句"
+      },
+      {
+        "filename": "重构.ipynb",
+        "path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T34-债券新发行\\重构.ipynb",
+        "type": "jupyter",
+        "description": "主重构Notebook"
+      }
+    ],
+    "notebooks": [
+      {
+        "chapter": 1,
+        "filename": "1_项目概述与数据字典.ipynb",
+        "title": "项目概述与数据字典",
+        "description": "介绍项目定位、数据流向、数据字典、API接口说明"
+      },
+      {
+        "chapter": 2,
+        "filename": "2_环境配置与初始化.ipynb",
+        "title": "环境配置与初始化",
+        "description": "导入依赖、配置参数（环境变量）、数据库连接、辅助函数"
+      },
+      {
+        "chapter": 3,
+        "filename": "3_数据采集与ETL.ipynb",
+        "title": "数据采集与ETL",
+        "description": "Wind API数据采集、iFinD API数据采集、数据入库函数"
+      },
+      {
+        "chapter": 4,
+        "filename": "4_数据处理模块.ipynb",
+        "title": "数据处理模块",
+        "description": "数据清洗、数据标准化、数据验证函数"
+      },
+      {
+        "chapter": 5,
+        "filename": "5_核心逻辑实现.ipynb",
+        "title": "核心逻辑实现",
+        "description": "BondMaturityCollector类、BondIssueCollector类、主控制类"
+      },
+      {
+        "chapter": 6,
+        "filename": "6_测试与验证.ipynb",
+        "title": "测试与验证",
+        "description": "DataValidator类、DataQualityChecker类、数据预览和统计"
+      },
+      {
+        "chapter": 7,
+        "filename": "7_部署与监控.ipynb",
+        "title": "部署与监控",
+        "description": "日志配置、TaskScheduler类、AlertManager类、定时任务配置"
+      }
+    ]
+  },
+  "data_sources": {
+    "wind_api": {
+      "description": "Wind经济数据库API",
+      "function": "w.wset()",
+      "interface": "bondissuanceandmaturity",
+      "usage": "债券到期数据采集",
+      "time_range": "未来7天",
+      "call_frequency": "按日期循环，每天最多27次调用"
+    },
+    "ifind_api": {
+      "description": "同花顺iFinD API",
+      "function": "THS_DR()",
+      "interface": "p04524",
+      "usage": "债券新发行数据采集",
+      "time_range": "未来1-30天",
+      "call_frequency": "单次批量调用"
+    }
+  },
+  "database_tables": {
+    "database": "yq",
+    "mysql_host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+    "tables": {
+      "output": [
+        {
+          "table_name": "债券到期",
+          "description": "债券到期数据表",
+          "key_fields": [
+            {"field": "dt", "type": "DATE", "description": "发行日期"},
+            {"field": "totalredemption", "type": "DECIMAL", "description": "总兑付金额（亿元）"},
+            {"field": "bondtype", "type": "VARCHAR(50)", "description": "债券类型"},
+            {"field": "isurbaninvestmentbonds", "type": "VARCHAR(10)", "description": "是否城投债"}
+          ]
+        },
+        {
+          "table_name": "债券新发行1",
+          "description": "债券新发行数据表",
+          "key_fields": [
+            {"field": "trade_code", "type": "VARCHAR(20)", "description": "债券代码"},
+            {"field": "sec_name", "type": "VARCHAR(100)", "description": "债券名称"},
+            {"field": "dt", "type": "DATE", "description": "发行日期"},
+            {"field": "planissueamount", "type": "DECIMAL", "description": "计划发行规模（亿元）"},
+            {"field": "bondterm", "type": "VARCHAR(50)", "description": "债券期限"},
+            {"field": "bondtype", "type": "VARCHAR(50)", "description": "债券类型"},
+            {"field": "isurbaninvestmentbonds", "type": "VARCHAR(10)", "description": "是否城投债"}
+          ]
+        }
+      ]
+    }
+  },
+  "bond_types": {
+    "count": 28,
+    "categories": [
+      {"wind_code": "governmentbonds", "name": "国债", "urban_investment": false},
+      {"wind_code": "centralbankbills", "name": "央行票据", "urban_investment": false},
+      {"wind_code": "cds", "name": "存单", "urban_investment": false},
+      {"wind_code": "commercialbankbonds", "name": "普通金融债", "urban_investment": false},
+      {"wind_code": "policybankbonds", "name": "政策银行债", "urban_investment": false},
+      {"wind_code": "commercialbanksubordinatedbonds", "name": "商业银行次级债券", "urban_investment": false},
+      {"wind_code": "insurancecompanybonds", "name": "保险债", "urban_investment": false},
+      {"wind_code": "corporatebondsofsecuritiescompany", "name": "证券公司债", "urban_investment": false},
+      {"wind_code": "securitiescompanycps", "name": "证券公司短融债", "urban_investment": false},
+      {"wind_code": "otherfinancialagencybonds", "name": "其他金融机构债", "urban_investment": false},
+      {"wind_code": "enterprisebonds", "name": "企业债", "urban_investment": "both"},
+      {"wind_code": "corporatebonds", "name": "公司债", "urban_investment": "both"},
+      {"wind_code": "medium-termnotes", "name": "中期票据", "urban_investment": "both"},
+      {"wind_code": "cps", "name": "短期融资券", "urban_investment": "both"},
+      {"wind_code": "projectrevenuenotes", "name": "项目收益票据", "urban_investment": false},
+      {"wind_code": "ppn", "name": "PPN", "urban_investment": "both"},
+      {"wind_code": "supranationalbonds", "name": "国际机构债", "urban_investment": false},
+      {"wind_code": "agencybonds", "name": "政府支持机构债", "urban_investment": false},
+      {"wind_code": "standardizednotes", "name": "标准化票据", "urban_investment": false},
+      {"wind_code": "abs", "name": "ABS", "urban_investment": false},
+      {"wind_code": "convertiblebonds", "name": "可转债", "urban_investment": false},
+      {"wind_code": "exchangeablebonds", "name": "可交换债", "urban_investment": false},
+      {"wind_code": "detachableconvertiblebonds", "name": "可分离转债", "urban_investment": false}
+    ]
+  },
+  "core_classes": {
+    "BondMaturityCollector": {
+      "description": "债券到期数据采集器",
+      "methods": ["collect", "_init_wind", "_get_existing_dates", "_fetch_single_day_single_type"],
+      "config": {
+        "days_ahead": 7,
+        "table_name": "债券到期"
+      }
+    },
+    "BondIssueCollector": {
+      "description": "债券新发行数据采集器",
+      "methods": ["collect", "_init_ifind", "_deduplicate"],
+      "config": {
+        "days_start": 1,
+        "days_end": 30,
+        "table_name": "债券新发行1"
+      }
+    },
+    "BondNewIssueSystem": {
+      "description": "债券新发行系统主控制类",
+      "methods": ["run_maturity_collection", "run_issue_collection", "run_all"]
+    }
+  },
+  "key_functions": {
+    "generate_column_mapping": "生成列名映射，将中文列名映射为col_0, col_1...",
+    "change_column_names": "动态修改表列名（中文<->英文）",
+    "insert_data_to_db": "数据处理+动态表结构+批量插入（支持UPSERT）",
+    "get_db_engine": "创建数据库连接引擎",
+    "log_progress": "记录处理进度"
+  },
+  "execution_config": {
+    "maturity_collection": {
+      "days_ahead": 7,
+      "description": "获取未来7天的债券到期数据",
+      "recommended_time": "每天16:00-18:00"
+    },
+    "issue_collection": {
+      "days_start": 1,
+      "days_end": 30,
+      "description": "获取未来1-30天的债券新发行数据",
+      "recommended_time": "每天16:00-18:00"
+    }
+  },
+  "environment_variables": [
+    "MYSQL_HOST",
+    "MYSQL_PORT",
+    "MYSQL_USER",
+    "MYSQL_PASSWORD",
+    "MYSQL_DATABASE",
+    "IFIND_USERNAME",
+    "IFIND_PASSWORD",
+    "WIND_USERNAME",
+    "WIND_PASSWORD",
+    "LOG_LEVEL"
+  ],
+  "dependencies": {
+    "required": [
+      "pandas>=1.5.0",
+      "numpy>=1.21.0",
+      "pymysql>=1.0.0",
+      "sqlalchemy>=1.4.0",
+      "chardet>=5.0.0",
+      "requests>=2.28.0"
+    ],
+    "optional": [
+      "WindPy - Wind金融终端API，需要安装Wind终端",
+      "iFinDPy - 同花顺iFinD API，需要联系同花顺获取"
+    ]
+  },
+  "refactor_improvements": [
+    "配置与代码分离，使用环境变量管理敏感信息",
+    "面向对象设计，提高代码可维护性和可扩展性",
+    "模块化结构，7个独立Notebook便于阅读和维护",
+    "完善的日志和告警机制",
+    "数据质量检查功能",
+    "定时任务调度支持",
+    "详细的文档和注释",
+    "支持命令行参数运行"
+  ],
+  "data_flow": {
+    "zqdq": {
+      "description": "债券到期数据采集流程",
+      "steps": [
+        "初始化数据库连接",
+        "启动Wind API",
+        "确定日期范围（未来7天）",
+        "查询数据库已有日期",
+        "循环处理每个日期和债券类型",
+        "调用Wind API获取数据",
+        "标记债券类型和城投标识",
+        "列名转换（中→英）",
+        "插入数据库",
+        "列名恢复（英→中）"
+      ]
+    },
+    "zqfx": {
+      "description": "债券新发行数据采集流程",
+      "steps": [
+        "初始化数据库连接",
+        "登录同花顺iFinD",
+        "确定日期范围（未来1-30天）",
+        "调用iFinD API获取数据",
+        "列名转换和数据入库",
+        "执行去重SQL（保留非S开头代码）"
+      ]
+    }
+  },
+  "security_notes": {
+    "hardcoded_credentials_found": true,
+    "location": "src/zqdq.py 和 src/zqfx.py 中存在硬编码的数据库密码和API凭证",
+    "recommendation": "重构后的config.py已使用环境变量，建议删除原始src文件中的硬编码密码"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "project_id": "T52",
+  "project_name": "svg提取数据",
+  "project_type": "数据采集/工具集成",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\README.md",
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\config.py",
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\requirements.txt",
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\重构.ipynb",
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\src\\原始代码.ipynb",
+    "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T52-svg提取数据\\src\\output.xlsx"
+  ],
+  "directory_structure": "T52-svg提取数据/\n├── 重构.ipynb         # 重构后的核心Jupyter Notebook（主要功能模块）\n├── config.py          # 配置文件（数据库连接、已知点、X轴配置）\n├── requirements.txt   # 依赖列表\n├── README.md          # 项目说明文档\n└── src/\n    ├── 原始代码.ipynb  # 原始开发代码\n    └── output.xlsx     # 输出示例文件",
+  "unique_points": {
+    "research_problem": "从研究报告网页中的SVG图表（特别是Highcharts生成的图表）提取原始数值数据，解决无法直接获取图表背后数据的问题",
+    "technical_feature": "1. 支持柱形图（rect元素）和线图（path元素）两种图表类型的坐标提取\n2. 基于3个已知点的线性插值算法，将SVG坐标精确转换为实际数值\n3. 自动检测Y轴零点位置，正确处理正负值柱形\n4. 支持对数坐标插值\n5. 自动生成时间序列X轴标签（支持月度和季度）",
+    "application_scenario": "当研究报告只提供图表而无法获取原始数据时，可使用此工具从SVG图表中精确提取数据点，用于进一步的数据分析和研究",
+    "core_insight": "通过SVG坐标到实际数值的线性插值转换，实现图表数据的精确数字化重建"
+  },
+  "similar_projects": [],
+  "data_sources": [
+    "网页SVG图表（Highcharts生成）",
+    "研究报告中的嵌入式图表"
+  ],
+  "search_keywords_used": [
+    "SVG图表数据提取 Python",
+    "Highcharts 图表数字化",
+    "研究报告图表提取"
+  ],
+  "search_findings": "网络搜索发现：1) Highcharts是常用的Web图表库，其图表本质是SVG格式；2) Python可使用svgpathtools或beautifulsoup4解析SVG；3) 对于Highcharts图表，也可尝试从页面JavaScript变量中直接提取配置数据；4) 常见的数据可视化工具包括Matplotlib、Plotly、ECharts等",
+  "recommended_focus": [
+    "线性插值算法的原理和实现",
+    "SVG结构与坐标提取方法",
+    "柱形图/线图的数据提取差异",
+    "Y轴零点自动检测机制",
+    "实际应用案例和精度验证"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "核心技术原理（线性插值、坐标转换）",
+      "多图表类型支持（柱形图、线图）",
+      "工具函数设计（可复用模块）",
+      "实际应用场景与案例"
+    ],
+    "skip_chapters": [
+      "详细的SVG语法解析（技术细节过多）",
+      "数据库连接实现（非核心功能）"
+    ],
+    "word_allocation": {
+      "核心技术原理": 800,
+      "图表类型支持": 500,
+      "应用场景": 400,
+      "技术亮点": 300
+    }
+  },
+  "core_functions": {
+    "extract_svg_data": "完整的SVG数据提取主流程函数",
+    "extract_bar_coordinates": "从柱形图SVG提取坐标点",
+    "extract_line_coordinates": "从线图SVG的path元素提取坐标点",
+    "interpolate_value": "基于3个已知点的线性插值",
+    "interpolate_log_value": "对数坐标插值",
+    "detect_y_zero": "自动检测柱形图Y轴零点",
+    "generate_x_axis_labels": "生成月度X轴标签",
+    "generate_quarter_labels": "生成季度X轴标签",
+    "save_to_database": "保存到MySQL数据库",
+    "save_to_excel": "保存到Excel文件"
+  },
+  "dependencies": [
+    "pandas>=1.5.0",
+    "numpy>=1.21.0",
+    "sqlalchemy>=1.4.0",
+    "pymysql>=1.0.0",
+    "requests>=2.28.0",
+    "beautifulsoup4>=4.11.0",
+    "openpyxl>=3.0.0"
+  ],
+  "notebook_structure": {
+    "重构.ipynb": [
+      "1. 项目概述",
+      "2. 环境配置",
+      "3. 数据获取（SVG文件读取）",
+      "4. 数据处理（SVG结构分析）",
+      "5. 核心逻辑（SVG解析、坐标提取、线性插值、X轴标签生成、数据转换）",
+      "6. 执行与测试",
+      "7. 工具函数（可复用）"
+    ]
+  },
+  "config_items": {
+    "database": "MySQL数据库连接配置（从环境变量读取）",
+    "known_points": "用于线性插值的3个已知点 [(-68, -18.6), (83, 22.7), (186, 51.1)]",
+    "x_axis_config": "X轴时间范围配置（1968年5月至2024年5月）"
+  }
+}

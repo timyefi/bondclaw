@@ -1,0 +1,72 @@
+import os
+import time
+from time import sleep
+from openpyxl import load_workbook
+import win32com.client as win32
+import win32com.client
+
+# 定义重试装饰器
+def retry(attempts, delay=30):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            for i in range(attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    print(f"Attempt {i+1} of {attempts} failed with error {e}. Retrying in {delay} seconds...")
+                    time.sleep(delay)
+            raise Exception(f"All {attempts} attempts failed.")
+        return wrapper
+    return decorator
+
+# 定义Excel操作类
+class ExcelApp:
+    def __init__(self):
+        self.Excel = win32com.client.Dispatch("Excel.Application")
+        self.Excel.DisplayAlerts = False
+
+    @retry(attempts=5)
+    def open_workbook(self, file_path):
+        return self.Excel.Workbooks.Open(file_path)
+
+    @retry(attempts=5)
+    def calculate_worksheet(self, ws):
+        ws.Calculate()
+
+    @retry(attempts=5)
+    def savevalue(self, ws):
+        # 全选工作表
+        used_range = ws.UsedRange
+        # 复制全选的单元格
+        used_range.Copy()
+        # 粘贴为值和数字格式
+        used_range.PasteSpecial(Paste=12)
+        # 取消全选
+        ws.Application.CutCopyMode = False
+
+    @retry(attempts=5)
+    def save_workbook(self, wb):
+        wb.Save()
+
+    @retry(attempts=5)
+    def close_workbook(self, wb):
+        wb.Close()
+
+# 指定文件夹路径
+folder_path = 'C:\\Users\\Administrator\\Desktop\\新建文件夹\\'  # 例如 '2/'
+
+# 假设files是你的文件列表
+files = [file for file in os.listdir(folder_path) if file.endswith('.xlsx')]
+
+# 创建Excel应用实例
+excel = ExcelApp()
+
+for filename in files:
+    file_path = os.path.join(folder_path, filename)
+    # 使用win32com重新打开Excel文件，执行公式并保存结果
+    wb = excel.open_workbook(file_path)
+    sleep(60)
+    excel.calculate_worksheet(wb.Worksheets(1))
+    excel.savevalue(wb.Worksheets(1))
+    excel.save_workbook(wb)
+    excel.close_workbook(wb)

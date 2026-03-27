@@ -1,0 +1,73 @@
+{
+  "project_id": "T30",
+  "project_name": "城投利差监控地图",
+  "project_type": "可视化",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "main.py",
+    "regional_spread_chart.py",
+    "run_query.py",
+    "图表js代码.js",
+    "图表数据生成代码（范例）.py",
+    "需求.md",
+    "PROJECT_BOARD.md"
+  ],
+  "directory_structure": "城投利差监控地图/\n├── main.py                        # 主程序 - 省市利差数据转换与输出\n├── regional_spread_chart.py       # 区域利差图表函数模块\n├── run_query.py                   # 目标格式数据查询\n├── 图表js代码.js                   # Highcharts地图可视化前端代码\n├── 图表数据生成代码（范例）.py     # 数据生成范例代码\n├── PROJECT_BOARD.md               # 项目看板\n└── 需求.md                        # 需求文档",
+  "unique_points": {
+    "research_problem": "本项目解决的核心问题是将城投债区域利差数据以地图热力图形式直观展示。与其他城投分析项目不同，T30专注于'可视化呈现'层面，通过省-市两级下钻的交互式地图，让研究人员快速识别区域利差异常和投资机会。",
+    "technical_feature": "1. 省市两级下钻机制：前端支持从全国省级地图下钻到各地级市地图，每次下钻自动更新颜色轴范围\n2. 使用Highcharts地图组件：支持GeoJSON动态加载和交互式探索\n3. 数据格式转换：从PostgreSQL的hzcurve_credit表获取数据，转换为符合地图展示的标准化格式（省/市名称截取、加权平均收益率计算）\n4. 窗口函数利差计算：使用FIRST_VALUE/LAST_VALUE计算7天、30天滚动收益率变化",
+    "application_scenario": "1. 城投债投资分析：快速识别利差异常区域\n2. 区域风险评估：直观展示各省市城投债信用利差分布\n3. 利差套利策略：通过地图发现高利差与低利差区域，指导配置决策\n4. 日常监控：每日/每周生成最新利差地图",
+    "core_insight": "T30是一个'数据可视化工具'而非'分析研究工具'，其独特价值在于将复杂的区域利差数据转化为直观的地图热力图，支持省市两级下钻探索。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "T06",
+      "project_name": "城投区域分析",
+      "similarity": "都涉及城投债利差数据和区域分析",
+      "difference": "T06是全面的分析框架，包含数据采集、风险评级、投资策略等完整分析流程；T30专注于利差数据的地图可视化展示，是T06中'可视化'环节的独立工具化。T06输出分析报告，T30输出交互式地图。"
+    },
+    {
+      "project_id": "T31-机构行为监测/图表7",
+      "project_name": "全国城投利差热力图",
+      "similarity": "功能几乎完全相同，都是城投利差热力图",
+      "difference": "T31-图表7是机构行为监测系统的一个子图表，数据来源从MySQL的bond.dealtinfo表获取当日成交数据；T30是独立项目，数据来源从PostgreSQL的hzcurve_credit曲线表获取历史曲线数据，支持更长的时间序列分析。"
+    }
+  ],
+  "data_sources": [
+    "PostgreSQL: hzcurve_credit表（弘则信用债曲线数据）",
+    "PostgreSQL: tc最新所属曲线表（债券分类映射）",
+    "PostgreSQL: 曲线代码表（债券代码与分类）",
+    "PostgreSQL: basicinfo_xzqh_ct表（行政区划城投映射）",
+    "MySQL: stock.temp_5843表（省级利差目标格式参考）",
+    "MySQL: stock.temp_5857表（市级利差目标格式参考）",
+    "GeoJSON API: geojson.cn/api/china/（地图边界数据）"
+  ],
+  "search_keywords_used": [
+    "城投债信用利差 分析框架 地图可视化 2025",
+    "区域城投利差 监控 分析方法 研究报告",
+    "城投利差热力图 地图可视化 交互式图表 Highcharts ECharts"
+  ],
+  "search_findings": "1. 市场上已有DM数据终端等商业化产品提供城投利差监控功能，但多为付费终端\n2. 标普信评发布'城投压力地图'报告，说明区域城投风险地图化是行业认可的分析方式\n3. Highcharts和ECharts是主流的交互式地图可视化方案，本项目选择Highcharts\n4. 2025年城投债市场特点是利差分化加剧，长久期品种信用分化明显\n5. 银行授信额度变化、区域座谈会等因素会影响区域利差波动",
+  "recommended_focus": [
+    "技术实现细节：省市两级下钻机制、颜色轴动态更新逻辑",
+    "数据处理的独特性：窗口函数计算滚动收益率变化、省份名称标准化处理",
+    "与T31-图表7的对比：数据源差异（曲线数据vs成交数据）及其对分析结果的影响",
+    "实际应用场景：如何通过利差地图发现投资机会"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": [
+      "技术实现（省市下钻机制、Highcharts配置）",
+      "数据处理流程（SQL窗口函数、数据格式转换）",
+      "与类似项目的对比分析"
+    ],
+    "skip_chapters": [
+      "项目背景（与其他城投项目类似，可简写）",
+      "数据源详细描述（可简化为表名和字段）"
+    ],
+    "word_allocation": {
+      "技术实现与独特性": "50%",
+      "心得要点": "20%",
+      "其他章节": "30%"
+    }
+  }
+}

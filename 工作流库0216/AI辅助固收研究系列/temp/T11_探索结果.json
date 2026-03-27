@@ -1,0 +1,113 @@
+{
+  "project_id": "T11",
+  "project_name": "机构行为",
+  "project_type": "分析研究",
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "重构.ipynb",
+    "config.py",
+    "requirements.txt",
+    ".env.example"
+  ],
+  "directory_structure": "T11-机构行为/\n├── 重构.ipynb        # 主分析Notebook\n├── config.py         # 配置文件\n├── requirements.txt  # 依赖包\n└── .env.example      # 环境变量示例",
+  "unique_points": {
+    "research_problem": "分析各类机构投资者（银行、保险、基金、券商、理财子公司等）在债券市场的行为特征，包括持仓偏好、交易模式、资金流向和投资情绪判断",
+    "technical_feature": "1. 机构类型完整映射（12类机构中英文对照）\n2. 债券类型与期限映射系统\n3. 期间对比分析框架（分割日期前后对比）\n4. 市场集中度计算方法\n5. 多维度热点分析（期限+债券类型）",
+    "application_scenario": "1. 非银机构（货币基金、理财子公司、基金公司）逆回购利率监控\n2. 现券交易净买入分析\n3. 同业存单专项分析\n4. 市场配置热点识别",
+    "core_insight": "聚焦非银金融机构（货币市场基金、理财子公司及产品、基金公司及产品）的资金行为，通过回购利率和现券交易双维度跟踪机构配置意愿和市场情绪"
+  },
+  "data_sources": [
+    {
+      "name": "分机构日资金流向分析（质押）",
+      "type": "Excel",
+      "description": "回购交易数据：正逆回购利率、金额、余额等",
+      "frequency": "日度"
+    },
+    {
+      "name": "现券成交分机构统计",
+      "type": "Excel",
+      "description": "现券交易数据：净买入、买入、卖出交易量等",
+      "frequency": "日度"
+    }
+  ],
+  "search_keywords_used": [
+    "机构行为 债券市场 2024 2025",
+    "债券托管数据 机构配置 2025",
+    "银行理财 债券配置行为 2025"
+  ],
+  "search_findings": "## 市场背景发现\n\n### 债券市场规模\n- 2025年债券市场托管余额达196.7万亿元\n- 2025年债券发行总额89.76万亿元（+11%）\n- 境外机构持债约3.46-3.61万亿元\n\n### 机构行为特点\n1. **商业银行**：配置盘主导，2025年初增持1.1万多亿元债券，偏好短债\n2. **银行理财**：直投债券规模收缩，配置占比下降；增配现金/存款、公募基金；优先配置中短久期信用债\n3. **保险机构**：受存款利率下调影响，资产端配置需调整\n4. **基金公司**：债基久期中位数加到年内高位（3.42年）\n\n### 市场特征变化\n- 2025年债券市场从单边下行牛市转为震荡市\n- 整体呈现\"上有顶、下有底\"的区间震荡格局\n- 配置盘在震荡环境中积极承接",
+  "recommended_focus": [
+    "非银金融机构的资金行为跟踪方法",
+    "期间对比分析框架的设计与应用",
+    "市场集中度指标的计算与解读",
+    "同业存单专项分析的技术实现",
+    "机构行为与市场情绪的关联分析"
+  ],
+  "suggested_report_structure": {
+    "section_1": "项目概述：机构行为分析的研究意义与应用场景",
+    "section_2": "数据体系：回购数据与现券数据的结构化处理",
+    "section_3": "核心分析模块：利率趋势/现券交易/集中度/热点分析",
+    "section_4": "技术亮点：机构映射/期间对比/多维度聚合",
+    "section_5": "实战应用：如何跟踪机构配置意愿变化",
+    "section_6": "代码复用：工具函数与配置管理"
+  },
+  "institution_coverage": {
+    "total_types": 12,
+    "key_institutions": [
+      "Monetary Market Fund (货币市场基金)",
+      "Wealth Management Subsidiary & Products (理财子公司及理财类产品)",
+      "Fund Company & Products (基金公司及产品)"
+    ],
+    "all_institutions": [
+      "大型商业银行/政策性银行",
+      "股份制商业银行",
+      "城市商业银行",
+      "农村金融机构",
+      "外资银行",
+      "证券公司",
+      "保险公司",
+      "基金公司及产品",
+      "货币市场基金",
+      "理财子公司及理财类产品",
+      "其他产品类",
+      "其他"
+    ]
+  },
+  "bond_classification": {
+    "interest_rate_bonds": ["国债-新债", "国债-老债", "政策性金融债-新债", "政策性金融债-老债", "地方政府债"],
+    "credit_bonds": ["中期票据", "短期/超短期融资券", "企业债"],
+    "maturity_buckets": ["<=1Y", "1-3Y", "3-5Y", "5-7Y", "7-10Y", "10-15Y", "15-20Y", "20-30Y", ">30Y"]
+  },
+  "analysis_modules": [
+    {
+      "name": "逆回购利率趋势分析",
+      "function": "analyze_repo_rate_trend",
+      "description": "分析目标机构的逆回购利率和金额变化"
+    },
+    {
+      "name": "利率变化统计",
+      "function": "calculate_rate_statistics",
+      "description": "计算分割日期前后的利率和金额统计"
+    },
+    {
+      "name": "现券交易分析",
+      "function": "analyze_bond_trading",
+      "description": "分析目标机构的现券交易行为"
+    },
+    {
+      "name": "市场集中度分析",
+      "function": "calculate_market_concentration",
+      "description": "计算目标机构在市场中的集中度变化"
+    },
+    {
+      "name": "市场热点分析",
+      "function": "analyze_market_hotspots",
+      "description": "按期限和债券类型分析市场净买入热点"
+    },
+    {
+      "name": "同业存单分析",
+      "function": "analyze_certificate_deposit",
+      "description": "专项分析同业存单交易"
+    }
+  ]
+}

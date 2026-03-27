@@ -1,0 +1,237 @@
+{
+  "projectInfo": {
+    "projectId": "T42",
+    "projectName": "城投转型",
+    "projectPath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型",
+    "exploredAt": "2026-02-16",
+    "documentQuality": "A"
+  },
+  "summary": {
+    "description": "城投融资平台转型数据管理与分析项目，用于跟踪城投融资平台转型情况、记录市场化退出过程、进行数据汇总与统计分析",
+    "mainFunctionality": [
+      "城投融资平台转型数据管理",
+      "跟踪城投融资平台转型情况",
+      "记录市场化退出过程",
+      "数据汇总与统计分析"
+    ]
+  },
+  "files": {
+    "mainFiles": [
+      {
+        "fileName": "重构.ipynb",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\重构.ipynb",
+        "fileType": "notebook",
+        "description": "主重构Notebook，包含完整的数据查询、验证、清洗、统计分析和导出流程",
+        "linesOfCode": "约700行",
+        "keyFunctions": [
+          "create_db_engine - 创建数据库连接引擎",
+          "query_transformation_data - 查询城投转型数据",
+          "validate_data - 数据完整性验证",
+          "clean_data - 数据清洗",
+          "generate_summary - 生成汇总统计",
+          "analyze_change_type - 按变更类型统计",
+          "analyze_change_reason - 按变更原因统计",
+          "analyze_by_province - 按省份统计",
+          "analyze_by_city - 按城市统计",
+          "analyze_publish_entity - 按发布主体统计",
+          "analyze_rating - 按主体评级统计",
+          "analyze_monthly_trend - 月度趋势分析",
+          "export_to_json - 导出JSON",
+          "export_to_csv - 导出CSV"
+        ]
+      },
+      {
+        "fileName": "config.py",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\config.py",
+        "fileType": "python",
+        "description": "项目配置文件，使用环境变量管理敏感信息",
+        "linesOfCode": 81,
+        "keyConfigurations": [
+          "数据库连接配置（主机、端口、数据库名、用户、密码）",
+          "输出目录配置",
+          "发布主体映射（官方披露/企业披露/其他）",
+          "评级等级排序",
+          "变更类型说明"
+        ]
+      },
+      {
+        "fileName": "README.md",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\README.md",
+        "fileType": "markdown",
+        "description": "项目说明文档",
+        "linesOfCode": 113
+      },
+      {
+        "fileName": "requirements.txt",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\requirements.txt",
+        "fileType": "text",
+        "description": "Python依赖列表",
+        "dependencies": [
+          "pandas>=1.5.0",
+          "numpy>=1.21.0",
+          "sqlalchemy>=1.4.0",
+          "pymysql>=1.0.0",
+          "openpyxl>=3.0.0",
+          "matplotlib>=3.5.0",
+          "seaborn>=0.12.0",
+          "jupyter>=1.0.0",
+          "ipykernel>=6.0.0"
+        ]
+      }
+    ],
+    "sourceFiles": [
+      {
+        "fileName": "转型城投清单.ipynb",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\src\\转型城投清单.ipynb",
+        "fileType": "notebook",
+        "description": "原始数据处理Notebook（备份）",
+        "fileSize": "198991 bytes"
+      },
+      {
+        "fileName": "T42-城投转型.md",
+        "filePath": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T42-城投转型\\src\\T42-城投转型.md",
+        "fileType": "markdown",
+        "description": "项目逻辑分析文档，包含详细的数据结构、业务逻辑、数据质量校验、可视化建议等",
+        "linesOfCode": 663
+      }
+    ],
+    "directories": [
+      {
+        "name": "src",
+        "description": "原始代码文件备份"
+      },
+      {
+        "name": "data",
+        "description": "数据文件目录"
+      },
+      {
+        "name": "assets",
+        "description": "图片等资源目录"
+      },
+      {
+        "name": "output",
+        "description": "输出目录"
+      }
+    ]
+  },
+  "dataStructure": {
+    "source": {
+      "database": "MySQL (yq数据库)",
+      "tableName": "城投平台市场化转型",
+      "connectionMethod": "SQLAlchemy + PyMySQL"
+    },
+    "coreFields": [
+      {"field": "itName", "type": "string", "description": "公司名称", "example": "桂林经开投资控股有限责任公司"},
+      {"field": "itCode2", "type": "string", "description": "公司代码2"},
+      {"field": "regionName", "type": "string", "description": "区域名称", "example": "桂林市"},
+      {"field": "regionCode", "type": "string", "description": "区域代码"},
+      {"field": "releaseDate", "type": "date", "description": "发布日期", "example": "2025-04-02"},
+      {"field": "changeType", "type": "string", "description": "变更类型", "values": ["退出", "市场化转型", "隐性债务清零"]},
+      {"field": "changeReason", "type": "string", "description": "变更原因", "values": ["市场化转型", "隐性债务清零"]},
+      {"field": "publishEntity", "type": "string", "description": "发布主体", "values": ["企业披露", "官方披露", "其他"]},
+      {"field": "subjectRating", "type": "string", "description": "主体评级", "values": ["AAA", "AA+", "AA", "AA-", "A"]},
+      {"field": "bondStockSize", "type": "decimal", "description": "债券库存规模"},
+      {"field": "issueBond", "type": "string", "description": "是否发债", "values": ["是", "否"]},
+      {"field": "province", "type": "string", "description": "省份"},
+      {"field": "city", "type": "string", "description": "城市"},
+      {"field": "county", "type": "string", "description": "区县"},
+      {"field": "actualController", "type": "string", "description": "实际控制人"}
+    ],
+    "outputFiles": [
+      "转型城投清单.json",
+      "转型城投清单.csv",
+      "变更类型.csv",
+      "变更原因.csv",
+      "省份分布.csv",
+      "城市TOP20.csv",
+      "发布主体.csv",
+      "主体评级.csv",
+      "月度趋势.csv"
+    ]
+  },
+  "businessLogic": {
+    "changeTypes": {
+      "退出": "城投融资平台完全退出政府融资职能，转型为市场化运作的国有企业",
+      "市场化转型": "按照市场化要求建立公司法人治理结构，按《公司法》、《公司章程》规定开展市场化融资",
+      "隐性债务清零": "隐性债务已清零，退出融资平台监管范畴"
+    },
+    "changeReasons": {
+      "市场化转型": "转型为市场化运作的国有企业，不再承担政府融资职能",
+      "隐性债务清零": "实现隐性债务和融资平台双清零"
+    },
+    "publishEntityMapping": {
+      "1": "官方披露",
+      "2": "企业披露",
+      "0": "其他",
+      "3": "其他"
+    },
+    "ratingOrder": ["AAA", "AA+", "AA", "AA-", "A"]
+  },
+  "dataValidation": {
+    "requiredFields": ["公司名称", "公司代码", "区域名称", "区域代码", "发布日期", "变更类型", "变更原因", "发布主体", "唯一标识", "省份", "城市"],
+    "conditionalFields": [
+      {"field": "subjectRating", "condition": "issueBond='是'时必须有值"},
+      {"field": "bondStockSize", "condition": "issueBond='是'时必须有值"}
+    ],
+    "consistencyRules": [
+      "changeType='退出' -> changeReason一般为'市场化转型'",
+      "issueBond='否' -> subjectRating应为null",
+      "issueBond='否' -> bondStockSize应为null"
+    ],
+    "dateFormat": "YYYY-MM-DD"
+  },
+  "analysisCapabilities": {
+    "statisticalAnalysis": [
+      "按变更类型统计",
+      "按变更原因统计",
+      "按省份分布统计",
+      "按城市TOP20统计",
+      "按发布主体统计",
+      "按主体评级统计",
+      "按月度趋势统计"
+    ],
+    "filteringCapabilities": [
+      "按区域筛选（省份/城市）",
+      "按日期范围筛选",
+      "按评级筛选"
+    ],
+    "visualizationSuggestions": [
+      "地图可视化（省份/城市分布）",
+      "时间趋势图（月度折线图/柱状图）",
+      "饼图/环形图（发布主体/变更类型分布）",
+      "条形图（省份TOP10/城市TOP10）",
+      "散点图（发行规模vs评级）"
+    ]
+  },
+  "potentialOptimizations": [
+    "缺少增量更新机制",
+    "缺少数据变更追踪",
+    "缺少数据版本管理",
+    "缺少实时数据同步",
+    "缺少异常数据告警",
+    "缺少数据质量报告",
+    "缺少API接口设计",
+    "缺少数据权限控制",
+    "缺少搜索功能设计",
+    "缺少导出格式多样化（Excel、PDF等）",
+    "缺少数据分析自动化",
+    "缺少可视化交互功能",
+    "缺少多维度交叉分析",
+    "缺少趋势预测功能"
+  ],
+  "technicalStack": {
+    "language": "Python",
+    "notebookEnvironment": "Jupyter",
+    "dataProcessing": ["pandas", "numpy"],
+    "database": ["SQLAlchemy", "PyMySQL", "MySQL"],
+    "visualization": ["matplotlib", "seaborn"],
+    "exportFormats": ["JSON", "CSV", "Excel"]
+  },
+  "databaseConfig": {
+    "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+    "port": "3306",
+    "database": "yq",
+    "charset": "utf8mb4",
+    "tableName": "城投平台市场化转型"
+  }
+}

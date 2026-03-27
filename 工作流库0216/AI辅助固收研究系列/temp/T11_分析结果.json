@@ -1,0 +1,267 @@
+{
+  "project_id": "T11",
+  "project_name": "机构行为",
+  "analysis_date": "2026-02-16",
+  "analysis_type": "深度代码分析",
+
+  "code_structure_analysis": {
+    "architecture_pattern": "配置驱动的模块化分析框架",
+    "code_quality": "良好 - 清晰的函数划分和完善的文档字符串",
+    "maintainability": "高 - 配置与逻辑分离，易于扩展",
+    "key_components": [
+      {
+        "name": "Config类",
+        "file": "config.py",
+        "function": "集中管理所有配置参数，支持环境变量覆盖",
+        "design_pattern": "单例配置模式"
+      },
+      {
+        "name": "数据加载模块",
+        "functions": ["load_repo_data", "load_bond_data"],
+        "function": "从Excel文件加载回购和现券交易数据"
+      },
+      {
+        "name": "数据清洗模块",
+        "functions": ["clean_repo_data", "clean_bond_data"],
+        "function": "数据类型转换、单位标准化、机构类型映射"
+      },
+      {
+        "name": "核心分析模块",
+        "functions": [
+          "analyze_repo_rate_trend",
+          "calculate_rate_statistics",
+          "analyze_bond_trading",
+          "calculate_market_concentration",
+          "analyze_market_hotspots",
+          "analyze_certificate_deposit"
+        ],
+        "function": "执行6大核心分析任务"
+      }
+    ]
+  },
+
+  "technical_highlights": {
+    "data_mapping_system": {
+      "title": "多层次映射体系",
+      "description": "建立了机构类型、期限、债券类型的三层映射系统，支持中英文双语标识",
+      "mapping_count": {
+        "institutions": 12,
+        "maturities": 9,
+        "bond_types": 11
+      },
+      "value": "提高代码可读性和国际化支持"
+    },
+    "period_comparison_framework": {
+      "title": "期间对比分析框架",
+      "description": "通过分割日期将数据划分为前期(Earlier)和近期(Recent)，实现前后对比分析",
+      "implementation": "使用apply函数动态添加Period标识列",
+      "value": "便于观察机构行为的时间变化趋势"
+    },
+    "concentration_analysis": {
+      "title": "市场集中度计算方法",
+      "description": "计算目标机构（非银机构）在整体市场中的占比变化",
+      "formula": "目标机构交易量 / 市场总交易量",
+      "value": "量化非银机构的市场影响力"
+    },
+    "multi_dimension_aggregation": {
+      "title": "多维度聚合分析",
+      "description": "按期限、债券类型、机构类型等多维度进行数据聚合",
+      "implementation": "使用pandas groupby + agg模式",
+      "value": "支持从不同视角分析市场热点"
+    }
+  },
+
+  "methodology_insights": [
+    {
+      "insight_id": "MI001",
+      "title": "负债行为研究范式",
+      "category": "研究方法论",
+      "core_content": "从传统的'资产定价研究'转向'负债行为研究'，关注机构负债端变化驱动的行为模式",
+      "application_context": "2025年债市特征是基本面、资金面与长债相关性减弱，需要从机构负债端寻找行为逻辑",
+      "code_reflection": "本项目聚焦非银金融机构（货币市场基金、理财子公司、基金公司）的资金行为，体现了负债行为研究的思路",
+      "market_evidence": "西部证券2025年研究指出研究方法应从'资产定价研究'转向'负债行为研究'",
+      "actionable_advice": "建议增加机构负债成本跟踪、产品申赎数据分析等维度"
+    },
+    {
+      "insight_id": "MI002",
+      "title": "双维度跟踪体系",
+      "category": "数据监测方法",
+      "core_content": "通过回购利率和现券交易双维度跟踪机构配置意愿和市场情绪",
+      "application_context": "回购利率反映短期资金成本，现券交易反映中长期配置行为",
+      "code_reflection": "项目设计了analyze_repo_rate_trend和analyze_bond_trading两大模块，分别处理两类数据",
+      "implementation_pattern": "利率维度关注加权利率变化；交易维度关注净买入方向和金额",
+      "actionable_advice": "可增加两维度数据的交叉验证，如利率上升时现券净买入是否同步变化"
+    },
+    {
+      "insight_id": "MI003",
+      "title": "配置驱动的设计模式",
+      "category": "工程化思维",
+      "core_content": "将配置参数与业务逻辑分离，通过Config类集中管理，支持环境变量覆盖",
+      "application_context": "金融机构分析项目常需在不同环境（开发/测试/生产）间切换",
+      "code_reflection": "config.py提供了完整的配置管理方案，包括目录配置、数据库配置、分析参数配置等",
+      "benefits": [
+        "提高代码可维护性",
+        "便于环境切换",
+        "降低硬编码风险",
+        "支持参数化测试"
+      ],
+      "actionable_advice": "可进一步引入配置验证机制和配置版本管理"
+    }
+  ],
+
+  "industry_best_practices": {
+    "data_tracking": {
+      "practice": "资金流向实时追踪",
+      "source": "2025年反洗钱立法要求",
+      "relevance": "项目已实现日度数据跟踪，可考虑增加更高频率的监测"
+    },
+    "analysis_framework": {
+      "practice": "风险预算体系 + 宏观轮动体系双逻辑",
+      "source": "2026年债券市场专题研究",
+      "relevance": "项目当前侧重资金流向，可结合宏观因子增强分析深度"
+    },
+    "market_monitoring": {
+      "practice": "关注股债相关性增强的新特征",
+      "source": "西部研究2025年机构行为分析",
+      "relevance": "可增加股票市场联动指标，丰富分析维度"
+    }
+  },
+
+  "code_reusability": {
+    "tool_functions": [
+      {
+        "function": "translate_institution",
+        "purpose": "机构类型中英文翻译",
+        "reusability": "高 - 可直接复用于其他机构分析项目"
+      },
+      {
+        "function": "calculate_change_percentage",
+        "purpose": "计算变化百分比",
+        "reusability": "高 - 通用计算工具"
+      },
+      {
+        "function": "add_period_identifier",
+        "purpose": "添加期间标识",
+        "reusability": "中 - 需适配不同日期列名"
+      }
+    ],
+    "config_pattern": {
+      "pattern": "Config类 + 环境变量覆盖",
+      "advantages": ["易于扩展", "安全敏感信息", "支持多环境部署"],
+      "recommended_usage": "可作为模板推广到其他项目"
+    }
+  },
+
+  "recommended_report_structure": {
+    "total_word_count_suggestion": "8000-10000字",
+    "sections": [
+      {
+        "section_id": 1,
+        "title": "项目概述：机构行为分析的研究意义",
+        "word_count": "1000-1500字",
+        "focus": [
+          "研究背景：2025年债市从单边牛市转为震荡市",
+          "研究价值：机构行为是市场微观结构的核心",
+          "应用场景：投资决策、风险监测、政策评估"
+        ]
+      },
+      {
+        "section_id": 2,
+        "title": "数据体系：回购与现券数据的结构化处理",
+        "word_count": "1500-2000字",
+        "focus": [
+          "数据源介绍：12类机构、9个期限段、11种债券类型",
+          "数据清洗流程：单位转换、缺失值处理、类型映射",
+          "期间对比框架：分割日期设计与前后对比方法"
+        ],
+        "code_reference": "数据清洗模块"
+      },
+      {
+        "section_id": 3,
+        "title": "核心分析模块：六大功能的实现与应用",
+        "word_count": "2500-3000字",
+        "focus": [
+          "逆回购利率趋势分析：非银机构资金成本跟踪",
+          "现券交易分析：净买入方向与金额变化",
+          "市场集中度分析：量化非银机构影响力",
+          "债券市场热点分析：期限与券种的双维度聚合",
+          "同业存单专项分析：特殊品种的独立分析",
+          "利率变化统计：期间对比的量化呈现"
+        ],
+        "code_reference": "核心分析模块的6个主要函数"
+      },
+      {
+        "section_id": 4,
+        "title": "方法论心得：从实践中提炼的分析框架",
+        "word_count": "1500-2000字",
+        "focus": [
+          "负债行为研究范式：从资产定价到负债行为",
+          "双维度跟踪体系：利率与交易的行为印证",
+          "配置驱动设计：工程化思维在金融分析中的应用"
+        ]
+      },
+      {
+        "section_id": 5,
+        "title": "代码复用指南：工具函数与配置管理",
+        "word_count": "1000-1500字",
+        "focus": [
+          "Config类的设计模式与复用方法",
+          "工具函数库的使用说明",
+          "映射表的扩展与定制"
+        ]
+      },
+      {
+        "section_id": 6,
+        "title": "实战案例：如何跟踪机构配置意愿变化",
+        "word_count": "500-1000字",
+        "focus": [
+          "案例场景描述",
+          "分析流程演示",
+          "结论解读方法"
+        ]
+      }
+    ]
+  },
+
+  "improvement_suggestions": [
+    {
+      "area": "数据频率",
+      "current": "日度数据",
+      "suggestion": "可增加周度、月度聚合分析，满足不同时间尺度的分析需求",
+      "priority": "中"
+    },
+    {
+      "area": "可视化增强",
+      "current": "已导入plotly但未充分使用",
+      "suggestion": "增加交互式图表，如利率走势图、净买入热力图等",
+      "priority": "高"
+    },
+    {
+      "area": "异常检测",
+      "current": "无异常检测机制",
+      "suggestion": "增加机构行为异常检测，如大额交易预警、利率异常波动提醒",
+      "priority": "中"
+    },
+    {
+      "area": "报告自动化",
+      "current": "生成摘要文本",
+      "suggestion": "可扩展为自动化生成PDF/HTML报告",
+      "priority": "低"
+    }
+  ],
+
+  "validation_results": {
+    "code_execution": "通过 - 所有分析模块可正常执行",
+    "data_flow": "清晰 - 从加载到清洗到分析到输出的完整链路",
+    "error_handling": "完善 - 关键函数包含try-except异常捕获",
+    "documentation": "良好 - 每个函数包含完整的docstring"
+  },
+
+  "sources": [
+    "https://finance.sina.com.cn/roll/2025-11-13/doc-infxhcvw5320860.shtml",
+    "https://www.sdyanbao.com/detail/935237",
+    "https://wallstreetcn.com/articles/3762352",
+    "https://www.vzkoo.com/read/4630861498036523008.html",
+    "https://bond.eastmoney.com/a/202601233629404073.html"
+  ]
+}

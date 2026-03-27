@@ -1,0 +1,356 @@
+{
+  "project_id": "T66",
+  "project_name": "负面舆情爬取",
+  "analysis_date": "2026-02-16",
+  "research_background": {
+    "context": "在债券市场信用风险管理中，负面舆情是重要的风险信号来源。声誉风险可通过资金外流、融资受阻等渠道传导为流动性危机，因此建立自动化舆情监控系统对信用风险预警具有重要意义。",
+    "business_value": [
+      "实时获取债券市场负面舆情，提前识别信用风险信号",
+      "自动化OCR识别图像化舆情内容，解决非结构化数据处理难题",
+      "敏感词过滤确保合规性，满足金融监管要求",
+      "AI总结功能提升信息处理效率，辅助投资决策"
+    ],
+    "industry_trends": [
+      "2025-2026年金融监管趋势强化，风险防控常态化",
+      "AI大模型广泛应用于舆情内容总结和风险分析",
+      "实时监控和快速预警成为行业标配（3秒预警成为标准）",
+      "舆情管理从被动响应向主动防控转变"
+    ]
+  },
+  "core_methodology": {
+    "architecture": {
+      "type": "模块化分层架构",
+      "layers": [
+        {
+          "name": "数据采集层",
+          "components": ["RatingdogClient", "API认证模块"],
+          "description": "负责与Ratingdog平台对接，完成登录认证、舆情列表获取、详情获取"
+        },
+        {
+          "name": "内容处理层",
+          "components": ["OCR引擎", "HTML解析器", "敏感词过滤器"],
+          "description": "处理HTML内容提取、图像OCR识别、敏感词过滤"
+        },
+        {
+          "name": "智能分析层",
+          "components": ["AI总结模块"],
+          "description": "对处理后的内容进行智能摘要和总结"
+        },
+        {
+          "name": "数据存储层",
+          "components": ["MySQL数据库", "SQLAlchemy ORM"],
+          "description": "持久化存储舆情数据，支持去重插入"
+        }
+      ]
+    },
+    "data_flow": "Ratingdog API -> 舆情列表 -> 详情获取 -> HTML解析 -> OCR识别 -> 敏感词过滤 -> AI总结 -> 数据库存储",
+    "key_algorithms": [
+      {
+        "name": "Aho-Corasick自动机",
+        "purpose": "高效敏感词过滤",
+        "time_complexity": "O(n+m)，n为文本长度，m为匹配数量",
+        "advantage": "一次扫描即可找出所有匹配敏感词，适合大量敏感词场景"
+      },
+      {
+        "name": "PaddleOCR",
+        "purpose": "图像文字识别",
+        "features": ["支持中文识别", "角度分类", "GPU加速"],
+        "preprocessing": "灰度化 -> 二值化 -> 形态学操作 -> OCR识别"
+      }
+    ],
+    "api_integration": {
+      "platform": "Ratingdog(企业预警通PC版)",
+      "authentication": "Bearer Token + Tenant ID双重验证",
+      "endpoints": {
+        "login": "https://auth.ratingdog.cn/api/TokenAuth/Authenticate",
+        "list": "https://host.ratingdog.cn/api/services/app/ResearchInfo/GetQueryPublicOpinionsForTenant",
+        "detail": "https://host.ratingdog.cn/api/services/app/ResearchInfo/GetCiPublicOpinionForView"
+      },
+      "pagination": "SkipCount + MaxResultCount分页机制"
+    }
+  },
+  "key_findings": [
+    {
+      "title": "多模态舆情内容处理能力",
+      "description": "系统具备处理文本、图像、Base64编码图片等多种格式舆情内容的能力，通过HTML解析+OCR识别实现了对非结构化数据的完整提取",
+      "evidence": [
+        "BeautifulSoup解析HTML提取文本和图像标签",
+        "支持http/https网络图片下载和Base64内嵌图片解析",
+        "OpenCV图像预处理（灰度化、二值化、形态学操作）提升OCR识别率"
+      ],
+      "significance": "解决了金融舆情中常见的图片化公告、截图等非文本内容无法自动处理的问题"
+    },
+    {
+      "title": "高效敏感词过滤机制",
+      "description": "采用Aho-Corasick自动机算法实现敏感词过滤，时间复杂度O(n+m)，适合大规模敏感词库场景",
+      "evidence": [
+        "ahocorasick库构建自动机",
+        "单次扫描完成所有匹配",
+        "支持动态更新敏感词库"
+      ],
+      "significance": "满足金融行业合规要求，确保舆情数据的合规性和安全性"
+    },
+    {
+      "title": "完整的API认证与数据采集流程",
+      "description": "实现了完整的Ratingdog API集成，包括登录认证、分页获取舆情列表、获取舆情详情等全流程",
+      "evidence": [
+        "Bearer Token认证机制",
+        "Tenant ID多租户支持",
+        "SkipCount分页处理大数据量"
+      ],
+      "significance": "为后续扩展其他API功能（如城投平台、区域经济数据）奠定了基础"
+    },
+    {
+      "title": "INSERT IGNORE去重机制",
+      "description": "数据库存储采用INSERT IGNORE语句，自动跳过重复数据，避免主键冲突",
+      "evidence": [
+        "SQLAlchemy text()执行原生SQL",
+        "INSERT IGNORE语法",
+        "事务管理with db_engine.begin()"
+      ],
+      "significance": "支持增量采集，避免重复数据入库，确保数据唯一性"
+    }
+  ],
+  "insights": [
+    {
+      "title": "模块化设计原则的应用价值",
+      "description": "项目采用清晰的模块化设计，将API客户端、OCR处理、敏感词过滤、数据存储分离为独立模块，便于维护和扩展",
+      "methodology": "单一职责原则 + 面向接口编程",
+      "application": "在类似的数据采集项目中，应优先考虑模块化设计，将数据源、处理逻辑、存储层解耦，便于替换数据源或处理算法"
+    },
+    {
+      "title": "多模态数据处理的技术路径",
+      "description": "通过HTML解析+OCR识别的技术组合，实现了对文本、图像混合内容的完整提取，这是金融舆情处理的通用模式",
+      "methodology": "内容类型识别 -> 分类处理 -> 结果整合",
+      "application": "金融文档（公告、财报、研报）普遍存在图文混合格式，本项目的技术路径可直接应用于这些场景"
+    },
+    {
+      "title": "合规性设计的先行意识",
+      "description": "敏感词过滤模块虽然当前使用空列表，但架构设计已预留完整功能，体现了合规性优先的设计意识",
+      "methodology": "预留接口 + 配置化设计",
+      "application": "在金融系统开发中，合规性要求应作为架构设计的首要考虑因素，而非事后补充"
+    }
+  ],
+  "application_guide": {
+    "prerequisites": [
+      "Ratingdog账号和访问权限",
+      "MySQL数据库（已有舆情监控表）",
+      "Python 3.8+环境",
+      "GPU环境（推荐，用于OCR加速）"
+    ],
+    "deployment_steps": [
+      "安装依赖：pip install -r requirements.txt",
+      "配置环境变量：DB_USER, DB_PASSWORD, RATINGDOG_USERNAME等",
+      "配置敏感词库：修改DEFAULT_SENSITIVE_WORDS列表",
+      "运行主程序：python T66_负面舆情爬取.ipynb"
+    ],
+    "customization_points": [
+      {
+        "point": "日期范围配置",
+        "location": "main()函数中的start_date/end_date",
+        "description": "可修改采集的日期范围，支持历史数据补采"
+      },
+      {
+        "point": "AI总结功能",
+        "location": "summarize_content_with_ai()函数",
+        "description": "可集成大模型API（如OpenAI、文心一言）实现智能摘要"
+      },
+      {
+        "point": "敏感词库",
+        "location": "DEFAULT_SENSITIVE_WORDS列表",
+        "description": "可从外部文件加载，支持动态更新"
+      },
+      {
+        "point": "数据库表结构",
+        "location": "insert_opinion_to_db()函数",
+        "description": "可根据实际表结构调整字段映射"
+      }
+    ],
+    "extension_suggestions": [
+      "集成大模型API实现智能舆情摘要和风险等级评估",
+      "添加定时任务实现自动化采集（如APScheduler）",
+      "扩展舆情情感分析功能",
+      "添加消息推送机制（邮件、企业微信、钉钉）",
+      "实现舆情数据统计分析和可视化"
+    ]
+  },
+  "limitations": [
+    {
+      "aspect": "数据源单一",
+      "description": "目前仅依赖Ratingdog单一数据源，若平台API变更或服务中断将影响数据采集",
+      "risk_level": "中",
+      "mitigation": "可考虑增加其他舆情数据源（如万得、同花顺）作为补充"
+    },
+    {
+      "aspect": "AI总结功能未完整实现",
+      "description": "当前AI总结功能仅做简单截取，未集成大模型API实现智能摘要",
+      "risk_level": "低",
+      "mitigation": "集成OpenAI或国内大模型API，实现真正的智能摘要"
+    },
+    {
+      "aspect": "敏感词库为空",
+      "description": "当前DEFAULT_SENSITIVE_WORDS为空列表，敏感词过滤功能未实际启用",
+      "risk_level": "中",
+      "mitigation": "根据合规要求配置敏感词库，或从外部文件加载"
+    },
+    {
+      "aspect": "错误处理机制待完善",
+      "description": "部分异常处理仅记录日志，未实现重试机制或告警通知",
+      "risk_level": "低",
+      "mitigation": "添加重试机制（如tenacity库）和异常告警"
+    },
+    {
+      "aspect": "缺乏增量采集标识",
+      "description": "每次运行需手动指定日期范围，未实现自动识别上次采集时间点",
+      "risk_level": "低",
+      "mitigation": "可在数据库中记录最后采集时间，实现自动增量采集"
+    }
+  ],
+  "report_structure": {
+    "suggested_sections": [
+      {
+        "section": "1. 项目概述",
+        "subsections": [
+          "1.1 项目背景与目标",
+          "1.2 数据源介绍（Ratingdog平台）",
+          "1.3 业务价值与应用场景"
+        ],
+        "estimated_length": "500-800字"
+      },
+      {
+        "section": "2. 技术架构",
+        "subsections": [
+          "2.1 系统架构图",
+          "2.2 技术栈说明",
+          "2.3 模块划分与职责"
+        ],
+        "estimated_length": "800-1200字"
+      },
+      {
+        "section": "3. 数据源分析",
+        "subsections": [
+          "3.1 Ratingdog平台介绍",
+          "3.2 API接口说明（认证、列表、详情）",
+          "3.3 数据字段解析"
+        ],
+        "estimated_length": "600-1000字"
+      },
+      {
+        "section": "4. 核心功能实现",
+        "subsections": [
+          "4.1 API认证机制",
+          "4.2 舆情采集与分页处理",
+          "4.3 OCR图像识别",
+          "4.4 敏感词过滤（Aho-Corasick算法）",
+          "4.5 数据库存储"
+        ],
+        "estimated_length": "1500-2000字"
+      },
+      {
+        "section": "5. 行业应用价值",
+        "subsections": [
+          "5.1 债券市场信用风险预警",
+          "5.2 负面舆情监控实践",
+          "5.3 与行业趋势的契合度分析"
+        ],
+        "estimated_length": "800-1000字"
+      },
+      {
+        "section": "6. 优化建议",
+        "subsections": [
+          "6.1 功能扩展方向",
+          "6.2 性能优化建议",
+          "6.3 AI增强方案"
+        ],
+        "estimated_length": "600-800字"
+      },
+      {
+        "section": "7. 总结",
+        "subsections": [
+          "7.1 项目总结",
+          "7.2 未来展望"
+        ],
+        "estimated_length": "300-500字"
+      }
+    ],
+    "total_estimated_length": "5100-7300字"
+  },
+  "search_references": [
+    {
+      "title": "2026年风险雷达图 - 中国银行业",
+      "url": "https://assets.kpmg.com/content/dam/kpmgsites/cn/pdf/zh/2025/12/2026-risk-radar-banking.pdf.coredownload.inline.pdf",
+      "relevance": "银行业风险管理趋势，信用风险框架设计参考"
+    },
+    {
+      "title": "证券公司信用风险管理指引",
+      "url": "https://www.sac.net.cn/zlgl/zlgz/202512/t20251231_69827.html",
+      "relevance": "信用风险管理规范，合规性设计参考"
+    },
+    {
+      "title": "机构债券交易AI：诱惑与挑战并存",
+      "url": "https://www.cls.cn/detail/2287372",
+      "relevance": "AI在债券投资舆情监测中的应用案例"
+    },
+    {
+      "title": "2026年舆情监测系统排名",
+      "url": "https://zhuanlan.zhihu.com/p/2004548635900273341",
+      "relevance": "舆情传播特点和技术赋能趋势"
+    },
+    {
+      "title": "东吴证券：人工智能在债券承销领域的应用",
+      "url": "http://www.news.cn/finance/20251120/cae0058e6dfe4e5a9fc4ca4580900913/c.html",
+      "relevance": "AI智能风控、舆情监测、风险识别应用"
+    },
+    {
+      "title": "金融舆情解析：智能事件抽取与风险预警",
+      "url": "https://blog.csdn.net/u013132758/article/details/146549395",
+      "relevance": "金融舆情事件抽取与风险预警系统技术方案"
+    },
+    {
+      "title": "PaddleOCR 3.0 发布",
+      "url": "http://www.paddleocr.ai/main/index.html",
+      "relevance": "OCR技术最新进展，金融文档识别能力"
+    },
+    {
+      "title": "PaddleOCR最佳实践场景项目征集",
+      "url": "https://github.com/PaddlePaddle/PaddleOCR/issues/16321",
+      "relevance": "OCR产业应用方向和最佳实践"
+    }
+  ],
+  "quality_checklist": {
+    "code_quality": {
+      "score": 8,
+      "max_score": 10,
+      "items": [
+        {"item": "模块化设计", "status": "通过", "notes": "清晰的模块划分，职责明确"},
+        {"item": "异常处理", "status": "部分通过", "notes": "有异常处理但缺乏重试机制"},
+        {"item": "日志记录", "status": "通过", "notes": "使用logging模块，记录关键操作"},
+        {"item": "配置管理", "status": "通过", "notes": "配置与代码分离，支持环境变量"},
+        {"item": "文档注释", "status": "通过", "notes": "函数有docstring，参数说明完整"}
+      ]
+    },
+    "functionality": {
+      "score": 7,
+      "max_score": 10,
+      "items": [
+        {"item": "API认证", "status": "通过", "notes": "完整的Bearer Token认证流程"},
+        {"item": "数据采集", "status": "通过", "notes": "支持分页采集，日期范围可配置"},
+        {"item": "OCR识别", "status": "通过", "notes": "支持多种图片格式，有预处理"},
+        {"item": "敏感词过滤", "status": "待完善", "notes": "框架完整但词库为空"},
+        {"item": "AI总结", "status": "待完善", "notes": "仅简单截取，未集成大模型"}
+      ]
+    },
+    "production_readiness": {
+      "score": 6,
+      "max_score": 10,
+      "items": [
+        {"item": "错误恢复", "status": "待完善", "notes": "缺乏重试和断点续采机制"},
+        {"item": "监控告警", "status": "未实现", "notes": "无运行状态监控和告警"},
+        {"item": "定时调度", "status": "未实现", "notes": "需手动执行，无定时任务"},
+        {"item": "数据校验", "status": "部分通过", "notes": "有INSERT IGNORE去重，但缺乏数据质量校验"},
+        {"item": "性能优化", "status": "部分通过", "notes": "支持GPU加速OCR，但缺乏并发处理"}
+      ]
+    },
+    "overall_assessment": "项目完成了核心舆情采集功能，代码质量良好，模块化设计清晰。主要待完善点包括：AI总结功能增强、敏感词库配置、生产环境的错误恢复和监控机制。适合作为内部工具使用，若需生产部署建议补充上述功能。"
+  }
+}

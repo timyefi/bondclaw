@@ -1,0 +1,113 @@
+{
+  "project_id": "T27",
+  "project_name": "非税收入",
+  "project_type": "数据分析研究",
+  "report_number": 27,
+  "exploration_date": "2026-02-16",
+  "files_analyzed": [
+    "非税收入.ipynb",
+    "config.py"
+  ],
+  "directory_structure": "T27-非税收入/\n├── 非税收入.ipynb    # 主Notebook，包含完整数据处理流程\n└── config.py         # 配置文件（数据库连接、文件路径）",
+  "file_structure": {
+    "files": [
+      {
+        "path": "非税收入.ipynb",
+        "type": "jupyter_notebook",
+        "description": "核心分析Notebook，包含非税收入比例计算、数据清洗、可视化及数据库操作"
+      },
+      {
+        "path": "config.py",
+        "type": "config",
+        "description": "配置文件，包含数据库连接信息和项目参数"
+      }
+    ],
+    "input_files": [
+      "一般公共预算收入累计值等.xlsx"
+    ],
+    "output_files": [
+      "output/non_tax_ratio_trend.png",
+      "output/non_tax_ratio_heatmap.png",
+      "output/non_tax_ratio_processed.xlsx"
+    ]
+  },
+  "code_analysis": {
+    "core_function": "calculate_non_tax_ratio",
+    "function_purpose": "计算各省份非税收入比例",
+    "calculation_method": "非税收入比例 = 非税收入/一般公共预算收入 或 1 - 税收收入/一般公共预算收入",
+    "data_processing_steps": [
+      "数据加载与列名标准化",
+      "非税收入比例计算",
+      "数值类型转换与负值处理",
+      "前向填充缺失值",
+      "时间序列可视化",
+      "热力图生成",
+      "数据库写入"
+    ]
+  },
+  "unique_points": {
+    "research_problem": "本项目专注于分析各省份非税收入比例，这是衡量地方财政收入质量的关键指标。非税收入比例过高通常意味着地方财政'造血'能力不足、可持续性较差。与T22-财政项目（综合性财政数据整合）不同，本项目聚焦于非税收入这一特定维度，提供更深入的区域财政质量分析。",
+    "technical_feature": "1. 非税收入比例计算逻辑：支持两种计算方式 - (非税收入/一般公共预算收入) 或 (1-税收收入/一般公共预算收入)\n2. 数据清洗流程：负值处理、前向填充\n3. 可视化：时间序列趋势图 + 省份热力图（最近24个月）\n4. 数据库存储：MySQL数据库持久化",
+    "application_scenario": "1. 地方政府债券信用评级辅助分析\n2. 城投债区域风险评估\n3. 财政收入质量监控\n4. 区域财政健康度对比",
+    "core_insight": "非税收入比例是评估地方财政质量的核心指标之一，比例越低通常意味着财政收入质量越高、稳定性越强。本项目通过计算和可视化各省份非税收入比例，帮助固收研究员快速识别财政质量较差的区域。"
+  },
+  "similar_projects": [
+    {
+      "project_id": "T22",
+      "similarity": "同为财政领域项目，都涉及地方财政数据处理",
+      "difference": "T22是综合性财政数据整合平台，涵盖GDP、负债率、债务率、城投债、土地出让等全方位指标；T27则专注于非税收入比例这一特定维度，更聚焦、更深入"
+    },
+    {
+      "project_id": "T06",
+      "similarity": "都涉及区域分析和数据库存储",
+      "difference": "T06是城投区域分析，聚焦城投主体信用评估；T27聚焦财政收入结构分析"
+    }
+  ],
+  "data_sources": [
+    "一般公共预算收入累计值等.xlsx（原始Excel数据文件）",
+    "MySQL数据库（yq库）"
+  ],
+  "business_context": {
+    "industry_background": "非税收入是地方政府财政收入的重要组成部分，主要包括行政事业性收费、罚没收入、国有资源（资产）有偿使用收入等。非税收入占比是衡量地方财政质量的重要指标。",
+    "investment_relevance": [
+      "非税收入占比过高反映地方财政质量较差，稳定性不足",
+      "城投债投资需关注地方财政质量，非税收入占比是关键指标之一",
+      "2024年全国非税收入增长25.4%，2025年增速放缓至3.7%",
+      "地方债务利息占广义财政收入比重接近20%，财政压力较大"
+    ],
+    "key_indicators": [
+      "非税收入比例 = 非税收入/一般公共预算收入",
+      "财政质量阈值：非税收入占比超过35%意味着财政稳定性较差",
+      "税收占比 vs 非税占比的此消彼长反映财政健康状况"
+    ]
+  },
+  "technical_features": {
+    "data_source": "Excel文件（一般公共预算收入累计值等.xlsx）",
+    "database": "MySQL (Aliyun RDS)",
+    "visualization": [
+      "时间序列折线图（多省份非税收入比例趋势）",
+      "热力图（各省份最近24个月非税收入比例）"
+    ],
+    "output_format": ["Excel", "PNG图片", "MySQL数据表"]
+  },
+  "search_keywords_used": [
+    "地方政府非税收入 财政分析 固定收益研究 2025",
+    "非税收入比例 地方财政健康度 债券研究分析框架"
+  ],
+  "search_findings": "1. 2025年全国非税收入约3.97万亿元，同比下降11.3%，财政收入质量有所改善\n2. 地方非税收入占全国比例约87%，占地方财政收入比重接近30%\n3. 北京税收占比86.5%为全国最优，部分地级市非税收入占比已超过50%\n4. 非税收入占比是评级机构评估地方财政实力的关键指标之一\n5. 非税收入来源包括行政收费、国有资产经营收益、专项收入等",
+  "recommended_focus": [
+    "非税收入比例的计算方法和数据清洗逻辑",
+    "省份间非税收入比例差异的经济学含义",
+    "非税收入比例与地方债/城投债风险的关联分析",
+    "热力图可视化的解读方法"
+  ],
+  "suggested_report_structure": {
+    "focus_chapters": ["核心逻辑实现", "非税收入的固收研究意义"],
+    "skip_chapters": ["环境配置（与其他项目相似）", "数据库操作（通用功能）"],
+    "word_allocation": {
+      "核心章节（非税收入计算逻辑+可视化）": "45%",
+      "心得要点（非税收入与固收研究的关联）": "25%",
+      "其他章节": "30%"
+    }
+  }
+}

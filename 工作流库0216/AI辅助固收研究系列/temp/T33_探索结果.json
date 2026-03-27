@@ -1,0 +1,347 @@
+{
+  "project_info": {
+    "project_id": "T33",
+    "project_name": "信用债规模",
+    "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T33-信用债规模",
+    "project_type": "数据ETL处理系统",
+    "status": "已完成",
+    "create_date": "2026-02-15",
+    "last_update": "2026-02-16"
+  },
+  "project_overview": {
+    "description": "信用债规模数据ETL处理系统，专注于统计和分析债券市场的存续规模数据",
+    "core_functions": [
+      "债券分类重建（信用债、金融债、ABS）",
+      "评级补全（从市场行情获取隐含评级）",
+      "久期补全（市场久期 + 基础信息计算）",
+      "多维度汇总统计（大类、区域、行业、评级、久期）"
+    ],
+    "data_flow": "基础信息表 -> 债券分类表 -> 市场信息3表 -> 信用债规模表"
+  },
+  "file_structure": {
+    "total_files": 15,
+    "notebooks": [
+      {
+        "name": "1_项目概述与数据字典.ipynb",
+        "description": "项目概述、数据流向、数据字典定义"
+      },
+      {
+        "name": "2_环境配置与初始化.ipynb",
+        "description": "环境配置、数据库连接、辅助函数定义"
+      },
+      {
+        "name": "3_数据采集与ETL.ipynb",
+        "description": "数据采集、ETL处理、久期补全、评级更新"
+      },
+      {
+        "name": "4_数据处理与特征工程.ipynb",
+        "description": "多维度规模统计、数据汇总与存储"
+      },
+      {
+        "name": "5_策略实现与回测.ipynb",
+        "description": "趋势分析、结构分析、集中度分析、增长率分析"
+      },
+      {
+        "name": "6_可视化与报告.ipynb",
+        "description": "规模趋势图、结构分布图、热力图、综合仪表板"
+      },
+      {
+        "name": "7_部署与监控.ipynb",
+        "description": "定时任务配置、日志监控、告警机制、运维脚本"
+      },
+      {
+        "name": "重构.ipynb",
+        "description": "主重构Notebook"
+      },
+      {
+        "name": "src/1.ipynb",
+        "description": "原始Notebook备份"
+      }
+    ],
+    "python_files": [
+      {
+        "name": "main.py",
+        "description": "主执行脚本，可由定时任务调用"
+      },
+      {
+        "name": "config.py",
+        "description": "配置文件，使用环境变量管理敏感信息"
+      },
+      {
+        "name": "src/xyzgm.py",
+        "description": "原始Python脚本（包含硬编码密码）"
+      }
+    ],
+    "config_files": [
+      {
+        "name": "requirements.txt",
+        "description": "Python依赖列表"
+      },
+      {
+        "name": "README.md",
+        "description": "项目说明文档"
+      },
+      {
+        "name": "report.json",
+        "description": "项目完成报告"
+      }
+    ]
+  },
+  "data_sources": {
+    "input_tables": [
+      {
+        "table": "bond.basicinfo_credit",
+        "database": "MySQL (bond)",
+        "description": "信用债基础信息"
+      },
+      {
+        "table": "bond.basicinfo_finance",
+        "database": "MySQL (bond)",
+        "description": "金融债基础信息"
+      },
+      {
+        "table": "bond.basicinfo_abs",
+        "database": "MySQL (bond)",
+        "description": "ABS基础信息"
+      },
+      {
+        "table": "bond.marketinfo_credit",
+        "database": "MySQL (bond)",
+        "description": "信用债市场信息（日度）"
+      },
+      {
+        "table": "bond.marketinfo_finance",
+        "database": "MySQL (bond)",
+        "description": "金融债市场信息（日度）"
+      },
+      {
+        "table": "bond.marketinfo_abs",
+        "database": "MySQL (bond)",
+        "description": "ABS市场信息（日度）"
+      },
+      {
+        "table": "bond.basicinfo_xzqh_ct",
+        "database": "MySQL (bond)",
+        "description": "城投行政区划映射"
+      },
+      {
+        "table": "bond.basicinfo_industrytype1",
+        "database": "MySQL (bond)",
+        "description": "申万行业分类映射"
+      },
+      {
+        "table": "bond.basicinfo_all",
+        "database": "MySQL (bond)",
+        "description": "债券基础信息汇总表"
+      },
+      {
+        "table": "债券新分类",
+        "database": "PostgreSQL (tsdb)",
+        "description": "ABS类型分类表"
+      }
+    ],
+    "output_tables": [
+      {
+        "table": "bond.债券分类",
+        "description": "债券分类汇总表（trade_code, 大类, 子类, 评级）"
+      },
+      {
+        "table": "bond.marketinfo3",
+        "description": "市场信息汇总表（DT, trade_code, 余额, 久期, 隐含评级）"
+      },
+      {
+        "table": "bond.信用债规模",
+        "description": "规模汇总表（DT, 分类, 子类, 分类方式, 余额）"
+      }
+    ]
+  },
+  "classification_dimensions": {
+    "bond_types": {
+      "major_categories": ["城投", "产业", "金融", "ABS"],
+      "description": "按债券性质分类"
+    },
+    "regional": {
+      "province": "城投债按省份分类",
+      "city": "城投债按城市分类"
+    },
+    "industry": {
+      "sw_level1": "产业债按申万一级行业分类",
+      "sw_industry": "产业债按申万行业分类",
+      "level1_category": "产业债按一级分类",
+      "level2_category": "产业债按二级分类"
+    },
+    "financial_institution": {
+      "types": ["银行", "证券公司", "保险", "其他"],
+      "description": "金融债按机构类型分类"
+    },
+    "rating": {
+      "levels": ["AAA", "AA+", "AA", "AA-", "A", "其他", "无评级"],
+      "description": "按隐含评级分类"
+    },
+    "duration": {
+      "thresholds": {
+        "0.5年": "< 0.75年",
+        "1年": "0.75 ~ 1.5年",
+        "2年": "1.5 ~ 2.5年",
+        "3年": "2.5 ~ 3.5年",
+        "4年": "3.5 ~ 4.5年",
+        "5年": "4.5 ~ 6年",
+        "7年": "6 ~ 8年",
+        "10年": ">= 8年"
+      },
+      "description": "按久期段分类"
+    },
+    "asset_type": {
+      "description": "ABS按基础资产类型分类"
+    }
+  },
+  "etl_process": {
+    "steps": [
+      {
+        "step": 1,
+        "name": "债券分类重建",
+        "description": "清空并重建债券分类表，分类信用债、金融债、ABS"
+      },
+      {
+        "step": 2,
+        "name": "评级补全",
+        "description": "从marketinfo_*表获取每个债券最新日期的隐含评级"
+      },
+      {
+        "step": 3,
+        "name": "市场数据插入",
+        "description": "插入信用债、金融债、ABS的余额和久期数据到marketinfo3"
+      },
+      {
+        "step": 4,
+        "name": "久期补全",
+        "description": "对久期缺失的记录，从基础信息表计算剩余年限（含永续债特殊处理）"
+      },
+      {
+        "step": 5,
+        "name": "隐含评级更新",
+        "description": "更新marketinfo3表的隐含评级字段"
+      },
+      {
+        "step": 6,
+        "name": "规模统计汇总",
+        "description": "执行14个汇总查询，按11种分类方式统计债券规模"
+      }
+    ],
+    "estimated_runtime": "10-30分钟",
+    "recommended_frequency": "每周执行一次"
+  },
+  "analysis_modules": {
+    "trend_analysis": {
+      "description": "规模趋势分析",
+      "metrics": ["日度规模变化", "周度/月度汇总", "同比增长率"]
+    },
+    "structure_analysis": {
+      "description": "结构分析",
+      "dimensions": ["大类占比", "评级分布", "久期分布"]
+    },
+    "concentration_analysis": {
+      "description": "集中度分析",
+      "metrics": ["HHI指数", "Top10占比", "集中度级别判断"]
+    },
+    "growth_analysis": {
+      "description": "增长率分析",
+      "metrics": ["环比增长率", "同比增长率", "CAGR"]
+    }
+  },
+  "visualization_types": [
+    "规模趋势图",
+    "大类结构饼图",
+    "评级分布图",
+    "久期分布图",
+    "大类趋势对比图",
+    "增长率热力图",
+    "综合仪表板"
+  ],
+  "technology_stack": {
+    "languages": ["Python 3.8+"],
+    "data_processing": ["pandas>=1.5.0", "numpy>=1.21.0"],
+    "database": {
+      "mysql": ["sqlalchemy>=1.4.0", "pymysql>=1.0.0"],
+      "postgresql": ["psycopg2-binary>=2.9.0"]
+    },
+    "visualization": ["matplotlib>=3.5.0", "seaborn>=0.12.0"],
+    "development": ["jupyter>=1.0.0", "ipykernel>=6.0.0"]
+  },
+  "security": {
+    "config_security": {
+      "hardcoded_passwords_in_refactored": false,
+      "uses_environment_variables": true,
+      "original_code_has_hardcoded_passwords": true,
+      "description": "重构后的config.py使用环境变量管理数据库密码，但原始xyzgm.py包含硬编码密码"
+    },
+    "sensitive_fields": [
+      "MYSQL_PASSWORD",
+      "PG_PASSWORD",
+      "SMTP_PASSWORD"
+    ]
+  },
+  "industry_context": {
+    "market_scale_2025": {
+      "credit_bond_issuance": "约20万亿元（1-11月）",
+      "yoy_growth": "+8.66%",
+      "net_financing": "3.68万亿元",
+      "total_bond_market": "88.52万亿元"
+    },
+    "market_structure": {
+      "city_investment_bond_share": "约35%",
+      "securities_company_bond_growth": "+40%",
+      "green_bond_growth": "+102.66%"
+    },
+    "2026_outlook": {
+      "maturity_scale": "约9.79万亿元",
+      "key_risks": ["债券集中到期", "流动性管理"]
+    }
+  },
+  "unique_features": [
+    {
+      "feature": "永续债久期特殊处理",
+      "description": "对永续债（理论期限含括号格式）进行特殊解析，从括号中提取期限年数"
+    },
+    {
+      "feature": "双数据库支持",
+      "description": "同时支持MySQL和PostgreSQL数据库，ABS分类数据来自PostgreSQL"
+    },
+    {
+      "feature": "多维度交叉统计",
+      "description": "支持11种分类方式，包括大类、省份、城市、申万行业、金融机构、评级、久期等"
+    },
+    {
+      "feature": "隐含评级自动补全",
+      "description": "从市场行情数据中自动获取最新的隐含评级"
+    },
+    {
+      "feature": "久期双重计算机制",
+      "description": "优先使用市场久期数据，缺失时从基础信息表计算剩余年限"
+    },
+    {
+      "feature": "增量更新机制",
+      "description": "只处理未处理的日期数据，避免重复计算"
+    }
+  ],
+  "code_quality": {
+    "documentation_quality": "A",
+    "modularization": "良好",
+    "error_handling": "基础",
+    "logging": "完整",
+    "testing": "缺失"
+  },
+  "recommendations": [
+    "添加单元测试和集成测试",
+    "优化SQL查询性能",
+    "添加数据质量检查模块",
+    "实现增量更新的回滚机制",
+    "添加API接口支持"
+  ],
+  "statistics": {
+    "total_notebooks": 9,
+    "total_python_files": 3,
+    "estimated_code_lines": 1500,
+    "sql_queries": 14
+  }
+}

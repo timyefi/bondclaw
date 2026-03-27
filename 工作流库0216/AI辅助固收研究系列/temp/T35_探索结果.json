@@ -1,0 +1,176 @@
+{
+  "task_id": "T35",
+  "task_name": "不同曲线投资顺序分析",
+  "project_path": "G:\\我的云端硬盘\\workspace\\projects\\工作库0216\\T35-不同曲线投资顺序分析",
+  "exploration_time": "2026-02-16",
+  "status": "completed",
+  "project_overview": {
+    "description": "本项目专注于研究不同类型债券（国债、国开、农发等）的投资顺序和收益率曲线形态，分析不同品种之间的利差关系和投资时点选择，为跨品种投资策略提供参考。",
+    "core_logic": "通过分析债券收益率下行周期，在不同品种、久期、资质维度的投资策略组合中进行回测，计算各策略的年化收益率并进行对比分析。",
+    "data_range": "2014-01-01 至 2024-12-08",
+    "initial_investment": 1000000000
+  },
+  "directory_structure": {
+    "notebooks": [
+      "01-数据准备.ipynb",
+      "02-周期标注.ipynb",
+      "03-数据获取.ipynb",
+      "04-策略生成.ipynb",
+      "05-回测分析.ipynb",
+      "06-可视化.ipynb",
+      "07-报告汇总.ipynb"
+    ],
+    "source_files": [
+      "src/不同曲线投资顺序分析.py",
+      "src/投资组合分析.py",
+      "src/债券数据准备.py",
+      "src/数据分析.py",
+      "src/数据准备.py",
+      "src/生成周期标注.py",
+      "src/国债收益率走势分析.py"
+    ],
+    "config_file": "config.py",
+    "assets": [
+      "assets/久期维度策略对比.png",
+      "assets/久期维度策略收益率对比.png",
+      "assets/久期维度策略稳定性分析.png",
+      "assets/久期维度累计收益.png",
+      "assets/品种维度策略对比.png",
+      "assets/品种维度策略收益率对比.png",
+      "assets/品种维度策略稳定性分析.png",
+      "assets/品种维度累计收益.png",
+      "assets/资质维度策略对比.png",
+      "assets/资质维度策略收益率对比.png",
+      "assets/资质维度策略稳定性分析.png",
+      "assets/资质维度累计收益.png"
+    ],
+    "reports": [
+      "久期维度策略分析报告.txt",
+      "品种维度策略分析报告.txt",
+      "资质维度策略分析报告.txt"
+    ]
+  },
+  "bond_types": {
+    "all_types": ["国债", "国开", "口行", "农发", "地方债", "城投", "产业", "普通金融债", "二永", "存单"],
+    "rate_bonds": ["国债", "国开", "口行", "农发", "地方债"],
+    "finance_bonds": ["存单", "普通金融债", "二永"],
+    "credit_bonds": ["城投", "产业"],
+    "type_mapping": {
+      "利率债": ["国债"],
+      "金融债": ["二永"],
+      "信用债": ["城投"]
+    }
+  },
+  "term_configuration": {
+    "rate_bond_terms": ["0-1", "1-3", "3-5", "5-7", "7-10", "10-13", "13-17", "17-23", "23-27", "27-33", "33-50"],
+    "credit_bond_terms": ["0-1", "2-3", "4-5", "6-7", "8-12", "13-17", "18-22", "23-27", "28-50"],
+    "duration_map": {
+      "短期": 0.5,
+      "中短期": 2.0,
+      "中长期": 4.0,
+      "长期": 7.0,
+      "超长期": 15.0
+    }
+  },
+  "rating_configuration": {
+    "ratings": ["AAA", "AA+", "AA", "AA(2)", "AA-"],
+    "rating_mapping": {
+      "高资质": ["AAA", "AA+"],
+      "中资质": ["AA"],
+      "弱资质": ["AA(2)", "AA-"]
+    }
+  },
+  "yield_down_cycles": [
+    {"cycle": 1, "start": "2014-01-02", "end": "2015-02-13", "start_yield": 4.6018, "end_yield": 3.3552, "yield_change": -1.2466},
+    {"cycle": 2, "start": "2015-06-11", "end": "2016-01-11", "start_yield": 3.6197, "end_yield": 2.8187, "yield_change": -0.8010},
+    {"cycle": 3, "start": "2018-01-18", "end": "2019-02-02", "start_yield": 3.9797, "end_yield": 3.0978, "yield_change": -0.8819},
+    {"cycle": 4, "start": "2019-11-04", "end": "2020-04-21", "start_yield": 3.2954, "end_yield": 2.5791, "yield_change": -0.7163},
+    {"cycle": 5, "start": "2021-03-10", "end": "2022-08-29", "start_yield": 3.2353, "end_yield": 2.6225, "yield_change": -0.6128},
+    {"cycle": 6, "start": "2023-02-22", "end": "2024-08-20", "start_yield": 2.9175, "end_yield": 2.1710, "yield_change": -0.7465}
+  ],
+  "strategies": {
+    "type_dimension": {
+      "name": "品种维度",
+      "description": "固定久期为中长期，资质为高资质，变化债券类型的投资顺序",
+      "strategy_count": 6,
+      "strategies": [
+        "利率债_中长期 -> 金融债_中长期_高资质 -> 信用债_中长期_高资质",
+        "利率债_中长期 -> 信用债_中长期_高资质 -> 金融债_中长期_高资质",
+        "金融债_中长期_高资质 -> 信用债_中长期_高资质 -> 利率债_中长期",
+        "金融债_中长期_高资质 -> 利率债_中长期 -> 信用债_中长期_高资质",
+        "信用债_中长期_高资质 -> 金融债_中长期_高资质 -> 利率债_中长期",
+        "信用债_中长期_高资质 -> 利率债_中长期 -> 金融债_中长期_高资质"
+      ],
+      "analysis_summary": {
+        "best_overall_strategy": "信用债_中长期_高资质资质 -> 利率债_中长期 -> 金融债_中长期_高资质资质",
+        "average_annual_return": "4.68%",
+        "std_dev_range": "0.71% - 0.93%",
+        "win_rate_range": "0% - 33.33%"
+      }
+    },
+    "term_dimension": {
+      "name": "久期维度",
+      "description": "固定品种为利率债或信用债，资质为中资质，变化久期顺序",
+      "strategy_count": 2,
+      "strategies": [
+        "利率债_超长期 -> 信用债_长期_中资质 -> 信用债_中长期_中资质 -> 信用债_短期_中资质",
+        "信用债_短期_中资质 -> 信用债_中长期_中资质 -> 信用债_长期_中资质 -> 利率债_超长期"
+      ],
+      "analysis_summary": {
+        "best_overall_strategy": "信用债_短期_中资质资质 -> 信用债_中长期_中资质资质 -> 信用债_长期_中资质资质 -> 利率债_超长期",
+        "average_annual_return": "6.37%",
+        "std_dev_range": "1.41% - 2.29%",
+        "win_rate_range": "33.33% - 66.67%"
+      }
+    },
+    "credit_dimension": {
+      "name": "资质维度",
+      "description": "固定品种为信用债，久期为中长期，变化资质顺序",
+      "strategy_count": 2,
+      "strategies": [
+        "信用债_中长期_高资质 -> 信用债_中长期_中资质 -> 信用债_中长期_弱资质",
+        "信用债_中长期_弱资质 -> 信用债_中长期_中资质 -> 信用债_中长期_高资质"
+      ],
+      "analysis_summary": {
+        "best_overall_strategy": "信用债_中长期_高资质资质 -> 信用债_中长期_中资质资质 -> 信用债_中长期_弱资质资质",
+        "average_annual_return": "7.70%",
+        "std_dev_range": "1.51% - 1.97%",
+        "win_rate_range": "33.33% - 66.67%"
+      }
+    }
+  },
+  "return_formula": {
+    "description": "债券持有期间总收益计算公式",
+    "coupon_return": "票息收益 = 期初收益率 × (持有天数 / 365)",
+    "price_return": "价格收益 = -修正久期 × 收益率变动 × (持有天数 / 365)",
+    "total_return": "总收益 = 票息收益 + 价格收益"
+  },
+  "database_configuration": {
+    "host": "rm-uf6c8yi6zdq6ea7p1qo.mysql.rds.aliyuncs.com",
+    "port": "3306",
+    "database": "yq",
+    "user_env_var": "DB_USER",
+    "password_env_var": "DB_PASSWORD"
+  },
+  "dependencies": [
+    "pandas>=1.5.0",
+    "numpy>=1.21.0",
+    "sqlalchemy>=1.4.0",
+    "pymysql>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "openpyxl>=3.0.0"
+  ],
+  "key_findings": {
+    "duration_dimension": "短久期优先策略平均年化收益率6.37%，胜率66.67%，表现优于长久期优先策略",
+    "type_dimension": "信用债优先策略整体表现较好，但各策略差异不大，波动率在0.71%-0.93%之间",
+    "credit_dimension": "高资质优先策略平均年化收益率7.70%，胜率66.67%，但弱资质优先策略波动率更低(1.51%)"
+  },
+  "usage": {
+    "step1": "设置环境变量: DB_PASSWORD=your_password",
+    "step2": "按顺序运行Notebook: 01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 07",
+    "step3": "查看输出文件和图表"
+  }
+}
