@@ -1,6 +1,6 @@
 ---
 name: financial-analyzer
-description: 企业年报附注优先财务分析 skill。用于让 Codex 先保留中间产物，再像人工一样逐章阅读附注、写报告、填 Excel，最后做知识库净化。
+description: 企业年报附注优先财务分析 skill。用于让 Codex 先保留中间产物，再像人工一样先做标准化 Excel 工作底稿、逐章阅读附注、写报告，最后做知识库净化。
 ---
 
 # Financial Analyzer
@@ -38,18 +38,18 @@ description: 企业年报附注优先财务分析 skill。用于让 Codex 先保
    - `soul_export_payload_scaffold.json`
    - 现有 `knowledge_base.json` 和最近的 adoption logs
 8. 如果该案例已经存在正式产物，则把正式产物也当作主要阅读对象，按以下顺序二次阅读：
+   - `financial_output.xlsx`
    - `analysis_report.md`
    - `final_data.json`
    - `soul_export_payload.json`
-   - `financial_output.xlsx`
    这一步不是复跑模板，而是基于既有正式产物做第二轮独立阅读和 synthesis。
 9. Codex 逐章阅读 `chapter_records` 中的章节原文与结构化要素，边读边写 `chapter_review_ledger.jsonl`，逐章提炼：
     - 章节结论
     - 证据摘录
     - 风险判断
     - 对正式知识库的增量或修正
-10. 在完成逐章阅读之后，基于 `chapter_text` / `chapter_text_cleaned`、`chapter_review_ledger.jsonl` 和既有知识库，由 Codex 自己完成指标口径核对、数值整理与正式 `analysis_report.md` 写作，再据此整理 `final_data.json` 和 `soul_export_payload.json`。不要让模板脚本替代这一步。
-11. 由 `soul_export_payload.json` 生成 `financial_output.xlsx`。需要时可再用 `spreadsheet` 做版式收尾，但不能改分析口径。
+10. 在完成逐章阅读之后，基于 `chapter_text` / `chapter_text_cleaned`、`chapter_review_ledger.jsonl` 和既有知识库，由 Codex 自己完成指标口径核对、数值整理与正式 `financial_output.xlsx` 工作底稿。这个 Excel 是客户可展示的第一层正式底稿，所有派生指标都要能回到章节证据和知识库口径。不要让模板脚本替代这一步。
+11. 由已完成的标准化 `financial_output.xlsx`、`chapter_review_ledger.jsonl` 和既有知识库，完成正式 `analysis_report.md` 写作，再据此整理 `final_data.json` 和 `soul_export_payload.json`。不要让模板脚本替代这一步。
 12. 最后才做知识库净化：先和现有知识库比对，再通过 adoption log 写入正式 `knowledge_base.json`。
 13. 如果某一步还没读完、没写完、没比对完，就不要进入下一步的正式化。
 
@@ -57,6 +57,7 @@ description: 企业年报附注优先财务分析 skill。用于让 Codex 先保
 
 - 角色定位必须是资深固收/信用分析师，不是摘要器。
 - 正式 `analysis_report.md` 必须体现“完整阅读后再写作”的结果，不得只是 scaffold 改写、主题拼接或模板填空。
+- 正式 `analysis_report.md` 必须建立在标准化 `financial_output.xlsx` 工作底稿已经完成的前提上；先有 workpaper，后有报告。
 - 正式报告必须以 `chapter_records.jsonl` 和 `chapter_review_ledger.jsonl` 为主阅读底座；`final_data.json`、`soul_export_payload.json` 只能作为摘要索引和交叉校验，不能单独承担写作来源。
 - 逐章阅读时优先使用 `chapter_text` / `chapter_text_cleaned`，不要只依赖 `summary`。
 - 指标核算必须优先调用知识库中的公式口径，尤其是：
@@ -165,10 +166,10 @@ description: 企业年报附注优先财务分析 skill。用于让 Codex 先保
 
 完成 Codex 逐章复核后，单案运行目录的正式交付产物为：
 
+- `financial_output.xlsx`
 - `analysis_report.md`
 - `final_data.json`
 - `soul_export_payload.json`
-- `financial_output.xlsx`
 
 ## 运行后最小验收清单
 

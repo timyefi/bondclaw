@@ -4,7 +4,7 @@
 
 这份文档只解决一件事：
 
-- 当项目已经完成 scaffold-only 抽取、runtime 绑定和 batch 回归后，如何把“先读中间产物 -> 再写正式报告和 Excel -> 最后直写知识”变成稳定、可交接、可回滚的主线。
+- 当项目已经完成 scaffold-only 抽取、runtime 绑定和 batch 回归后，如何把“先读中间产物 -> 先写正式 Excel 工作底稿 -> 再写正式报告 -> 最后直写知识”变成稳定、可交接、可回滚的主线。
 
 它不是总蓝图的替代品，也不是 `codex_execution_runbook.md` 的重复版。它只承接后 W5 的新主线：`Codex Review & Direct Adopt`。
 
@@ -13,7 +13,7 @@
 1. `financial_analyzer.py` 只负责抽取与 scaffold，不再直接生成正式分析结论。
 2. `pending_updates.json` 不是主学习路径，只保留兼容痕迹。
 3. `chapter_records.jsonl` 和各类 scaffold 只表示抽取完成，不代表已完整阅读、已成稿或已净化知识库。
-4. 正式报告与 Excel 必须由 Codex 读完中间产物后再写，不能把 scaffold 自动收口当成最终分析。
+4. 正式 Excel 工作底稿与正式报告必须由 Codex 读完中间产物后再写，不能把 scaffold 自动收口当成最终分析。
 5. 正式知识学习由 Codex 按章阅读后，通过 adoption log 直写 `runtime/knowledge/knowledge_base.json`。
 6. `knowledge_manager.py` 只负责正式知识库审计、摘要与兼容入口，不再承担候选治理主路径。
 7. 任何章节级知识写入都必须能回滚，并且能被摘要工具看见。
@@ -48,7 +48,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 
 ### 目标
 
-- 把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 写正式 analysis_report / final_data / soul_export_payload / financial_output -> 直写正式 knowledge_base”的控制面标准化，替代旧的 `pending_updates / review bundle` 主路径。
+- 把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 先写正式 financial_output（Excel workpaper）-> 再写正式 analysis_report / final_data / soul_export_payload -> 直写正式 knowledge_base”的控制面标准化，替代旧的 `pending_updates / review bundle` 主路径。
 - 明确章节状态机、adoption gate、finalization gate、rollback boundary 和 direct adopt 交接规则。
 
 ### 开始前阅读
@@ -87,7 +87,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、production_execution_runbook.md、financial-analyzer/SKILL.md、financial-analyzer/references/open_record_protocol.md、financial-analyzer/references/output_contract.md。当前聚焦 R1：Codex Review & Direct Adopt Control Plane。请把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 写正式 analysis_report / final_data / soul_export_payload / financial_output -> 直写正式 knowledge_base”的控制面标准化，明确 review 状态机、adoption gate、finalization gate、章节级 review ledger 口径、rollback boundary 以及与 direct adopt 的交接规则，并把结果落成仓库文档。不要继续按 `pending_updates / review bundle` 主路径推进，也不要把 scaffold 自动收口当成最终分析。
+先阅读 AGENTS.md、automation_blueprint.md、codex_execution_runbook.md、production_execution_runbook.md、financial-analyzer/SKILL.md、financial-analyzer/references/open_record_protocol.md、financial-analyzer/references/output_contract.md。当前聚焦 R1：Codex Review & Direct Adopt Control Plane。请把“模板脚本输出 scaffold -> Codex 先完整阅读中间产物 -> 逐章写入 review ledger -> 先写正式 financial_output（Excel workpaper）-> 再写正式 analysis_report / final_data / soul_export_payload -> 直写正式 knowledge_base”的控制面标准化，明确 review 状态机、adoption gate、finalization gate、章节级 review ledger 口径、rollback boundary 以及与 direct adopt 的交接规则，并把结果落成仓库文档。不要继续按 `pending_updates / review bundle` 主路径推进，也不要把 scaffold 自动收口当成最终分析。
 ```
 
 ### 4.2 线程 R2：Knowledge Adoption Delta Contract
@@ -159,7 +159,7 @@ R1、R2、R3 与 P6 都已收口到文档与结果，后续只需按运行反馈
 ### 可直接复制的 Prompt
 
 ```text
-先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及最新的 W6 / W7 回归结果。当前聚焦 R3：1-2 个完整案例的 Scaffold -> Read -> Write -> Adopt 演练。请选取 1 到 2 个完整案例，按“先 scaffold、再完整阅读中间产物、再写正式 analysis_report/final_data/soul_export_payload/financial_output、最后通过 adoption log 直写正式 knowledge_base”的顺序跑通全流程，并记录 adoption logs、回滚验证和单案复核摩擦点。不要扩成 10 案，也不要回到 pending_updates/review bundle 口径。
+先阅读 AGENTS.md、automation_blueprint.md、production_execution_runbook.md、codex_review_and_finalization_runbook.md、knowledge_adoption_delta_contract.md，以及最新的 W6 / W7 回归结果。当前聚焦 R3：1-2 个完整案例的 Scaffold -> Read -> Write -> Adopt 演练。请选取 1 到 2 个完整案例，按“先 scaffold、再完整阅读中间产物、再写正式 financial_output（Excel workpaper）、再写正式 analysis_report/final_data/soul_export_payload、最后通过 adoption log 直写正式 knowledge_base”的顺序跑通全流程，并记录 adoption logs、回滚验证和单案复核摩擦点。不要扩成 10 案，也不要回到 pending_updates/review bundle 口径。
 ```
 
 ### 4.4 线程 P6：Go-Live Checklist

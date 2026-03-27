@@ -16,7 +16,7 @@
 1. 自动采集完整财报与评级报告。
 2. 自动解析 PDF 并定位关键章节，尤其是附注。
 3. 在 Skill 驱动下生成研究分析结果。
-4. 自动生成对外交付级 Excel 成品 `Soul`。
+4. 自动生成对外交付级 Excel 工作底稿 `Soul`，并在底稿基础上形成正式报告。
 5. 自动沉淀内部知识候选，但与对外交付严格解耦。
 
 最终目标不是做一个“能跑一次的脚本集合”，而是形成一个可持续迭代、可批量运维、可审计、可交接的研究自动化系统。
@@ -47,8 +47,8 @@
 
 ### 5.1 对外交付产物
 
+- `financial_output.xlsx`
 - `analysis_report.md`
-- `financial_output.xlsx` 或后续正式命名的 `soul_output.xlsx`
 
 ### 5.2 内部运行产物
 
@@ -143,6 +143,7 @@
 
 输出：
 
+- `financial_output.xlsx`
 - `analysis_report.md`
 - `final_data.json`
 - `focus_list.json`
@@ -195,10 +196,12 @@
 2. 应采用“固定骨架 + 标准可选模块 + 行业专题模块”。
 3. 当前最稳定的骨架是：
    - `00_overview`
-   - `01_kpi_dashboard`
-   - `02_financial_summary`
+   - `01_input_ledger`
+   - `02_calculations`
    - `03_debt_profile`
    - `04_liquidity_and_covenants`
+   - `05_operating_profile`
+   - `06_risk_matrix`
    - `99_evidence_index`
 4. 专题模块是后续演进重点，而不是继续膨胀主表。
 
@@ -220,7 +223,7 @@
 
 ### 8.2 已确认事实
 
-1. `financial_analyzer.py` 当前仍以 scaffold-only 为默认输出，正式报告和 Excel 需要在 Codex 完整阅读中间产物后显式收口。
+1. `financial_analyzer.py` 当前仍以 scaffold-only 为默认输出，正式 Excel 工作底稿和正式报告需要在 Codex 完整阅读中间产物后显式收口。
 2. 历史 `test_runs` 目录仍混有旧内部分析 workbook、旧路径口径和分层改造前样本，不能直接等同于当前 W6 回归基线。
 3. 现有历史 Excel 与 3 个固定案例可继续作为结构归纳和回归样本，但需要区分“历史样本”和“当前主线重跑产物”。
 4. curated `spreadsheet` skill 已安装，可作为 Excel 生成层参考。
@@ -379,8 +382,8 @@ Subagents 协作约束：
 
 验收：
 
+- 成功生成标准化 `financial_output.xlsx`
 - 成功生成 `analysis_report.md`
-- 成功生成初版 Soul Excel
 - 成功生成 `run_manifest.json`
 
 ### Phase 2：多案例模板打样
@@ -453,7 +456,7 @@ Subagents 协作约束：
 - 已新增独立 `soul_exporter.py`，可从 `soul_export_payload.json` 生成 Soul v1.1-alpha 工作簿
 - 已完成恒隆地产、碧桂园、杭海新城控股三案例的 Soul v1.1-alpha 样稿与 PDF/PNG 预览产物
 - 已验证首轮专题模块：`investment_property`、`restricted_assets`、`lgfv_features`、`external_guarantees`
-- 已将 `financial_analyzer.py` 的最终 Excel 导出切换为“先输出稳定契约，再调用独立 Soul exporter”模式，`financial_output.xlsx` 现由 W4 导出层生成
+- 已将 `financial_output.xlsx` 的正式定位切换为客户可展示的 Excel 工作底稿，workpaper 由 Skill 驱动的分析阶段先行生成，`spreadsheet` 仅负责版式收尾
 - W5 路线已调整：不再把“知识学习”压在规则脚本和 `pending_updates` 上，而是改为“模板脚本先产 scaffold，Codex 再逐章复核、逐章写入正式知识库，并通过 adoption log 保持可审计和可回滚”
 - `financial-analyzer/SKILL.md` 已切换为 Codex-driven workflow：脚本只负责通用模板抽取，知识学习与最终分析由 Codex 按章完成，正式写入必须带 adoption log
 - 已新增 `financial-analyzer/scripts/run_w6_regression.py`，将 W6 最小回归收敛为固定 3 案例重跑 + 结构校验
@@ -525,3 +528,20 @@ Subagents 协作约束：
 5. 某个阶段完成，进入下一个阶段。
 
 如果只是局部实现细节变化，则更新对应模块文档，不必污染总蓝图。
+
+## 17. 业务研究规划补充（信用组 2026）
+
+仓库内另有一套面向信用组业务建设的研究规划，核心是“大数据信用研究 + 财务分析”的双子项目结构。
+
+该规划的基本原则是：
+
+1. 先做子项目 1 的大数据分析，再做子项目 2 的财务分析。
+2. 子项目 1 负责全市场定价重构与比价，子项目 2 负责财报附注深挖与基本面补强。
+3. 实习生优先参与子项目 1，随后逐步进入子项目 2。
+4. 相关成果以研究文档、Excel 数据库和案例材料为主，不涉及代码实现细节。
+
+该业务规划的正式文本分别见：
+
+- `大数据信用研究与财务分析项目总体规划.md`
+- `大数据信用研究项目1详细规划.md`
+- `大数据信用研究实习生介绍.md`

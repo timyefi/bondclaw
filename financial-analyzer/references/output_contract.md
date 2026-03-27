@@ -15,18 +15,19 @@
 
 完成逐章复核和最终汇总后，运行目录内正式交付文件名为：
 
+- `financial_output.xlsx`
 - `analysis_report.md`
 - `final_data.json`
 - `soul_export_payload.json`
-- `financial_output.xlsx`
 
 ## 导出规则
 
 - 模板脚本输出的 scaffold 只能视为草稿，不能未经复核直接作为最终交付。
-- 主链路默认停在 scaffold；正式 `analysis_report.md` 和 `financial_output.xlsx` 需要在 Codex 读完中间产物后显式 formalize。
-- `soul_export_payload.json` 仍是 Soul Excel 导出层的正式稳定契约。
-- `financial_output.xlsx` 由独立 Soul exporter 基于正式 `soul_export_payload.json` 生成。
+- 主链路默认停在 scaffold；正式 `financial_output.xlsx` 需要在 Codex 完成标准化 workpaper 后显式 formalize，正式 `analysis_report.md` 只能建立在该 workpaper 之上。
+- `financial_output.xlsx` 是客户可展示的正式底稿，不是报告的附属摘要。
+- `soul_export_payload.json` 仍是结构化中间契约，供底稿与报告共享稳定字段，但不替代 workpaper 本身。
 - Excel 只消费稳定核心字段和已确认结构，不消费内部知识治理元数据。
+- 如需版式收尾，可再用 `spreadsheet` 做格式微调，但不能改动底稿口径。
 - 所有正常分析产物都只基于附注章节生成。
 
 ## 前向兼容
