@@ -1,2 +1,5 @@
 runtime/state/
 financial-analyzer/scripts/__pycache__/
+._*
+.DS_Store
+cases/
