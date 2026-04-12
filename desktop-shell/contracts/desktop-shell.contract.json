@@ -1,0 +1,11 @@
+{
+  "app_name": "BondClaw",
+  "team_label": "国投固收 张亮/叶青",
+  "runtime_entry": "financialanalysis/financial-analyzer/scripts/bondclaw_runtime.py",
+  "runtime_bridge": "desktop-shell/bridge/runtime_client.py",
+  "default_execution_mode": "native",
+  "windows_execution_mode": "native",
+  "forbidden_defaults": [
+    "non-native-execution"
+  ]
+}

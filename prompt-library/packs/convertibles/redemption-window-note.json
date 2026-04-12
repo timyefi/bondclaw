@@ -1,0 +1,35 @@
+{
+  "id": "convertibles-redemption-window-note-v1",
+  "role": "convertibles",
+  "workflow": "redemption-window-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "convertible_list",
+      "redemption_window"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "convertible_list": { "type": "array", "items": { "type": "string" } },
+      "redemption_window": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、转债列表和赎回窗口，生成一份赎回风险观察笔记。要求包含赎回条件、正股表现、溢价和条款风险、交易对策和回避建议，全文保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "convertible_list": ["转债A", "转债B"],
+    "redemption_window": "未来 30 个交易日"
+  },
+  "qa_checklist": [
+    "赎回窗口是否明确",
+    "风险提示是否充分",
+    "交易对策是否清晰",
+    "是否适合盘中快速查看"
+  ]
+}

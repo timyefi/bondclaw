@@ -1,0 +1,22 @@
+{
+  "panel_id": "bondclaw-research-brain",
+  "panel_title": "信息中心",
+  "sections": [
+    "header",
+    "source_groups",
+    "source_cards",
+    "theme_overview",
+    "filters",
+    "case_browser",
+    "case_details",
+    "case_highlights",
+    "prompt_shortcuts",
+    "recommended_actions",
+    "notes"
+  ],
+  "interaction_rules": {
+    "filter_mode": "role-first",
+    "case_browser": "local-cache-first",
+    "recommended_actions": "non-blocking"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "convertibles-underlying-momentum-note-v1",
+  "role": "convertibles",
+  "workflow": "underlying-momentum-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "underlying_momentum",
+      "convertible_candidates"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "underlying_momentum": { "type": "string" },
+      "convertible_candidates": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕正股动量写一份转债观察，说明动量对转债弹性、估值和切换节奏的影响。先判断，再解释，再给操作提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "underlying_momentum": "正股动量增强",
+    "convertible_candidates": [
+      "可转债A",
+      "可转债B"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明正股动量",
+    "是否连接转债弹性",
+    "是否给出操作提示"
+  ]
+}

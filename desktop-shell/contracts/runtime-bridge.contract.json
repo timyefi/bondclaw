@@ -1,0 +1,15 @@
+{
+  "commands": [
+    "summary",
+    "catalog",
+    "validate",
+    "providers",
+    "roles",
+    "role_manifest",
+    "prompt_pack",
+    "describe_command"
+  ],
+  "transport": "subprocess",
+  "encoding": "utf-8",
+  "payload_shape": "json"
+}

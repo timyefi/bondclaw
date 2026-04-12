@@ -1,0 +1,60 @@
+﻿<!doctype html>
+<html data-theme="light" data-color-scheme="default">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="application-name" content="BondClaw" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="BondClaw" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#2F7386" />
+    <link rel="icon" type="image/png" href="./pwa/icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="./pwa/icon-180.png" />
+    <title>BondClaw</title>
+    <script>
+      // Synchronously restore theme from localStorage to prevent theme flash
+      (function () {
+        try {
+          var theme = localStorage.getItem('__bondclaw_theme') || localStorage.getItem('__aionui_theme');
+          var colorScheme =
+            localStorage.getItem('__bondclaw_colorScheme') || localStorage.getItem('__aionui_colorScheme');
+          if (theme) {
+            localStorage.setItem('__bondclaw_theme', theme);
+            localStorage.removeItem('__aionui_theme');
+            document.documentElement.setAttribute('data-theme', theme);
+          }
+          if (colorScheme) {
+            localStorage.setItem('__bondclaw_colorScheme', colorScheme);
+            localStorage.removeItem('__aionui_colorScheme');
+            document.documentElement.setAttribute('data-color-scheme', colorScheme);
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      html,
+      body,
+      #root {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Set arco-theme on body synchronously
+      try {
+        var t = localStorage.getItem('__bondclaw_theme') || localStorage.getItem('__aionui_theme');
+        if (t) localStorage.setItem('__bondclaw_theme', t);
+        if (t) document.body.setAttribute('arco-theme', t);
+      } catch (e) {}
+    </script>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

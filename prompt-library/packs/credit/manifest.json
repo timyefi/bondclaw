@@ -1,0 +1,28 @@
+{
+  "role": "credit",
+  "display_name": "信用研究员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "issuer-deep-dive",
+    "financial-report-review",
+    "event-risk-monitor",
+    "peer-comparison",
+    "covenant-review",
+    "liquidity-pressure-note",
+    "covenant-event-watch",
+    "peer-spread-watch",
+    "cash-conversion-watch",
+    "event-impact-note",
+    "repayment-calendar-watch",
+    "leverage-watch",
+    "issuer-risk-memo",
+    "funding-access-note",
+    "refinancing-track",
+    "issuer-liquidity-watch",
+    "covenant-breach-watch",
+    "debt-rollover-watch",
+    "funding-spread-watch",
+    "liquidity-horizon-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}

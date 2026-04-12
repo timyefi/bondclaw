@@ -1,0 +1,40 @@
+{
+  "id": "rates-term-spread-watch-v1",
+  "role": "rates",
+  "workflow": "term-spread-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "term_spreads",
+      "liquidity_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "term_spreads": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "liquidity_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据期限利差、资金面信号和曲线结构，判断期限价差是否出现可交易机会。先给判断，再给背后驱动，最后给交易含义和风险。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "term_spreads": ["1Y-10Y", "5Y-10Y"],
+    "liquidity_signals": ["DR007稳定", "同业存单发行放量"]
+  },
+  "qa_checklist": [
+    "是否给出期限利差判断",
+    "是否连接资金面与曲线",
+    "是否说明交易风险"
+  ]
+}

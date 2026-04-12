@@ -1,0 +1,29 @@
+{
+  "id": "trader-execution-note-v1",
+  "role": "trader",
+  "workflow": "execution-note",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["date", "trade_list"],
+    "properties": {
+      "date": { "type": "string" },
+      "trade_list": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据交易清单和市场变化，生成交易执行备注，说明成交、滑点、异常和后续观察重点。输出需简洁、可追踪。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "trade_list": ["买入利率债", "减仓信用债"]
+  },
+  "qa_checklist": [
+    "是否记录交易动作",
+    "是否说明异常",
+    "是否适合回看"
+  ]
+}

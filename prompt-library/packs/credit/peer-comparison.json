@@ -1,0 +1,35 @@
+{
+  "id": "credit-peer-comparison-v1",
+  "role": "credit",
+  "workflow": "peer-comparison",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "peer_list",
+      "compare_dimensions"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "peer_list": { "type": "array", "items": { "type": "string" } },
+      "compare_dimensions": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入发行人、对标名单和比较维度，生成一份同业比较报告。要求按维度比较盈利、杠杆、现金流、融资和信用利差，并给出相对优劣结论。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "peer_list": ["同业A", "同业B", "同业C"],
+    "compare_dimensions": ["盈利", "杠杆", "现金流"]
+  },
+  "qa_checklist": [
+    "对标名单是否合理",
+    "比较维度是否完整",
+    "相对结论是否清楚",
+    "是否适合研报引用"
+  ]
+}

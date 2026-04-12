@@ -1,0 +1,46 @@
+{
+  "id": "rates-liquidity-gap-watch-v1",
+  "role": "rates",
+  "workflow": "liquidity-gap-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "funding_readings",
+      "gap_observations"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "funding_readings": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "gap_observations": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕资金缺口和期限分层写一份观察笔记，说明短端与中长端之间的资金传导是否出现断点，以及对应的交易含义。输出要短而完整。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "funding_readings": [
+      "DR007平稳",
+      "存单利率小幅上行"
+    ],
+    "gap_observations": [
+      "1Y与5Y分化",
+      "长端买盘延续"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明资金传导",
+    "是否识别期限分层",
+    "是否给出交易含义"
+  ]
+}

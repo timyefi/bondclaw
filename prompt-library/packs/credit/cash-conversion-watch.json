@@ -1,0 +1,40 @@
+{
+  "id": "credit-cash-conversion-watch-v1",
+  "role": "credit",
+  "workflow": "cash-conversion-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "operating_cash_flow",
+      "working_capital_signals"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "operating_cash_flow": { "type": "string" },
+      "working_capital_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕主体现金转化效率写一份观察笔记，说明经营现金流、营运资本变化和利润质量之间的关系。先结论，再证据，再风险。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "operating_cash_flow": "经营现金流转弱",
+    "working_capital_signals": [
+      "应收增加",
+      "存货抬升"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明现金转化",
+    "是否解释营运资本变化",
+    "是否给出风险判断"
+  ]
+}

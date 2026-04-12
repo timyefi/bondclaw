@@ -1,0 +1,13 @@
+{
+  "app_name": "BondClaw",
+  "team_label": "国投固收 张亮/叶青",
+  "execution_mode": "native",
+  "shell_mode": "native",
+  "default_provider_id": "zai",
+  "default_role_id": "macro",
+  "default_prompt_name": "daily-brief",
+  "lead_capture_enabled": true,
+  "support_banner_enabled": true,
+  "notification_level": "normal",
+  "api_key_storage": "local-keychain"
+}

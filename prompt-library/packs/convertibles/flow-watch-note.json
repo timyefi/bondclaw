@@ -1,0 +1,35 @@
+{
+  "id": "convertibles-flow-watch-note-v1",
+  "role": "convertibles",
+  "workflow": "flow-watch-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "flow_signal",
+      "issuer_name"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "flow_signal": { "type": "string" },
+      "issuer_name": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、资金流信号和主体名称，生成一份转债资金流观察。要求写清是主动流入还是流出、对估值和波动的影响、以及盘中最需要观察的动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "flow_signal": "资金明显流入",
+    "issuer_name": "样本主体"
+  },
+  "qa_checklist": [
+    "资金流方向是否明确",
+    "估值和波动影响是否提到",
+    "盘中动作是否具体",
+    "是否适合快速查看"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-relative-value-scan-v1",
+  "role": "multi-asset",
+  "workflow": "relative-value-scan",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "scan_universe",
+      "relative_focus"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "scan_universe": { "type": "array", "items": { "type": "string" } },
+      "relative_focus": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、扫描范围和相对价值关注点，生成一份相对价值扫描结果。要求列出候选、比较维度、相对优势和后续跟踪信号。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "scan_universe": ["债券A", "信用B", "权益C"],
+    "relative_focus": "收益风险比"
+  },
+  "qa_checklist": [
+    "候选是否清楚",
+    "比较维度是否合理",
+    "相对优势是否写明",
+    "是否适合配置和交易共用"
+  ]
+}

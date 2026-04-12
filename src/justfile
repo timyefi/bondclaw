@@ -1,0 +1,275 @@
+# AionUI Development Justfile
+# Usage: just <recipe>
+
+# Developer shell for AionUI maintenance tasks; customer runtime uses Windows-native execution.
+set shell := ["sh", "-lc"]
+
+# Default recipe: show available commands
+default:
+    @just --list --unsorted
+
+# ============================================================
+# Development
+# ============================================================
+
+# Start development server (Electron + Vite HMR)
+dev:
+    bun run start
+
+# Start WebUI development mode
+webui:
+    bun run webui
+
+# Start WebUI with remote access
+webui-remote:
+    bun run webui:remote
+
+# Start WebUI production mode
+webui-prod:
+    bun run webui:prod
+
+# Run CLI mode
+cli:
+    bun run cli
+
+# ============================================================
+# Environment Checks (from CI experience)
+# ============================================================
+
+# Check all build prerequisites are met
+[no-exit-message]
+preflight:
+    node scripts/just-tools.mjs preflight
+
+# Show current build environment info
+info:
+    node scripts/just-tools.mjs info
+
+# Sync the local AionUi fork with its upstream remote
+sync-upstream:
+    bun run sync:upstream
+
+# ============================================================
+# Dependencies & Native Modules
+# ============================================================
+
+# Install dependencies (clean install)
+install:
+    bun install
+
+# Install dependencies (with lockfile update)
+install-update:
+    bun install
+
+# Full setup: install deps + rebuild native modules
+setup: install rebuild-native
+
+# Rebuild native modules for Electron (critical step!)
+# On Windows, ensure MSVC build tools are installed via:
+#   choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools"
+# or install Visual Studio 2022 with "Desktop development with C++" workload.
+[no-exit-message]
+rebuild-native:
+    node scripts/just-tools.mjs rebuild-native
+
+# Verify native modules can actually be loaded by Node.js
+[no-exit-message]
+verify-native:
+    node scripts/just-tools.mjs verify-native
+
+# ============================================================
+# Build (mirrors CI workflow environment setup)
+# ============================================================
+
+# Build for current platform (preflight → build)
+build: preflight
+    NODE_OPTIONS=--max-old-space-size=8192 bun run build
+
+# Quick build - uses cached Vite output if available
+build-quick: preflight
+    NODE_OPTIONS=--max-old-space-size=8192 node scripts/build-with-builder.js auto --skip-native
+
+# Build package only (no installer) - fastest iteration
+build-package: preflight
+    NODE_OPTIONS=--max-old-space-size=8192 node scripts/build-with-builder.js auto --pack-only --skip-native
+
+# Force full rebuild (clears cache)
+build-force: preflight clean
+    NODE_OPTIONS=--max-old-space-size=8192 node scripts/build-with-builder.js auto --force
+
+# Build for Windows x64
+build-win-x64: preflight
+    node scripts/just-tools.mjs build-win-x64
+
+# Build for Windows arm64
+build-win-arm64: preflight
+    node scripts/just-tools.mjs build-win-arm64
+
+# Build for Windows (auto-detect arch)
+build-win: preflight
+    node scripts/just-tools.mjs build-win
+
+# Build for macOS ARM64
+build-mac-arm64: preflight
+    node scripts/just-tools.mjs build-mac-arm64
+
+# Build for macOS x64
+build-mac-x64: preflight
+    node scripts/just-tools.mjs build-mac-x64
+
+# Build for macOS (arm64 + x64)
+build-mac: preflight
+    node scripts/just-tools.mjs build-mac
+
+# Build for Linux
+build-linux: preflight
+    node scripts/just-tools.mjs build-linux
+
+# Package only (electron-vite build, no installer)
+package:
+    bun run package
+
+# Distribute (shortcut)
+dist:
+    bun run dist
+
+# ============================================================
+# Code Quality
+# ============================================================
+
+# Run linter
+lint:
+    bun run lint
+
+# Run linter with auto-fix
+lint-fix:
+    bun run lint:fix
+
+# Format code
+fmt:
+    bun run format
+
+# Check formatting
+fmt-check:
+    bun run format:check
+
+# Type check
+typecheck:
+    bunx tsc --noEmit
+
+# Run all checks (lint + format + typecheck) — mirrors CI code-quality job
+check: lint fmt-check typecheck
+
+# ============================================================
+# Testing
+# ============================================================
+
+# Run all tests
+test:
+    bun run test
+
+# Run tests in watch mode
+test-watch:
+    bun run test:watch
+
+# Run tests with coverage
+test-coverage:
+    bun run test:coverage
+
+# Run contract tests
+test-contract:
+    bun run test:contract
+
+# Run integration tests
+test-integration:
+    bun run test:integration
+
+# Verify packaged artifact contains complete renderer assets (i18n safety)
+test-packaged-i18n:
+    bun run test:packaged:i18n
+
+# Run E2E tests (Playwright + Electron — auto-launches app)
+# Builds main+preload+renderer into out/ first to ensure fresh artifacts.
+e2e-test:
+    bun run package
+    bunx playwright test --config playwright.config.ts
+
+# Run only extension-related E2E tests (faster iteration)
+e2e-test-ext:
+    bun run package
+    bunx playwright test --config playwright.config.ts tests/e2e/specs/ext-*.e2e.ts
+
+# Run E2E tests with headed browser (for debugging)
+e2e-test-headed:
+    bun run package
+    bunx playwright test --config playwright.config.ts --headed
+
+# Open Playwright HTML report after test run
+e2e-report:
+    bunx playwright show-report tests/e2e/report
+
+# ============================================================
+# Extension System (RFC-001)
+# ============================================================
+
+# Start dev server with example extensions loaded
+# CDP remote debugging is enabled by default on port 9222 in dev mode
+dev-ext:
+    node scripts/dev-bootstrap.mjs launch start --extensions
+
+# Start WebUI with example extensions loaded
+webui-ext:
+    node scripts/dev-bootstrap.mjs launch webui --extensions
+
+# Start CLI with example extensions loaded
+cli-ext:
+    node scripts/dev-bootstrap.mjs launch cli --extensions
+
+# Cross-platform diagnosis for dev extension startup
+dev-ext-doctor:
+    node scripts/dev-bootstrap.mjs doctor
+
+# Launch packaged (unpacked) app with example extensions for one-click debugging
+# Requires out/*-unpacked artifacts
+packaged-ext:
+    node scripts/packaged-launch.mjs
+
+# Build package first, then launch with example extensions
+packaged-ext-build: build-package
+    node scripts/packaged-launch.mjs
+
+# Validate extension system types compile correctly
+ext-typecheck:
+    bunx tsc --noEmit --project tsconfig.json
+
+# Run extension system tests
+ext-test:
+    bunx vitest run tests/extensions/ --passWithNoTests
+
+# Run extension system tests in watch mode
+ext-test-watch:
+    bunx vitest tests/extensions/
+
+# ============================================================
+# Utilities
+# ============================================================
+
+# Reset WebUI password
+reset-password:
+    bun run resetpass
+
+# Clean build artifacts
+clean:
+    node scripts/just-tools.mjs clean
+
+# Deep clean (build artifacts + node_modules)
+clean-all: clean
+    node scripts/just-tools.mjs clean-all
+
+# List build output artifacts
+list-artifacts:
+    node scripts/just-tools.mjs list-artifacts
+
+# CI-like full build validation (mirrors GitHub Actions workflow)
+ci-local: check test build
+    echo "CI-local pipeline passed!"

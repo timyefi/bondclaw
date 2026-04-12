@@ -1,0 +1,2 @@
+"""BondClaw template center package."""
+

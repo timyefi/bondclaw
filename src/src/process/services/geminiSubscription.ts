@@ -1,0 +1,92 @@
+/**
+ * @license
+ * Copyright 2025 BondClaw (github.com/timyefi/bondclaw)
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import type { UserTierId } from '@office-ai/aioncli-core';
+import { getOauthInfoWithCache, Storage } from '@office-ai/aioncli-core';
+import * as fs from 'node:fs';
+
+export interface GeminiSubscriptionStatus {
+  isSubscriber: boolean;
+  tier?: UserTierId | 'unknown';
+  lastChecked: number;
+  message?: string;
+}
+
+const CACHE_TTL = 5 * 60 * 1000;
+
+type CacheEntry = {
+  status: GeminiSubscriptionStatus;
+  expiresAt: number;
+};
+
+const statusCache = new Map<string, CacheEntry>();
+const pendingRequests = new Map<string, Promise<GeminiSubscriptionStatus>>();
+
+async function fetchSubscriptionStatus(proxy?: string): Promise<GeminiSubscriptionStatus> {
+  try {
+    const credsPath = Storage.getOAuthCredsPath();
+    if (!fs.existsSync(credsPath)) {
+      return {
+        isSubscriber: false,
+        tier: 'unknown',
+        lastChecked: Date.now(),
+        message: 'OAuth credentials file not found',
+      };
+    }
+
+    const oauthInfo = await getOauthInfoWithCache(proxy);
+    if (!oauthInfo) {
+      return {
+        isSubscriber: false,
+        tier: 'unknown',
+        lastChecked: Date.now(),
+        message: 'No valid cached credentials',
+      };
+    }
+
+    return {
+      isSubscriber: false,
+      tier: 'unknown',
+      lastChecked: Date.now(),
+    };
+  } catch (error) {
+    return {
+      isSubscriber: false,
+      tier: 'unknown',
+      lastChecked: Date.now(),
+      message: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function getGeminiSubscriptionStatus(proxy?: string): Promise<GeminiSubscriptionStatus> {
+  const cacheKey = proxy || 'default';
+  const cached = statusCache.get(cacheKey);
+  const now = Date.now();
+
+  if (cached && cached.expiresAt > now) {
+    return cached.status;
+  }
+
+  if (pendingRequests.has(cacheKey)) {
+    return await pendingRequests.get(cacheKey)!;
+  }
+
+  const request = fetchSubscriptionStatus(proxy)
+    .then((status) => {
+      statusCache.set(cacheKey, {
+        status,
+        expiresAt: Date.now() + CACHE_TTL,
+      });
+      return status;
+    })
+    .finally(() => {
+      pendingRequests.delete(cacheKey);
+    });
+
+  pendingRequests.set(cacheKey, request);
+  return await request;
+}

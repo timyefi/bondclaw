@@ -1,0 +1,47 @@
+{
+  "id": "fund-manager-weekly-risk-balance-v1",
+  "role": "fund-manager",
+  "workflow": "weekly-risk-balance",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "risk_buckets",
+      "return_drivers"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "risk_buckets": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "return_drivers": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕一周的风险预算和收益驱动做平衡复盘，说明哪些风险消耗了预算、哪些策略贡献了收益、下周该怎么调。要求简洁但要可执行。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "risk_buckets": [
+      "久期风险",
+      "信用风险",
+      "流动性风险"
+    ],
+    "return_drivers": [
+      "票息贡献",
+      "久期交易"
+    ]
+  },
+  "qa_checklist": [
+    "是否覆盖风险预算",
+    "是否说明收益来源",
+    "是否提出下周调整"
+  ]
+}

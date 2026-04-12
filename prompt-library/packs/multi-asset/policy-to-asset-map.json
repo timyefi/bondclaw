@@ -1,0 +1,46 @@
+{
+  "id": "multi-asset-policy-to-asset-map-v1",
+  "role": "multi-asset",
+  "workflow": "policy-to-asset-map",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_signals",
+      "asset_impacts"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "asset_impacts": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "把政策信号映射到多资产配置视角，说明不同资产的受益和受损方向，并给出仓位上的优先级建议。要求先结论，再映射逻辑，再配置动作。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "policy_signals": [
+      "稳增长预期抬升",
+      "资金面边际宽松"
+    ],
+    "asset_impacts": [
+      "利率债偏友好",
+      "权益风格轮动"
+    ]
+  },
+  "qa_checklist": [
+    "是否完成政策到资产的映射",
+    "是否给出优先级",
+    "是否提示仓位风险"
+  ]
+}

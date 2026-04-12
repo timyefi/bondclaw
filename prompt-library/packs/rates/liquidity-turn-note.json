@@ -1,0 +1,35 @@
+{
+  "id": "rates-liquidity-turn-note-v1",
+  "role": "rates",
+  "workflow": "liquidity-turn-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "liquidity_turn",
+      "curve_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "liquidity_turn": { "type": "string" },
+      "curve_view": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、流动性拐点和曲线视角，生成一份流动性拐点说明。要求写清拐点是改善还是恶化、影响最先出现在哪些期限、以及交易窗口是否正在打开，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "liquidity_turn": "流动性从偏紧转为中性",
+    "curve_view": ["中段更活跃", "长端承接稳定"]
+  },
+  "qa_checklist": [
+    "拐点方向是否明确",
+    "期限影响是否清楚",
+    "交易窗口是否说明",
+    "是否适合交易员和研究员共用"
+  ]
+}

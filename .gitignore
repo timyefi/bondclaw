@@ -1,6 +1,18 @@
 .venv/
-financialanalysis/
 **/__pycache__/
 *.pyc
 .DS_Store
 ._*
+*.pdf
+*.mov
+开篇报告AI 辅助固收投研financialanalysis介绍/
+手册/
+手册系列/
+参考范例报告（主要是参考其组织形式，而非具体内容）.pdf
+万科A：2025年半年度财务报告.PDF
+报告及工作流/
+.claude/
+node_modules/
+out/
+dist/
+src/node_modules/

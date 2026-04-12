@@ -1,0 +1,22 @@
+{
+  "auth": {
+    "failed": "{{backend}} 认证失败：\n\n{{error}}\n\n请检查本地 CLI 工具的认证状态",
+    "console_error": "ACP 认证错误详情：",
+    "failed_confirm": "ACP {{backend}} 认证失败：\n\n{{error}}\n\n是否前往设置页面进行配置？"
+  },
+  "sendbox": {
+    "placeholder": "向 {{backend}} 发送消息..."
+  },
+  "status": {
+    "connecting": "正在连接 {{agent}}...",
+    "connected": "已连接到 {{agent}}",
+    "authenticated": "已通过 {{agent}} 认证",
+    "session_active": "与 {{agent}} 的会话已激活",
+    "error": "连接错误",
+    "unknown": "未知状态"
+  },
+  "config": {
+    "reasoning_effort": "推理力度",
+    "default": "默认"
+  }
+}

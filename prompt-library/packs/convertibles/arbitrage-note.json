@@ -1,0 +1,35 @@
+{
+  "id": "convertibles-arbitrage-note-v1",
+  "role": "convertibles",
+  "workflow": "arbitrage-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "arbitrage_pair",
+      "pricing_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "arbitrage_pair": { "type": "array", "items": { "type": "string" } },
+      "pricing_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、套利组合和定价观点，生成一份转债套利笔记。要求说明价差来源、套利空间、主要风险和执行提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "arbitrage_pair": ["正股A", "转债A"],
+    "pricing_view": "价差偏宽"
+  },
+  "qa_checklist": [
+    "套利组合是否明确",
+    "价差来源是否写清",
+    "风险是否充分",
+    "是否适合盘前决策"
+  ]
+}

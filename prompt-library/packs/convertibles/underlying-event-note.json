@@ -1,0 +1,35 @@
+{
+  "id": "convertibles-underlying-event-note-v1",
+  "role": "convertibles",
+  "workflow": "underlying-event-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "underlying_list",
+      "event_description"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "underlying_list": { "type": "array", "items": { "type": "string" } },
+      "event_description": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、正股列表和事件描述，生成一份正股事件对转债的影响笔记。要求写清事件性质、正股弹性、对转债估值的传导和交易提醒。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "underlying_list": ["正股A", "正股B"],
+    "event_description": "业绩预告上修"
+  },
+  "qa_checklist": [
+    "事件性质是否清楚",
+    "正股弹性是否说明",
+    "对转债的传导是否写明",
+    "是否适合盘中使用"
+  ]
+}

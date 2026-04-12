@@ -1,0 +1,35 @@
+{
+  "id": "rates-curve-kink-watch-v1",
+  "role": "rates",
+  "workflow": "curve-kink-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_kink",
+      "driver_summary"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_kink": { "type": "string" },
+      "driver_summary": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线拐点和驱动摘要，生成一份曲线拐点观察。要求写清拐点出现在哪些期限、背后的供需和资金驱动、以及最适合关注的交易窗口，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "curve_kink": "5Y附近出现拐点",
+    "driver_summary": ["中端需求增强", "长端承接稳定"]
+  },
+  "qa_checklist": [
+    "拐点位置是否明确",
+    "驱动因素是否完整",
+    "交易窗口是否说清",
+    "是否适合交易员和研究员共用"
+  ]
+}

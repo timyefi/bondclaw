@@ -1,0 +1,12 @@
+{
+  "name": "bondclaw",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BondClaw — AI-powered fixed income research workspace",
+  "scripts": {
+    "dev": "cd src && bun run start",
+    "build": "cd src && bun run package",
+    "dist:win": "cd src && bun run dist:win",
+    "dist:mac": "cd src && bun run dist:mac"
+  }
+}

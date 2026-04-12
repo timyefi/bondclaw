@@ -1,0 +1,28 @@
+{
+  "role": "multi-asset",
+  "display_name": "多资产研究员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "equity-bond-valuation",
+    "cross-asset-allocation",
+    "risk-budget-check",
+    "market-regime-shift",
+    "relative-value-scan",
+    "policy-to-asset-map",
+    "regime-allocation-note",
+    "equity-bond-relative-note",
+    "risk-off-allocation-note",
+    "correlation-shift-note",
+    "duration-beta-balance",
+    "spread-rotation-note",
+    "rebalancing-note",
+    "regime-rotation-note",
+    "correlation-map",
+    "rotation-map-note",
+    "asset-drift-note",
+    "cross-asset-signal-map",
+    "allocation-shift-note",
+    "relative-shift-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}

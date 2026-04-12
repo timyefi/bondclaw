@@ -1,0 +1,35 @@
+{
+  "id": "rates-interbank-liquidity-check-v1",
+  "role": "rates",
+  "workflow": "interbank-liquidity-check",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "liquidity_snapshot",
+      "market_context"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "liquidity_snapshot": { "type": "string" },
+      "market_context": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、同业流动性快照和市场背景，生成一份同业流动性检查笔记。要求说明资金松紧、主要驱动、对短端和曲线的含义，以及当日交易关注点。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "liquidity_snapshot": "隔夜偏紧，7D 偏平",
+    "market_context": ["缴税", "逆回购到期"]
+  },
+  "qa_checklist": [
+    "流动性快照是否准确",
+    "驱动因素是否明确",
+    "对曲线含义是否写明",
+    "是否适合交易员参考"
+  ]
+}

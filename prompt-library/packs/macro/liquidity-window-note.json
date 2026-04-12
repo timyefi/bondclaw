@@ -1,0 +1,38 @@
+{
+  "id": "macro-liquidity-window-note-v1",
+  "role": "macro",
+  "workflow": "liquidity-window-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "liquidity_signal",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "liquidity_signal": { "type": "string" },
+      "focus_topics": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "基于输入日期、资金信号和关注主题，生成一份流动性窗口观察笔记。要求先给结论，再给资金面变化、政策背景、对利率和信用的传导、风险提示，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "liquidity_signal": "隔夜与 7D 资金波动",
+    "focus_topics": ["资金面", "利率", "信用"]
+  },
+  "qa_checklist": [
+    "资金信号是否写清",
+    "传导路径是否明确",
+    "风险提示是否到位",
+    "是否适合晨会快速阅读"
+  ]
+}

@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "case_count": 20,
+  "cases": [
+    {
+      "case_id": "macro-funding-spike",
+      "title": "资金面突变后的宏观晨报卡",
+      "role_tags": [
+        "macro",
+        "rates"
+      ],
+      "topic_tags": [
+        "liquidity",
+        "policy"
+      ],
+      "prompt_role": "macro",
+      "prompt_workflow": "funding-condition-watch",
+      "recommended_prompt": "funding-condition-watch",
+      "source_refs": [
+        "policy-watch feed",
+        "bondclaw reports"
+      ],
+      "summary": "用于把资金面异常、公开市场操作和政策语气变化快速转成晨报。",
+      "evidence_hints": [
+        "DR007",
+        "公开市场操作",
+        "政策表述"
+      ]
+    },
+    {
+      "case_id": "rates-auction-followthrough",
+      "title": "招标后市场余味卡",
+      "role_tags": [
+        "rates"
+      ],
+      "topic_tags": [
+        "auction",
+        "curve"
+      ],
+      "prompt_role": "rates",
+      "prompt_workflow": "auction-aftertaste-note",
+      "recommended_prompt": "auction-aftertaste-note",
+      "source_refs": [
+        "bond issuance calendar",
+        "auction result feed"
+      ],
+      "summary": "用于把招标结果和收盘后的曲线反应整理成利率点评。",
+      "evidence_hints": [
+        "中标结果",
+        "曲线变化",
+        "利差反应"
+      ]
+    },
+    {
+      "case_id": "credit-repayment-pressure",
+      "title": "偿债日历与再融资风险卡",
+      "role_tags": [
+        "credit",
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "repayment",
+        "refinancing"
+      ],
+      "prompt_role": "credit",
+      "prompt_workflow": "repayment-calendar-watch",
+      "recommended_prompt": "repayment-calendar-watch",
+      "source_refs": [
+        "issuer disclosures",
+        "bond maturity calendar"
+      ],
+      "summary": "用于把未来到期压力、回售窗口和再融资风险整理成信用预警。",
+      "evidence_hints": [
+        "到期节点",
+        "回售窗口",
+        "再融资路径"
+      ]
+    },
+    {
+      "case_id": "convertibles-event-window",
+      "title": "事件窗口内的转债轮动卡",
+      "role_tags": [
+        "convertibles",
+        "trader"
+      ],
+      "topic_tags": [
+        "event",
+        "rotation"
+      ],
+      "prompt_role": "convertibles",
+      "prompt_workflow": "event-window-note",
+      "recommended_prompt": "event-window-note",
+      "source_refs": [
+        "company event feed",
+        "convertible screening list"
+      ],
+      "summary": "用于把事件窗口、正股动量和候选转债连接起来。",
+      "evidence_hints": [
+        "事件窗口",
+        "正股动量",
+        "候选标的"
+      ]
+    },
+    {
+      "case_id": "multi-asset-correlation-shift",
+      "title": "相关性变化的多资产卡",
+      "role_tags": [
+        "multi-asset"
+      ],
+      "topic_tags": [
+        "correlation",
+        "allocation"
+      ],
+      "prompt_role": "multi-asset",
+      "prompt_workflow": "correlation-shift-note",
+      "recommended_prompt": "correlation-shift-note",
+      "source_refs": [
+        "macro feed",
+        "market regime feed"
+      ],
+      "summary": "用于把股债、信用和权益之间的相关性变化转成配置判断。",
+      "evidence_hints": [
+        "相关性变化",
+        "分散效果",
+        "配置含义"
+      ]
+    },
+    {
+      "case_id": "fund-manager-risk-committee",
+      "title": "风控会议简报卡",
+      "role_tags": [
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "risk",
+        "committee"
+      ],
+      "prompt_role": "fund-manager",
+      "prompt_workflow": "risk-committee-note",
+      "recommended_prompt": "risk-committee-note",
+      "source_refs": [
+        "weekly risk summary",
+        "portfolio actions"
+      ],
+      "summary": "用于把本周风控主题、组合动作和继续观察项整理成会议发言稿。",
+      "evidence_hints": [
+        "风险主题",
+        "组合动作",
+        "继续观察"
+      ]
+    },
+    {
+      "case_id": "trader-position-reconciliation",
+      "title": "头寸对账与收盘跟进卡",
+      "role_tags": [
+        "trader"
+      ],
+      "topic_tags": [
+        "settlement",
+        "position"
+      ],
+      "prompt_role": "trader",
+      "prompt_workflow": "position-reconciliation-note",
+      "recommended_prompt": "position-reconciliation-note",
+      "source_refs": [
+        "position book",
+        "settlement list"
+      ],
+      "summary": "用于把库存、成交、回执和系统记录的差异快速收口。",
+      "evidence_hints": [
+        "库存",
+        "成交回执",
+        "系统记录"
+      ]
+    },
+    {
+      "case_id": "macro-growth-signal",
+      "title": "增长信号与政策预期卡",
+      "role_tags": [
+        "macro",
+        "multi-asset"
+      ],
+      "topic_tags": [
+        "growth",
+        "policy"
+      ],
+      "prompt_role": "macro",
+      "prompt_workflow": "growth-signal-note",
+      "recommended_prompt": "growth-signal-note",
+      "source_refs": [
+        "macro releases",
+        "policy feed"
+      ],
+      "summary": "用于把实体经济改善或放缓信号快速转成政策和债市判断。",
+      "evidence_hints": [
+        "增长信号",
+        "政策预期",
+        "债市含义"
+      ]
+    },
+    {
+      "case_id": "macro-policy-tone",
+      "title": "政策措辞变化的晨会卡",
+      "role_tags": [
+        "macro",
+        "rates"
+      ],
+      "topic_tags": [
+        "policy",
+        "communication"
+      ],
+      "prompt_role": "macro",
+      "prompt_workflow": "policy-tone-watch",
+      "recommended_prompt": "policy-tone-watch",
+      "source_refs": [
+        "policy feed",
+        "official statement digest"
+      ],
+      "summary": "用于把政策表述、会议措辞和市场预期的细微变化整理成晨会判断。",
+      "evidence_hints": [
+        "措辞变化",
+        "预期修正",
+        "政策边际"
+      ]
+    },
+    {
+      "case_id": "rates-curve-positioning",
+      "title": "曲线定位与交易方向卡",
+      "role_tags": [
+        "rates",
+        "trader"
+      ],
+      "topic_tags": [
+        "curve",
+        "positioning"
+      ],
+      "prompt_role": "rates",
+      "prompt_workflow": "curve-positioning-note",
+      "recommended_prompt": "curve-positioning-note",
+      "source_refs": [
+        "curve monitor",
+        "position book"
+      ],
+      "summary": "用于把曲线形态、期限利差和仓位偏好合成一张交易方向卡。",
+      "evidence_hints": [
+        "曲线形态",
+        "期限利差",
+        "仓位偏好"
+      ]
+    },
+    {
+      "case_id": "credit-issuer-deep-dive",
+      "title": "主体深挖与信用复核卡",
+      "role_tags": [
+        "credit",
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "issuer",
+        "fundamentals"
+      ],
+      "prompt_role": "credit",
+      "prompt_workflow": "issuer-deep-dive",
+      "recommended_prompt": "issuer-deep-dive",
+      "source_refs": [
+        "issuer financials",
+        "disclosure archive"
+      ],
+      "summary": "用于把主体财务、经营变化和披露信号整合成一张信用复核卡。",
+      "evidence_hints": [
+        "主体财务",
+        "经营变化",
+        "披露信号"
+      ]
+    },
+    {
+      "case_id": "convertibles-double-low-screening",
+      "title": "双低筛选与候选池卡",
+      "role_tags": [
+        "convertibles",
+        "trader"
+      ],
+      "topic_tags": [
+        "screening",
+        "valuation"
+      ],
+      "prompt_role": "convertibles",
+      "prompt_workflow": "double-low-screening",
+      "recommended_prompt": "double-low-screening",
+      "source_refs": [
+        "convertible universe",
+        "pricing snapshot"
+      ],
+      "summary": "用于把转债双低筛选结果整理成候选池和观察名单。",
+      "evidence_hints": [
+        "双低指标",
+        "候选池",
+        "观察名单"
+      ]
+    },
+    {
+      "case_id": "multi-asset-cross-asset-allocation",
+      "title": "跨资产配置联动卡",
+      "role_tags": [
+        "multi-asset",
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "allocation",
+        "cross-asset"
+      ],
+      "prompt_role": "multi-asset",
+      "prompt_workflow": "cross-asset-allocation",
+      "recommended_prompt": "cross-asset-allocation",
+      "source_refs": [
+        "macro feed",
+        "asset allocation board"
+      ],
+      "summary": "用于把股、债、信用和商品之间的联动转换成配置建议。",
+      "evidence_hints": [
+        "联动关系",
+        "配置建议",
+        "相对价值"
+      ]
+    },
+    {
+      "case_id": "fund-manager-morning-meeting",
+      "title": "晨会包与组合动作卡",
+      "role_tags": [
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "meeting",
+        "portfolio"
+      ],
+      "prompt_role": "fund-manager",
+      "prompt_workflow": "morning-meeting-pack",
+      "recommended_prompt": "morning-meeting-pack",
+      "source_refs": [
+        "overnight headlines",
+        "portfolio summary"
+      ],
+      "summary": "用于把隔夜信息、组合动作和待办事项整理成晨会包。",
+      "evidence_hints": [
+        "隔夜信息",
+        "组合动作",
+        "待办事项"
+      ]
+    },
+    {
+      "case_id": "trader-execution-note",
+      "title": "交易执行与盘中跟进卡",
+      "role_tags": [
+        "trader"
+      ],
+      "topic_tags": [
+        "execution",
+        "intraday"
+      ],
+      "prompt_role": "trader",
+      "prompt_workflow": "execution-note",
+      "recommended_prompt": "execution-note",
+      "source_refs": [
+        "execution blotter",
+        "intraday tape"
+      ],
+      "summary": "用于把盘中执行偏差、报价变化和成交反馈整理成执行跟进卡。",
+      "evidence_hints": [
+        "执行偏差",
+        "报价变化",
+        "成交反馈"
+      ]
+    },
+    {
+      "case_id": "rates-curve-attribution",
+      "title": "曲线归因与日内复盘卡",
+      "role_tags": [
+        "rates",
+        "multi-asset"
+      ],
+      "topic_tags": [
+        "curve",
+        "attribution"
+      ],
+      "prompt_role": "rates",
+      "prompt_workflow": "curve-attribution",
+      "recommended_prompt": "curve-attribution",
+      "source_refs": [
+        "intraday curve board",
+        "trade attribution log"
+      ],
+      "summary": "用于把收益率曲线变化、相对价值和日内交易行为归因成复盘笔记。",
+      "evidence_hints": [
+        "收益率曲线",
+        "相对价值",
+        "日内归因"
+      ]
+    },
+    {
+      "case_id": "macro-policy-demand",
+      "title": "政策与需求联动观察卡",
+      "role_tags": [
+        "macro",
+        "credit"
+      ],
+      "topic_tags": [
+        "policy",
+        "demand"
+      ],
+      "prompt_role": "macro",
+      "prompt_workflow": "policy-demand-note",
+      "recommended_prompt": "policy-demand-note",
+      "source_refs": [
+        "policy feed",
+        "macro release digest"
+      ],
+      "summary": "用于把政策动作和需求信号连起来，快速判断市场最先反应的方向。",
+      "evidence_hints": [
+        "政策动作",
+        "需求变化",
+        "市场反应"
+      ]
+    },
+    {
+      "case_id": "rates-curve-pressure",
+      "title": "曲线压力与交易窗口卡",
+      "role_tags": [
+        "rates"
+      ],
+      "topic_tags": [
+        "curve",
+        "pressure"
+      ],
+      "prompt_role": "rates",
+      "prompt_workflow": "curve-pressure-note",
+      "recommended_prompt": "curve-pressure-note",
+      "source_refs": [
+        "funding feed",
+        "curve monitor"
+      ],
+      "summary": "用于把曲线承压的位置、驱动因素和可交易窗口整理成一页。",
+      "evidence_hints": [
+        "曲线压力",
+        "期限分布",
+        "交易窗口"
+      ]
+    },
+    {
+      "case_id": "credit-liquidity-horizon",
+      "title": "主体流动性视野卡",
+      "role_tags": [
+        "credit",
+        "fund-manager"
+      ],
+      "topic_tags": [
+        "liquidity",
+        "horizon"
+      ],
+      "prompt_role": "credit",
+      "prompt_workflow": "liquidity-horizon-note",
+      "recommended_prompt": "liquidity-horizon-note",
+      "source_refs": [
+        "issuer disclosures",
+        "funding horizon tracker"
+      ],
+      "summary": "用于把未来几个季度的资金安排和融资窗口整理成信用观察。",
+      "evidence_hints": [
+        "资金安排",
+        "融资窗口",
+        "潜在缺口"
+      ]
+    },
+    {
+      "case_id": "multi-asset-relative-shift",
+      "title": "相对变化的跨资产联动卡",
+      "role_tags": [
+        "multi-asset",
+        "macro"
+      ],
+      "topic_tags": [
+        "allocation",
+        "relative-value"
+      ],
+      "prompt_role": "multi-asset",
+      "prompt_workflow": "relative-shift-note",
+      "recommended_prompt": "relative-shift-note",
+      "source_refs": [
+        "macro feed",
+        "cross-asset monitor"
+      ],
+      "summary": "用于把利率、信用、转债和权益之间的相对变化快速映射成配置含义。",
+      "evidence_hints": [
+        "相对变化",
+        "配置含义",
+        "联动信号"
+      ]
+    }
+  ]
+}

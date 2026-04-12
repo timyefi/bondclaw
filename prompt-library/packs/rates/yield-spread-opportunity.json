@@ -1,0 +1,35 @@
+{
+  "id": "rates-yield-spread-opportunity-v1",
+  "role": "rates",
+  "workflow": "yield-spread-opportunity",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "spread_candidates",
+      "rate_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "spread_candidates": { "type": "array", "items": { "type": "string" } },
+      "rate_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、利差候选和利率观点，生成一份利差机会提示。要求说明可交易的利差对、驱动逻辑、风险点和执行提示，保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "spread_candidates": ["1Y-5Y", "5Y-10Y"],
+    "rate_view": "区间震荡"
+  },
+  "qa_checklist": [
+    "候选利差是否具体",
+    "交易逻辑是否完整",
+    "风险点是否明确",
+    "是否适合盘前查看"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "trader-liquidity-gap-note-v1",
+  "role": "trader",
+  "workflow": "liquidity-gap-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "inventory_snapshot",
+      "liquidity_gaps"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "inventory_snapshot": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "liquidity_gaps": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕库存和流动性缺口写一份交易备忘，说明哪些头寸最难处理、哪些报价最需要优先跟进、尾盘是否需要提前做动作。输出要足够短，方便交易员直接执行。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "inventory_snapshot": [
+      "利率债库存偏高",
+      "部分信用债买盘不足"
+    ],
+    "liquidity_gaps": [
+      "长久期债券成交慢",
+      "低评级债券点差宽"
+    ]
+  },
+  "qa_checklist": [
+    "是否标出难处理头寸",
+    "是否提醒优先跟进报价",
+    "是否给出尾盘动作建议"
+  ]
+}

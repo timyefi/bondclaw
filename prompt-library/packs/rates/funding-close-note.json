@@ -1,0 +1,46 @@
+{
+  "id": "rates-funding-close-note-v1",
+  "role": "rates",
+  "workflow": "funding-close-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "funding_close_readings",
+      "next_day_watch"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "funding_close_readings": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "next_day_watch": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕收盘时点的资金面写一份简短收口，说明今天资金是否平稳、有没有尾盘异常、明天需要盯什么。要求短、准、可直接转发。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "funding_close_readings": [
+      "隔夜资金平稳",
+      "尾盘需求略增"
+    ],
+    "next_day_watch": [
+      "公开市场操作",
+      "存单到期量"
+    ]
+  },
+  "qa_checklist": [
+    "是否总结收盘资金面",
+    "是否说明尾盘异常",
+    "是否列出次日关注"
+  ]
+}

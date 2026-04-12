@@ -1,0 +1,46 @@
+{
+  "id": "convertibles-event-driven-screen-v1",
+  "role": "convertibles",
+  "workflow": "event-driven-screen",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "event_candidates",
+      "screen_rules"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "event_candidates": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "screen_rules": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据事件催化和条款条件，筛选可能出现弹性的转债标的。输出应说明触发事件、核心条款、风格偏好和风险约束。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "event_candidates": [
+      "业绩预告改善",
+      "正股放量突破"
+    ],
+    "screen_rules": [
+      "双低优先",
+      "条款风险可控"
+    ]
+  },
+  "qa_checklist": [
+    "是否点明事件催化",
+    "是否结合条款和价格",
+    "是否给出风险约束"
+  ]
+}

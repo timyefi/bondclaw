@@ -1,0 +1,40 @@
+{
+  "id": "convertibles-event-window-note-v1",
+  "role": "convertibles",
+  "workflow": "event-window-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "event_window",
+      "candidate_bonds"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "event_window": { "type": "string" },
+      "candidate_bonds": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕事件窗口写一份转债观察，说明事件发生前后应该如何调整关注顺序和交易节奏。要求先判断，再解释，再给执行建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "event_window": "未来两周",
+    "candidate_bonds": [
+      "可转债A",
+      "可转债B"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明事件窗口",
+    "是否给出关注顺序",
+    "是否有执行建议"
+  ]
+}

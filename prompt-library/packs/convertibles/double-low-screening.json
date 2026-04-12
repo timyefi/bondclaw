@@ -1,0 +1,29 @@
+{
+  "id": "convertibles-double-low-screening-v1",
+  "role": "convertibles",
+  "workflow": "double-low-screening",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["date", "universe"],
+    "properties": {
+      "date": { "type": "string" },
+      "universe": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据转债池和双低条件生成筛选结果，并说明条款、价格、溢价率和事件风险。输出要适合直接用于晨会讨论。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "universe": ["可转债A", "可转债B"]
+  },
+  "qa_checklist": [
+    "是否给出筛选逻辑",
+    "是否提示条款风险",
+    "是否适合晨会"
+  ]
+}

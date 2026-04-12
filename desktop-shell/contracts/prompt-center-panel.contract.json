@@ -1,0 +1,19 @@
+{
+  "panel_id": "bondclaw-prompt-center",
+  "panel_title": "模板中心",
+  "sections": [
+    "header",
+    "role_cards",
+    "default_context",
+    "selected_role",
+    "selected_prompt",
+    "recommended_actions",
+    "notes"
+  ],
+  "interaction_rules": {
+    "role_browser": "local-cache-first",
+    "prompt_cards": "role-first",
+    "recommended_actions": "non-blocking"
+  }
+}
+

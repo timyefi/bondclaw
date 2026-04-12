@@ -1,0 +1,15 @@
+{
+  "panel_id": "brand-upgrade",
+  "title": "设置",
+  "section": "utility",
+  "description": "查看 BondClaw 品牌配置、版本渠道、更新仓库、清单地址和功能开关",
+  "source": "release manifest + runtime state",
+  "sections": [
+    "brand_overview",
+    "release_overview",
+    "support_overview",
+    "feature_flags",
+    "update_actions",
+    "notes"
+  ]
+}

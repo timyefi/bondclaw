@@ -1,0 +1,20 @@
+{
+  "panel_id": "bondclaw-lead-capture",
+  "panel_title": "联系方式",
+  "sections": [
+    "header",
+    "required_fields",
+    "delivery_order",
+    "retry_policy",
+    "queue_status",
+    "submission_cards",
+    "sink_notes",
+    "recommended_actions",
+    "notes"
+  ],
+  "interaction_rules": {
+    "trigger": "first_core_action",
+    "delivery": "parallel",
+    "retry": "automatic"
+  }
+}

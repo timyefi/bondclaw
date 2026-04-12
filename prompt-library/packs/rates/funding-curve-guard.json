@@ -1,0 +1,35 @@
+{
+  "id": "rates-funding-curve-guard-v1",
+  "role": "rates",
+  "workflow": "funding-curve-guard",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "funding_condition",
+      "curve_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "funding_condition": { "type": "string" },
+      "curve_view": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、资金面状态和曲线视角，生成一份资金-曲线联动观察。要求说明资金约束如何改变曲线交易窗口、哪些期限最敏感、以及需要回避的风险点。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "funding_condition": "短端资金偏紧",
+    "curve_view": ["中段陡峭", "长端偏平"]
+  },
+  "qa_checklist": [
+    "资金条件是否明确",
+    "曲线敏感区是否准确",
+    "交易窗口是否说清",
+    "是否适合交易员和研究员共用"
+  ]
+}

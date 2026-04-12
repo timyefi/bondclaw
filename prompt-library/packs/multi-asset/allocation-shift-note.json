@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-allocation-shift-note-v1",
+  "role": "multi-asset",
+  "workflow": "allocation-shift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "allocation_shift",
+      "asset_buckets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "allocation_shift": { "type": "string" },
+      "asset_buckets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、配置变化和资产桶，生成一份配置变化说明。要求写清从哪里减、往哪里加、背后的因子和需要保留的风险预算，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "allocation_shift": "利率减仓、信用加仓",
+    "asset_buckets": ["利率", "信用", "转债", "权益"]
+  },
+  "qa_checklist": [
+    "调整方向是否清楚",
+    "因子是否完整",
+    "风险预算是否保留",
+    "是否适合组合讨论"
+  ]
+}

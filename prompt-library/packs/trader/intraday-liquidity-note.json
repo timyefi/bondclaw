@@ -1,0 +1,46 @@
+{
+  "id": "trader-intraday-liquidity-note-v1",
+  "role": "trader",
+  "workflow": "intraday-liquidity-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "intraday_signals",
+      "liquidity_actions"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "intraday_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "liquidity_actions": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕盘中流动性变化写一份短提示，说明哪类资产成交开始变慢、哪些报价需要优先处理、是否需要提前做风险动作。要求足够短，便于盘中直接看。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "intraday_signals": [
+      "上午成交偏快",
+      "午后流动性收缩"
+    ],
+    "liquidity_actions": [
+      "优先处理大额买盘",
+      "控制低流动性持仓"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明盘中流动性变化",
+    "是否给出处理优先级",
+    "是否提示风险动作"
+  ]
+}

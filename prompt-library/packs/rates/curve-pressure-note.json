@@ -1,0 +1,35 @@
+{
+  "id": "rates-curve-pressure-note-v1",
+  "role": "rates",
+  "workflow": "curve-pressure-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_pressure",
+      "driver_summary"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_pressure": { "type": "string" },
+      "driver_summary": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线压力和驱动摘要，生成一份曲线压力观察。要求说明压力体现在哪些期限、背后的资金或供需因素、以及可能的交易应对方式，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "curve_pressure": "中长端承压",
+    "driver_summary": ["供给偏多", "需求犹豫"]
+  },
+  "qa_checklist": [
+    "压力期限是否说清",
+    "驱动因素是否完整",
+    "应对方式是否明确",
+    "是否适合交易员和研究员共用"
+  ]
+}

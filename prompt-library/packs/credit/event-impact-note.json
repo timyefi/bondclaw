@@ -1,0 +1,40 @@
+{
+  "id": "credit-event-impact-note-v1",
+  "role": "credit",
+  "workflow": "event-impact-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "event_summary",
+      "impact_channels"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "event_summary": { "type": "string" },
+      "impact_channels": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕信用事件写一份影响评估，说明事件如何影响主体偿债能力、市场情绪和再融资路径。输出要求先结论，再拆影响渠道，再给风险提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "event_summary": "信用事件简述",
+    "impact_channels": [
+      "再融资压力",
+      "市场情绪传导"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明事件影响",
+    "是否拆解影响渠道",
+    "是否提示风险升级"
+  ]
+}

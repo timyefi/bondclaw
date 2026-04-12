@@ -1,0 +1,26 @@
+{
+  "panel_id": "bondclaw-home",
+  "panel_title": "BondClaw Home",
+  "team_label": "国投固收 张亮/叶青",
+  "data_sources": [
+    "desktop settings",
+    "runtime summary",
+    "provider matrix",
+    "role summaries"
+  ],
+  "sections": [
+    "header",
+    "quick_actions",
+    "default_context",
+    "provider_status",
+    "prompt_shortcuts",
+    "research_brain",
+    "lead_capture",
+    "support_banner"
+  ],
+  "interaction_rules": {
+    "support_banner": "visible_only",
+    "lead_capture": "first_core_action",
+    "provider_setup": "key_only"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "role": "convertibles",
+  "display_name": "转债研究员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "double-low-screening",
+    "delta-and-gamma-review",
+    "terms-alert",
+    "rotation-watch",
+    "arbitrage-note",
+    "event-driven-screen",
+    "delta-exposure-note",
+    "rotation-trade-note",
+    "gamma-swing-note",
+    "premium-discount-watch",
+    "underlying-momentum-note",
+    "event-window-note",
+    "new-issue-screen",
+    "redemption-window-note",
+    "underlying-event-note",
+    "premium-stability-note",
+    "earnings-event-note",
+    "volatility-burst-note",
+    "flow-watch-note",
+    "event-window-flow-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}

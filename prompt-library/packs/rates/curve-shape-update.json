@@ -1,0 +1,35 @@
+{
+  "id": "rates-curve-shape-update-v1",
+  "role": "rates",
+  "workflow": "curve-shape-update",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_shape",
+      "driver_summary"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_shape": { "type": "string" },
+      "driver_summary": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线形态和驱动摘要，生成一份曲线形态更新。要求说明陡峭化/平坦化/熊陡/牛平等变化、驱动因素、交易影响和风险提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "curve_shape": "平坦化",
+    "driver_summary": ["资金偏紧", "招标偏弱"]
+  },
+  "qa_checklist": [
+    "曲线形态是否准确",
+    "驱动因素是否完整",
+    "交易影响是否说明",
+    "是否适合交易员和研究员共用"
+  ]
+}

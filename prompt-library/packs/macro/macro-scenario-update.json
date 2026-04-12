@@ -1,0 +1,37 @@
+{
+  "id": "macro-scenario-update-v1",
+  "role": "macro",
+  "workflow": "macro-scenario-update",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "scenario_title",
+      "scenario_change"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "scenario_title": { "type": "string" },
+      "scenario_change": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、场景标题和场景变化，生成一份宏观场景更新。要求先给核心判断，再给变化点、驱动因素、对利率和信用的含义，以及需要修正的观察假设。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "scenario_title": "宽松预期回摆",
+    "scenario_change": "政策表述边际收紧",
+    "focus_topics": ["政策预期", "资金面"]
+  },
+  "qa_checklist": [
+    "场景判断是否明确",
+    "变化点是否具体",
+    "含义是否覆盖利率和信用",
+    "是否便于内部复盘"
+  ]
+}

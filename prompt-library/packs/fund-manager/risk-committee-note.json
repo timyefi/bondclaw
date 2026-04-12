@@ -1,0 +1,46 @@
+{
+  "id": "fund-manager-risk-committee-note-v1",
+  "role": "fund-manager",
+  "workflow": "risk-committee-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "risk_topics",
+      "portfolio_actions"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "risk_topics": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "portfolio_actions": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕风控会议写一份简报，说明本周最重要的风险主题、组合已经采取的动作、还需要继续观察什么。要求适合风控会上直接讲。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "risk_topics": [
+      "久期暴露",
+      "信用事件"
+    ],
+    "portfolio_actions": [
+      "缩短部分久期",
+      "提升流动性"
+    ]
+  },
+  "qa_checklist": [
+    "是否明确风险主题",
+    "是否说明已采取动作",
+    "是否指出继续观察项"
+  ]
+}

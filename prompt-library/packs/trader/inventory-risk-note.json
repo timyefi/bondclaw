@@ -1,0 +1,35 @@
+{
+  "id": "trader-inventory-risk-note-v1",
+  "role": "trader",
+  "workflow": "inventory-risk-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "inventory_state",
+      "risk_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "inventory_state": { "type": "string" },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、库存状态和风险项，生成一份库存风险提示。要求写清库存暴露、可能的结算/流动性/价差风险，以及优先处理顺序，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "inventory_state": "短久期库存偏多",
+    "risk_items": ["价差回撤", "成交稀疏", "结算冲突"]
+  },
+  "qa_checklist": [
+    "库存暴露是否清楚",
+    "风险是否分层",
+    "优先处理顺序是否明确",
+    "是否适合盘前快速查看"
+  ]
+}

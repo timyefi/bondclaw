@@ -1,0 +1,14 @@
+{
+  "shell_id": "bondclaw-desktop-shell",
+  "default_page_id": "home",
+  "pages": [
+    "home",
+    "settings",
+    "providers",
+    "prompts",
+    "research-brain",
+    "lead-capture",
+    "logs",
+    "about"
+  ]
+}

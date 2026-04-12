@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-cross-asset-signal-map-v1",
+  "role": "multi-asset",
+  "workflow": "cross-asset-signal-map",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "signal_summary",
+      "asset_buckets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "signal_summary": { "type": "array", "items": { "type": "string" } },
+      "asset_buckets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、跨资产信号摘要和资产桶，生成一份跨资产信号映射。要求写清各信号之间的先后关系、对资产配置的含义和需要继续观察的联动点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "signal_summary": ["权益偏强", "利率横盘", "信用稳定"],
+    "asset_buckets": ["利率", "信用", "转债", "权益"]
+  },
+  "qa_checklist": [
+    "信号之间的先后关系是否清楚",
+    "配置含义是否明确",
+    "联动点是否完整",
+    "是否适合组合讨论"
+  ]
+}

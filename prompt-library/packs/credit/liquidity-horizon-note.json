@@ -1,0 +1,35 @@
+{
+  "id": "credit-liquidity-horizon-note-v1",
+  "role": "credit",
+  "workflow": "liquidity-horizon-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "liquidity_horizon"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "liquidity_horizon": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和流动性视野，生成一份流动性视野说明。要求写清未来几个季度的资金安排、可见融资窗口、潜在缺口和观察重点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "liquidity_horizon": "未来两个季度"
+  },
+  "qa_checklist": [
+    "资金安排是否完整",
+    "融资窗口是否明确",
+    "潜在缺口是否提到",
+    "是否适合风控共享"
+  ]
+}

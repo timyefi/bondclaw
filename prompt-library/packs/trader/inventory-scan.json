@@ -1,0 +1,35 @@
+{
+  "id": "trader-inventory-scan-v1",
+  "role": "trader",
+  "workflow": "inventory-scan",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "inventory_list",
+      "scan_focus"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "inventory_list": { "type": "array", "items": { "type": "string" } },
+      "scan_focus": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、库存列表和扫描重点，生成一份交易库存扫描笔记。要求写清库存结构、可交易性、流动性和优先处理顺序，保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "inventory_list": ["债券A", "债券B", "转债C"],
+    "scan_focus": "流动性与久期"
+  },
+  "qa_checklist": [
+    "库存列表是否完整",
+    "交易性判断是否清楚",
+    "优先顺序是否明确",
+    "是否适合交易员盘前使用"
+  ]
+}

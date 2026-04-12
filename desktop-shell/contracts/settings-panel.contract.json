@@ -1,0 +1,18 @@
+{
+  "panel_id": "bondclaw-settings",
+  "panel_title": "Settings",
+  "sections": [
+    "execution",
+    "provider",
+    "prompt",
+    "lead_capture",
+    "support_banner",
+    "notifications"
+  ],
+  "field_groups": [
+    "runtime",
+    "defaults",
+    "privacy",
+    "appearance"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "trader-settlement-followup-note-v1",
+  "role": "trader",
+  "workflow": "settlement-followup-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "settlement_items",
+      "pending_counterparties"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "settlement_items": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "pending_counterparties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕结算跟进写一份简短提醒，说明哪些成交需要回执确认、哪些对手方需要继续跟进、哪些事项要留到明天处理。输出短而明确，便于收盘后执行。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "settlement_items": [
+      "成交回执待确认",
+      "资金划拨待复核"
+    ],
+    "pending_counterparties": [
+      "对手方A",
+      "对手方B"
+    ]
+  },
+  "qa_checklist": [
+    "是否列出回执确认项",
+    "是否列出待跟进对手方",
+    "是否适合收盘后执行"
+  ]
+}

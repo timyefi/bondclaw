@@ -1,0 +1,40 @@
+{
+  "id": "rates-curve-positioning-note-v1",
+  "role": "rates",
+  "workflow": "curve-positioning-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_view",
+      "positioning_bias"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_view": { "type": "string" },
+      "positioning_bias": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕收益率曲线位置写一份交易定位说明，判断当前适合做陡峭化、平坦化还是维持中性久期。先给判断，再给证据，再给执行建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "curve_view": "中段偏贵，长端支撑尚在",
+    "positioning_bias": [
+      "适度防守",
+      "关注曲线变陡"
+    ]
+  },
+  "qa_checklist": [
+    "是否给出曲线定位",
+    "是否说明偏向",
+    "是否给出执行建议"
+  ]
+}

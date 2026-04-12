@@ -1,0 +1,35 @@
+{
+  "id": "macro-policy-watch-v1",
+  "role": "macro",
+  "workflow": "policy-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_summary",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_summary": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、政策摘要和关注主题，生成一份政策观察笔记。要求先给判断，再拆政策方向、市场反馈、资金和利率含义、后续观察点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "policy_summary": "公开市场操作节奏变化",
+    "focus_topics": ["资金面", "政策预期", "利率"]
+  },
+  "qa_checklist": [
+    "政策摘要是否清楚",
+    "判断是否先行",
+    "市场反馈是否准确",
+    "是否适合晨会直读"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "trader-preclose-checklist-v1",
+  "role": "trader",
+  "workflow": "preclose-checklist",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "open_items",
+      "close_window"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "open_items": { "type": "array", "items": { "type": "string" } },
+      "close_window": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、待处理事项和收盘窗口，生成一份收盘前检查清单。要求包含库存、成交、回执、未完成事项和盘后复核提醒，保持简洁直接。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "open_items": ["库存对账", "回执确认"],
+    "close_window": "15:00 前"
+  },
+  "qa_checklist": [
+    "待处理事项是否完整",
+    "收盘窗口是否明确",
+    "回执检查是否覆盖",
+    "是否适合交易员收盘前使用"
+  ]
+}

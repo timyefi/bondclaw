@@ -1,0 +1,40 @@
+{
+  "id": "convertibles-gamma-swing-note-v1",
+  "role": "convertibles",
+  "workflow": "gamma-swing-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "gamma_profile",
+      "underlying_events"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "gamma_profile": { "type": "string" },
+      "underlying_events": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕 gamma 暴露和正股事件写一份转债短评，说明波动放大对仓位和节奏的影响。要求先判断，再给逻辑，再给风控建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "gamma_profile": "高 gamma，事件驱动明显",
+    "underlying_events": [
+      "正股拉升",
+      "隐波抬升"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明 gamma 特征",
+    "是否关联正股事件",
+    "是否给出风控建议"
+  ]
+}

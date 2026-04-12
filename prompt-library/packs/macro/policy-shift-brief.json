@@ -1,0 +1,35 @@
+{
+  "id": "macro-policy-shift-brief-v1",
+  "role": "macro",
+  "workflow": "policy-shift-brief",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_shift",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_shift": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、政策变化描述和关注主题，生成一份政策变化简报。要求说明政策信号、可能传导路径、对利率/信用/资产配置的影响，以及后续观察重点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "policy_shift": "政策表述边际转向稳增长",
+    "focus_topics": ["政策", "利率", "信用"]
+  },
+  "qa_checklist": [
+    "政策信号是否清楚",
+    "传导路径是否完整",
+    "影响是否落到资产层面",
+    "是否适合晨会快速使用"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "convertibles-event-window-flow-note-v1",
+  "role": "convertibles",
+  "workflow": "event-window-flow-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "event_window",
+      "flow_signal"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "event_window": { "type": "string" },
+      "flow_signal": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、事件窗口和资金流信号，生成一份转债事件窗口资金流观察。要求写清事件窗口如何放大资金行为、对估值和波动的影响，以及盘中最重要的动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "event_window": "业绩和赎回窗口叠加",
+    "flow_signal": "资金流入明显"
+  },
+  "qa_checklist": [
+    "事件窗口是否清楚",
+    "资金行为是否说明",
+    "估值波动影响是否提到",
+    "是否适合盘中快速查看"
+  ]
+}

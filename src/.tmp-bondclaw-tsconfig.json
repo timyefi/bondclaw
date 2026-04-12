@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "rootDir": "."
+  },
+  "include": [
+    "src/common/adapter/ipcBridge.ts",
+    "src/common/config/bondclawReleaseManifest.ts",
+    "src/common/config/bondclawBrand.ts",
+    "src/common/config/bondclawRuntimeState.ts",
+    "src/process/bridge/index.ts",
+    "src/process/bridge/updateBridge.ts",
+    "src/process/bridge/bondclawBridge.ts",
+    "src/renderer/hooks/system/useBondClawRuntimeState.ts",
+    "src/renderer/components/layout/Titlebar/index.tsx",
+    "src/renderer/components/layout/Layout.tsx",
+    "src/renderer/components/settings/SettingsModal/contents/AboutModalContent.tsx",
+    "src/renderer/components/settings/UpdateModal.tsx"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-correlation-map-v1",
+  "role": "multi-asset",
+  "workflow": "correlation-map",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "asset_pairs",
+      "correlation_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "asset_pairs": { "type": "array", "items": { "type": "string" } },
+      "correlation_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、资产配对和相关性判断，生成一份相关性地图。要求说明哪些资产联动增强或减弱、对配置和对冲的含义，以及后续观察点。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "asset_pairs": ["股债", "信用-利率"],
+    "correlation_view": "联动增强"
+  },
+  "qa_checklist": [
+    "资产配对是否明确",
+    "相关性判断是否清楚",
+    "对配置和对冲含义是否写明",
+    "是否便于组合讨论"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-equity-bond-valuation-v1",
+  "role": "multi-asset",
+  "workflow": "equity-bond-valuation",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "equity_view",
+      "bond_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "equity_view": { "type": "string" },
+      "bond_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、权益观点和债券观点，生成一份股债估值对比笔记。要求说明估值差、风险偏好和资产切换含义，并给出组合动作建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "equity_view": "偏震荡",
+    "bond_view": "偏中性"
+  },
+  "qa_checklist": [
+    "股债观点是否清楚",
+    "估值差是否有说明",
+    "组合动作是否明确",
+    "是否便于配置讨论"
+  ]
+}

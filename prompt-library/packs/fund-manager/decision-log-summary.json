@@ -1,0 +1,35 @@
+{
+  "id": "fund-manager-decision-log-summary-v1",
+  "role": "fund-manager",
+  "workflow": "decision-log-summary",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "decision_items",
+      "followup_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "decision_items": { "type": "array", "items": { "type": "string" } },
+      "followup_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、决策事项和后续事项，生成一份决策日志总结。要求按决策、理由、执行和后续跟进四部分组织，保证团队内部可追溯。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "decision_items": ["减久期", "加信用观察"],
+    "followup_items": ["检查资金面", "复核风险敞口"]
+  },
+  "qa_checklist": [
+    "决策事项是否完整",
+    "理由是否清楚",
+    "后续跟进是否明确",
+    "是否便于内部留档"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "macro-inflation-implication-note-v1",
+  "role": "macro",
+  "workflow": "inflation-implication-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "inflation_reading",
+      "market_expectation"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "inflation_reading": { "type": "string" },
+      "market_expectation": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕通胀读数写一份影响说明，判断数据对利率预期、资金面和政策判断意味着什么。要求先给结论，再讲结构，再落到债市含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "inflation_reading": "通胀读数温和",
+    "market_expectation": "市场原本预期持平"
+  },
+  "qa_checklist": [
+    "是否判断通胀对预期的影响",
+    "是否说明结构变化",
+    "是否落到债市含义"
+  ]
+}

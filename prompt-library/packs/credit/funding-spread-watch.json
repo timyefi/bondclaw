@@ -1,0 +1,35 @@
+{
+  "id": "credit-funding-spread-watch-v1",
+  "role": "credit",
+  "workflow": "funding-spread-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "funding_spreads"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "funding_spreads": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和融资利差信号，生成一份融资利差观察。要求写清融资成本变化、可替代融资路径、和需要继续跟踪的市场窗口，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "funding_spreads": ["银行贷款上浮", "债券发行利差抬升"]
+  },
+  "qa_checklist": [
+    "成本变化是否说清",
+    "替代融资路径是否明确",
+    "市场窗口是否提到",
+    "是否适合风控共享"
+  ]
+}

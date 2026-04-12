@@ -1,0 +1,46 @@
+{
+  "id": "credit-repayment-calendar-watch-v1",
+  "role": "credit",
+  "workflow": "repayment-calendar-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "repayment_calendar",
+      "refinancing_risks"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "repayment_calendar": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "refinancing_risks": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕偿债日历写一份跟踪笔记，说明未来一段时间的到期压力、再融资风险和需要提前警惕的节点。要求先结论，再列日历，再给风险。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "repayment_calendar": [
+      "5月到期短债",
+      "6月回售窗口"
+    ],
+    "refinancing_risks": [
+      "融资收缩",
+      "展期预期上升"
+    ]
+  },
+  "qa_checklist": [
+    "是否列出到期节点",
+    "是否说明再融资风险",
+    "是否给出预警判断"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-rotation-map-note-v1",
+  "role": "multi-asset",
+  "workflow": "rotation-map-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "rotation_signal",
+      "asset_buckets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "rotation_signal": { "type": "string" },
+      "asset_buckets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、风格轮动信号和资产桶，生成一份轮动映射说明。要求写清当前偏好、回避项、跨资产传导路径和需要保留的风险预算，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "rotation_signal": "风格从防御切向进攻",
+    "asset_buckets": ["利率", "信用", "转债", "权益"]
+  },
+  "qa_checklist": [
+    "轮动方向是否明确",
+    "资产偏好是否可执行",
+    "传导路径是否说清",
+    "是否适合组合讨论"
+  ]
+}

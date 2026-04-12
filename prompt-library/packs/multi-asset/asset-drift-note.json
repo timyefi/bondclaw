@@ -1,0 +1,35 @@
+{
+  "id": "multi-asset-asset-drift-note-v1",
+  "role": "multi-asset",
+  "workflow": "asset-drift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "drift_signal",
+      "asset_buckets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "drift_signal": { "type": "string" },
+      "asset_buckets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、资产漂移信号和资产桶，生成一份资产漂移说明。要求写清当前偏好的微调方向、潜在切换条件、跨资产传导和风险预算，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "drift_signal": "权益边际走强、债券偏稳",
+    "asset_buckets": ["利率", "信用", "转债", "权益"]
+  },
+  "qa_checklist": [
+    "漂移方向是否明确",
+    "切换条件是否具体",
+    "传导路径是否完整",
+    "是否适合组合讨论"
+  ]
+}

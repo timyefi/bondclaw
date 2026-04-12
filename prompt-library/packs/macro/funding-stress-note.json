@@ -1,0 +1,35 @@
+{
+  "id": "macro-funding-stress-note-v1",
+  "role": "macro",
+  "workflow": "funding-stress-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "funding_stress",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "funding_stress": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、资金压力描述和关注主题，生成一份资金压力观察。要求说明压力从哪里来、会传导到哪些期限和资产、以及需要优先跟踪的缓解信号，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "funding_stress": "跨月资金偏紧",
+    "focus_topics": ["资金", "利率", "信用"]
+  },
+  "qa_checklist": [
+    "压力来源是否清楚",
+    "传导链条是否完整",
+    "缓解信号是否明确",
+    "是否适合晨会快速使用"
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "name": "通用财务分析模板",
+  "version": "1.0",
+  "sheets": {
+    "基本信息": {
+      "fields": ["公司名称", "报告期间", "币种", "数据单位"]
+    },
+    "资产负债表": {
+      "items": [
+        {
+          "name": "货币资金",
+          "formula": "资产负债表 - 货币资金",
+          "formula_en": "Balance Sheet - Cash and cash equivalents"
+        },
+        { "name": "应收账款", "formula": "资产负债表 - 应收账款", "formula_en": "Balance Sheet - Accounts receivable" },
+        { "name": "预付款项", "formula": "资产负债表 - 预付款项", "formula_en": "Balance Sheet - Prepaid expenses" },
+        {
+          "name": "其他应收款",
+          "formula": "资产负债表 - 其他应收款",
+          "formula_en": "Balance Sheet - Other receivables"
+        },
+        { "name": "存货", "formula": "资产负债表 - 存货", "formula_en": "Balance Sheet - Inventories" },
+        {
+          "name": "流动资产合计",
+          "formula": "资产负债表 - 流动资产合计",
+          "formula_en": "Balance Sheet - Total current assets"
+        },
+        { "name": "固定资产", "formula": "资产负债表 - 固定资产", "formula_en": "Balance Sheet - Fixed assets" },
+        { "name": "无形资产", "formula": "资产负债表 - 无形资产", "formula_en": "Balance Sheet - Intangible assets" },
+        {
+          "name": "非流动资产合计",
+          "formula": "资产负债表 - 非流动资产合计",
+          "formula_en": "Balance Sheet - Total non-current assets"
+        },
+        { "name": "资产总计", "formula": "资产负债表 - 资产总计", "formula_en": "Balance Sheet - Total assets" },
+        {
+          "name": "短期借款",
+          "formula": "资产负债表 - 短期借款",
+          "formula_en": "Balance Sheet - Short-term borrowings"
+        },
+        { "name": "应付账款", "formula": "资产负债表 - 应付账款", "formula_en": "Balance Sheet - Accounts payable" },
+        {
+          "name": "预收款项",
+          "formula": "资产负债表 - 预收款项",
+          "formula_en": "Balance Sheet - Advance from customers"
+        },
+        { "name": "其他应付款", "formula": "资产负债表 - 其他应付款", "formula_en": "Balance Sheet - Other payables" },
+        {
+          "name": "一年内到期非流动负债",
+          "formula": "资产负债表 - 一年内到期非流动负债",
+          "formula_en": "Balance Sheet - Non-current liabilities due within one year"
+        },
+        {
+          "name": "流动负债合计",
+          "formula": "资产负债表 - 流动负债合计",
+          "formula_en": "Balance Sheet - Total current liabilities"
+        },
+        {
+          "name": "长期借款",
+          "formula": "资产负债表 - 长期借款",
+          "formula_en": "Balance Sheet - Long-term borrowings"
+        },
+        { "name": "应付债券", "formula": "资产负债表 - 应付债券", "formula_en": "Balance Sheet - Bonds payable" },
+        {
+          "name": "长期应付款",
+          "formula": "资产负债表 - 长期应付款",
+          "formula_en": "Balance Sheet - Long-term payables"
+        },
+        {
+          "name": "非流动负债合计",
+          "formula": "资产负债表 - 非流动负债合计",
+          "formula_en": "Balance Sheet - Total non-current liabilities"
+        },
+        { "name": "负债合计", "formula": "资产负债表 - 负债合计", "formula_en": "Balance Sheet - Total liabilities" },
+        {
+          "name": "所有者权益合计",
+          "formula": "资产负债表 - 所有者权益合计",
+          "formula_en": "Balance Sheet - Total owner's equity"
+        }
+      ]
+    },
+    "利润表": {
+      "items": [
+        { "name": "营业收入", "formula": "利润表 - 营业收入", "formula_en": "Income Statement - Operating revenue" },
+        { "name": "营业成本", "formula": "利润表 - 营业成本", "formula_en": "Income Statement - Operating cost" },
+        {
+          "name": "税金及附加",
+          "formula": "利润表 - 税金及附加",
+          "formula_en": "Income Statement - Tax and surcharges"
+        },
+        { "name": "销售费用", "formula": "利润表 - 销售费用", "formula_en": "Income Statement - Selling expenses" },
+        {
+          "name": "管理费用",
+          "formula": "利润表 - 管理费用",
+          "formula_en": "Income Statement - Administrative expenses"
+        },
+        { "name": "财务费用", "formula": "利润表 - 财务费用", "formula_en": "Income Statement - Financial expenses" },
+        { "name": "利息支出", "formula": "利润表 - 利息支出", "formula_en": "Income Statement - Interest expense" },
+        {
+          "name": "资产减值损失",
+          "formula": "利润表 - 资产减值损失",
+          "formula_en": "Income Statement - Asset impairment loss"
+        },
+        {
+          "name": "公允价值变动收益",
+          "formula": "利润表 - 公允价值变动收益",
+          "formula_en": "Income Statement - Gains from fair value changes"
+        },
+        { "name": "投资收益", "formula": "利润表 - 投资收益", "formula_en": "Income Statement - Investment income" },
+        { "name": "营业利润", "formula": "利润表 - 营业利润", "formula_en": "Income Statement - Operating profit" },
+        { "name": "利润总额", "formula": "利润表 - 利润总额", "formula_en": "Income Statement - Total profit" },
+        {
+          "name": "所得税费用",
+          "formula": "利润表 - 所得税费用",
+          "formula_en": "Income Statement - Income tax expense"
+        },
+        { "name": "净利润", "formula": "利润表 - 净利润", "formula_en": "Income Statement - Net profit" },
+        {
+          "name": "归属于母公司股东的净利润",
+          "formula": "利润表 - 归属于母公司股东的净利润",
+          "formula_en": "Income Statement - Net profit attributable to parent"
+        }
+      ]
+    },
+    "现金流量表": {
+      "items": [
+        {
+          "name": "销售商品、提供劳务收到的现金",
+          "formula": "现金流量表 - 销售商品、提供劳务收到的现金",
+          "formula_en": "Cash Flow - Cash received from sales"
+        },
+        {
+          "name": "经营活动现金流入小计",
+          "formula": "现金流量表 - 经营活动现金流入小计",
+          "formula_en": "Cash Flow - Total operating cash inflow"
+        },
+        {
+          "name": "购买商品、接受劳务支付的现金",
+          "formula": "现金流量表 - 购买商品、接受劳务支付的现金",
+          "formula_en": "Cash Flow - Cash paid for goods"
+        },
+        {
+          "name": "支付给职工以及为职工支付的现金",
+          "formula": "现金流量表 - 支付给职工以及为职工支付的现金",
+          "formula_en": "Cash Flow - Cash paid to employees"
+        },
+        { "name": "支付的各项税费", "formula": "现金流量表 - 支付的各项税费", "formula_en": "Cash Flow - Taxes paid" },
+        {
+          "name": "经营活动现金流出小计",
+          "formula": "现金流量表 - 经营活动现金流出小计",
+          "formula_en": "Cash Flow - Total operating cash outflow"
+        },
+        {
+          "name": "经营活动产生的现金流量净额",
+          "formula": "现金流量表 - 经营活动产生的现金流量净额",
+          "formula_en": "Cash Flow - Net cash from operating activities"
+        },
+        {
+          "name": "处置固定资产、无形资产和其他长期资产收回的现金净额",
+          "formula": "现金流量表 - 处置固定资产收回的现金净额",
+          "formula_en": "Cash Flow - Cash from asset disposal"
+        },
+        {
+          "name": "投资活动产生的现金流量净额",
+          "formula": "现金流量表 - 投资活动产生的现金流量净额",
+          "formula_en": "Cash Flow - Net cash from investing activities"
+        },
+        {
+          "name": "吸收投资收到的现金",
+          "formula": "现金流量表 - 吸收投资收到的现金",
+          "formula_en": "Cash Flow - Cash received from investors"
+        },
+        {
+          "name": "取得借款收到的现金",
+          "formula": "现金流量表 - 取得借款收到的现金",
+          "formula_en": "Cash Flow - Cash from borrowings"
+        },
+        {
+          "name": "筹资活动产生的现金流量净额",
+          "formula": "现金流量表 - 筹资活动产生的现金流量净额",
+          "formula_en": "Cash Flow - Net cash from financing activities"
+        },
+        {
+          "name": "现金及现金等价物净增加额",
+          "formula": "现金流量表 - 现金及现金等价物净增加额",
+          "formula_en": "Cash Flow - Net change in cash"
+        },
+        {
+          "name": "期末现金及现金等价物余额",
+          "formula": "现金流量表 - 期末现金及现金等价物余额",
+          "formula_en": "Cash Flow - Ending cash balance"
+        }
+      ]
+    },
+    "财务指标": {
+      "indicators": [
+        { "name": "流动比率", "formula": "流动资产合计 / 流动负债合计", "category": "偿债能力" },
+        { "name": "速动比率", "formula": "(流动资产合计 - 存货) / 流动负债合计", "category": "偿债能力" },
+        { "name": "现金比率", "formula": "货币资金 / 流动负债合计", "category": "偿债能力" },
+        { "name": "资产负债率", "formula": "负债合计 / 资产总计", "category": "偿债能力" },
+        { "name": "产权比率", "formula": "负债合计 / 所有者权益合计", "category": "偿债能力" },
+        {
+          "name": "有息负债",
+          "formula": "短期借款 + 长期借款 + 应付债券 + 一年内到期非流动负债",
+          "category": "有息债务"
+        },
+        { "name": "净负债", "formula": "有息负债 - 货币资金", "category": "有息债务" },
+        { "name": "净负债率", "formula": "净负债 / 所有者权益合计", "category": "有息债务" },
+        { "name": "毛利率", "formula": "(营业收入 - 营业成本) / 营业收入", "category": "盈利能力" },
+        { "name": "净利率", "formula": "净利润 / 营业收入", "category": "盈利能力" },
+        { "name": "ROE", "formula": "净利润 / 所有者权益合计", "category": "盈利能力" },
+        {
+          "name": "EBITDA",
+          "formula": "净利润 + 所得税费用 + 利息支出 + 固定资产折旧 + 无形资产摊销",
+          "category": "EBITDA指标"
+        },
+        { "name": "利息保障倍数", "formula": "EBITDA / 利息支出", "category": "EBITDA指标" },
+        { "name": "净负债/EBITDA", "formula": "净负债 / EBITDA", "category": "EBITDA指标" },
+        { "name": "经营现金流/债务", "formula": "经营活动产生的现金流量净额 / 有息负债", "category": "现金流指标" },
+        { "name": "净现比", "formula": "经营活动产生的现金流量净额 / 净利润", "category": "现金流指标" },
+        { "name": "收现比", "formula": "销售商品、提供劳务收到的现金 / 营业收入", "category": "现金流指标" }
+      ]
+    }
+  }
+}

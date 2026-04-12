@@ -1,0 +1,35 @@
+{
+  "id": "credit-issuer-liquidity-watch-v1",
+  "role": "credit",
+  "workflow": "issuer-liquidity-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "liquidity_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "liquidity_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和流动性信号，生成一份主体流动性跟踪。要求写清现金来源、融资可得性、潜在压力点和需要继续观察的融资节点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "liquidity_signals": ["授信收缩", "回款放缓", "再融资窗口变窄"]
+  },
+  "qa_checklist": [
+    "现金和融资路径是否清楚",
+    "压力点是否具体",
+    "后续观察节点是否明确",
+    "是否适合风控与研究共享"
+  ]
+}

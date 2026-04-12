@@ -1,0 +1,28 @@
+{
+  "role": "fund-manager",
+  "display_name": "固收基金经理",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "morning-meeting-pack",
+    "weekly-strategy-update",
+    "portfolio-risk-review",
+    "performance-explanation",
+    "decision-log-summary",
+    "drawdown-review",
+    "weekly-risk-balance",
+    "daily-position-note",
+    "closing-summary",
+    "overnight-brief",
+    "weekly-readout",
+    "risk-committee-note",
+    "week-ahead-playbook",
+    "committee-brief",
+    "drawdown-guard",
+    "position-discipline-note",
+    "risk-budget-reset",
+    "exposure-tilt-note",
+    "portfolio-shift-note",
+    "review-cycle-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}

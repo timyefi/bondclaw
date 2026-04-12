@@ -1,0 +1,40 @@
+{
+  "id": "rates-auction-allocation-note-v1",
+  "role": "rates",
+  "workflow": "auction-allocation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "auction_details",
+      "market_color"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "auction_details": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "market_color": { "type": "string" }
+    }
+  },
+  "prompt_template": "根据招标和认购结果写一份分配点评，说明中标情况、需求强弱、结果对曲线和利差的含义。要求结论前置、结构清楚。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "auction_details": [
+      "7Y国债发行",
+      "边际认购偏强"
+    ],
+    "market_color": "中长端需求平稳"
+  },
+  "qa_checklist": [
+    "是否说明中标和分配含义",
+    "是否判断需求强弱",
+    "是否落到曲线和利差"
+  ]
+}

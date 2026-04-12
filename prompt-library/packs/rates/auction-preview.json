@@ -1,0 +1,35 @@
+{
+  "id": "rates-auction-preview-v1",
+  "role": "rates",
+  "workflow": "auction-preview",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "auction_list",
+      "rate_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "auction_list": { "type": "array", "items": { "type": "string" } },
+      "rate_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、招标列表和利率观点，生成一份招标前瞻。要求包含品种重点、市场预期、可能扰动和结果观察点，语言保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "auction_list": ["7Y 国债", "10Y 国开"],
+    "rate_view": "中性略强"
+  },
+  "qa_checklist": [
+    "招标列表是否清楚",
+    "预期是否合理",
+    "扰动因素是否明确",
+    "是否适合盘前快速阅读"
+  ]
+}

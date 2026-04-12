@@ -1,0 +1,46 @@
+{
+  "id": "trader-position-reconciliation-note-v1",
+  "role": "trader",
+  "workflow": "position-reconciliation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "position_book",
+      "reconciliation_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "position_book": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "reconciliation_items": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕头寸对账写一份简短跟进，说明库存、成交、回执和系统记录之间是否一致。要求明确、简短、便于收盘后跟进。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "position_book": [
+      "利率债久期持仓",
+      "信用债分散持仓"
+    ],
+    "reconciliation_items": [
+      "系统记录核对",
+      "成交回执核对"
+    ]
+  },
+  "qa_checklist": [
+    "是否覆盖头寸与成交核对",
+    "是否列出对账事项",
+    "是否便于收盘后处理"
+  ]
+}

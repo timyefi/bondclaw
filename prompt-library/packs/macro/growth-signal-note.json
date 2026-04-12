@@ -1,0 +1,40 @@
+{
+  "id": "macro-growth-signal-note-v1",
+  "role": "macro",
+  "workflow": "growth-signal-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "growth_signals",
+      "market_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "growth_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "market_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕增长信号写一份简短跟踪，说明实体经济信号如何影响政策预期、风险偏好和债市定价。要求先结论，再拆信号，再给含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "growth_signals": [
+      "工业数据改善",
+      "消费修复"
+    ],
+    "market_view": "市场对稳增长预期略有抬升"
+  },
+  "qa_checklist": [
+    "是否识别增长信号",
+    "是否说明政策预期变化",
+    "是否落到债市含义"
+  ]
+}

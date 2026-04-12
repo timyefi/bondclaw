@@ -1,0 +1,20 @@
+{
+  "navigation_type": "sidebar",
+  "sections": [
+    "workspace",
+    "content",
+    "utility"
+  ],
+  "primary_actions": [
+    "home",
+    "settings",
+    "providers",
+    "prompts"
+  ],
+  "secondary_actions": [
+    "research-brain",
+    "lead-capture",
+    "logs",
+    "about"
+  ]
+}

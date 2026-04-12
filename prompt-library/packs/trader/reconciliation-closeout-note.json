@@ -1,0 +1,35 @@
+{
+  "id": "trader-reconciliation-closeout-note-v1",
+  "role": "trader",
+  "workflow": "reconciliation-closeout-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "reconciliation_items",
+      "risk_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "reconciliation_items": { "type": "array", "items": { "type": "string" } },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、对账事项和风险项，生成一份对账收尾说明。要求写清对账对象、差异来源、优先处理顺序和需要留档的动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "reconciliation_items": ["成交回执", "资金回单"],
+    "risk_items": ["差异未闭合", "回执滞后"]
+  },
+  "qa_checklist": [
+    "对账对象是否清楚",
+    "差异来源是否明确",
+    "处理顺序是否合理",
+    "是否适合收盘前快速查看"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "macro-policy-demand-note-v1",
+  "role": "macro",
+  "workflow": "policy-demand-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_action",
+      "demand_signal"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_action": { "type": "string" },
+      "demand_signal": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、政策动作和需求信号，生成一份政策-需求联动观察。要求写清政策如何影响需求、最先反应在哪些资产、以及后续需要验证的需求端信号，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "policy_action": "稳增长政策加码",
+    "demand_signal": ["信用需求回升", "融资需求改善"]
+  },
+  "qa_checklist": [
+    "政策与需求的关系是否清楚",
+    "资产反应是否明确",
+    "验证信号是否具体",
+    "是否适合晨会快速使用"
+  ]
+}
