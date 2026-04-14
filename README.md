@@ -22,6 +22,20 @@
 它不是单点工具，而是一套从信息收集、文档解析、附注优先分析，到结构化输出、知识沉淀、订阅分发和无代码工作流编排的协作底座。
 
 
+## 使用演示视频
+
+下面这段演示视频展示了一个完整案例：使用 BondClaw 分析中国建筑最新财报，并在约 20 分钟内形成规范详尽的财务分析底稿。
+
+- 当前版本：2 倍速压缩版
+- 时长：约 4 分 50 秒
+- 文件大小：约 20.8 MB
+
+[![BondClaw 使用演示视频封面](docs/assets/videos/bondclaw-demo-cn-buildings-cover.jpg)](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
+
+- 在线播放/打开视频：[`bondclaw-demo-cn-buildings-2x.mp4`](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
+- 封面图：[`bondclaw-demo-cn-buildings-cover.jpg`](docs/assets/videos/bondclaw-demo-cn-buildings-cover.jpg)
+
+
 ## 许可
 
 本仓库仅限非商业使用。任何商业使用、转售、再许可、付费托管、商业集成都不允许，除非得到权利人事先书面许可。详见 [LICENSE](LICENSE)。
