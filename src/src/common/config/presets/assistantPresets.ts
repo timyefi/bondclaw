@@ -174,7 +174,7 @@ export const ASSISTANT_PRESETS: AssistantPreset[] = [
     },
     descriptionI18n: {
       'en-US': 'Complete financial report analysis with note-first methodology, PDF parsing, and Excel output.',
-      'zh-CN': '完整的财报分析，包含附注优先分析法、PDF 解析和 Excel 输出。',
+      'zh-CN': '完整的财报分析工作流，包括：1. 数据采集：从中国货币网等官方来源下载财报和披露材料；2. 文档解析：将 PDF、Word、PPT 和图片转成 Markdown 或结构化中间文本；3. 标准化处理：识别主体、期间、报告类型、附注范围和章节结构；4. 分析工作流：按附注优先原则生成分析底稿、报告草稿和结构化结果；5. 运行治理：记录 manifest、状态、失败原因、重跑信息和正式产物；6. 知识治理：把案例中的稳定口径整理成可审阅、可回滚的知识输入。',
       'ru-RU': 'Полный анализ финансовых отчётов с методологией «сначала примечания», разбором PDF и выводом в Excel.',
     },
     promptsI18n: {
@@ -634,35 +634,6 @@ export const ASSISTANT_PRESETS: AssistantPreset[] = [
   //     ],
   //   },
   // },
-  {
-    id: 'game-3d',
-    avatar: '🎮',
-    category: 'general' as AssistantPresetCategory,
-    presetAgentType: 'claude',
-    resourceDir: 'src/process/resources/assistant/game-3d',
-    ruleFiles: {
-      'en-US': 'game-3d.md',
-      'zh-CN': 'game-3d.zh-CN.md',
-    },
-    nameI18n: {
-      'en-US': '3D Game',
-      'zh-CN': '3D 游戏生成',
-      'ru-RU': 'Генератор 3D-игр',
-    },
-    descriptionI18n: {
-      'en-US': 'Generate a complete 3D platform collection game in one HTML file.',
-      'zh-CN': '用单个 HTML 文件生成完整的 3D 平台收集游戏。',
-      'ru-RU': 'Генерирует полноценную 3D-игру-платформер со сбором предметов в одном HTML-файле.',
-    },
-    promptsI18n: {
-      'en-US': [
-        'Create a 3D platformer game with jumping mechanics',
-        'Make a coin collection game with obstacles',
-        'Build a 3D maze exploration game',
-      ],
-      'zh-CN': ['创建一个带跳跃机制的 3D 平台游戏', '制作一个带障碍物的金币收集游戏', '构建一个 3D 迷宫探索游戏'],
-    },
-  },
   {
     id: 'ui-ux-pro-max',
     avatar: '🎨',

@@ -4,6 +4,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// ============ Crash Logger ============
+// MUST be the very first imports — before configureChromium and everything else.
+// Writes to ~/BondClaw-crash.log so we can diagnose silent startup failures on user machines.
+import * as _crashFs from 'fs';
+import * as _crashPath from 'path';
+import * as _crashOs from 'os';
+const _crashLogPath = _crashPath.join(_crashOs.homedir(), 'BondClaw-crash.log');
+function _writeCrashLog(msg: string) {
+  try {
+    _crashFs.appendFileSync(_crashLogPath, `[${new Date().toISOString()}] ${msg}\n`);
+  } catch { /* ignore */ }
+}
+process.on('uncaughtException', (error) => {
+  _writeCrashLog(`UNCAUGHT: ${error?.stack || error}`);
+});
+process.on('unhandledRejection', (reason) => {
+  _writeCrashLog(`UNHANDLED REJECTION: ${reason}`);
+});
+_writeCrashLog('BondClaw main process starting...');
+
 // configureChromium sets app name (dev isolation) and Chromium flags — must run before
 // ANY module that calls app.getPath('userData'), because Electron caches the path on first call.
 import './process/utils/configureChromium';
@@ -25,6 +45,7 @@ import { AION_ASSET_PROTOCOL } from '@process/extensions';
 import { initializeProcess } from './process';
 import { ProcessConfig } from './process/utils/initStorage';
 import { loadShellEnvironmentAsync, logEnvironmentDiagnostics, mergePaths } from './process/utils/shellEnv';
+import { isDiagEnabled, diagClose, getDiagLogPath } from './process/utils/diag';
 import { initializeAcpDetector, registerWindowMaximizeListeners, disposeAllTeamSessions } from '@process/bridge';
 import { wasLaunchedAtLogin } from '@process/bridge/applicationBridge';
 import { onCloseToTrayChanged, onLanguageChanged } from './process/bridge/systemSettingsBridge';
@@ -133,6 +154,11 @@ if (process.platform === 'darwin' || process.platform === 'linux') {
 // Phase 1 prints sync info immediately; Phase 2 resolves CLI tools in the
 // background — fire-and-forget so it never blocks the startup path (#1157).
 void logEnvironmentDiagnostics();
+
+// BondClaw diagnostic logging — controlled by BONDCLAW_DIAG=1 env var
+if (isDiagEnabled) {
+  console.log(`[BC:diag] Diagnostic logging enabled. Log file: ${getDiagLogPath()}`);
+}
 
 // Handle Squirrel startup events (Windows installer)
 if (electronSquirrelStartup) {
@@ -543,7 +569,31 @@ const handleAppReady = async (): Promise<void> => {
       })();
     }, 3000);
 
-    // Run ACP detection in parallel with renderer loading.
+    // Check whether Claude Code CLI tools are already deployed (by the NSIS
+    // installer or a previous run).  We only *detect* here — never install.
+    // The NSIS installer runs install-cli-tools.cjs during setup; if that
+    // fails the user can trigger a manual install from ClaudeInstallBanner.
+    // IMPORTANT: require is wrapped in try-catch because claudeInstaller.ts
+    // is a new module — if it fails to load on a fresh machine, the app must
+    // still start.  The renderer-side ClaudeInstallBanner handles detection
+    // and installation via IPC as a fallback.
+    try {
+      const { isClaudeInstalled } = require('@process/utils/claudeInstaller') as {
+        isClaudeInstalled: () => Promise<boolean>;
+      };
+      (async () => {
+        try {
+          const installed = await isClaudeInstalled();
+          if (installed) mark('claudeInstalled');
+        } catch (error) {
+          console.error('[Claude] Detection failed:', error);
+        }
+      })();
+    } catch (error) {
+      console.error('[Claude] Failed to load claudeInstaller module:', error);
+    }
+
+    // ACP detector runs independently — must not be blocked by Claude check.
     // By the time React mounts and calls getAvailableAgents (~300ms+),
     // detection (~700ms) is usually already done.
     initializeAcpDetector()
@@ -728,6 +778,7 @@ app.on('before-quit', async () => {
 
 app.on('will-quit', () => {
   console.log('[BondClaw] will-quit');
+  if (isDiagEnabled) diagClose();
 });
 
 app.on('quit', (_event, exitCode) => {

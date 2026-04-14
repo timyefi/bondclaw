@@ -136,16 +136,43 @@ const ModelModalContent: React.FC = () => {
     { revalidateOnFocus: false }
   );
   const claudeAgent = detectedAgents?.find((a: Record<string, any>) => a.backend === 'claude');
+  const [claudeInstalling, setClaudeInstalling] = useState(false);
+  const [claudeInstallProgress, setClaudeInstallProgress] = useState<{
+    phase: string;
+    attempt: number;
+    totalAttempts: number;
+    message: string;
+    source?: 'bundled' | 'mirror' | 'official';
+  } | null>(null);
 
-  const handleCopyInstallCommand = () => {
-    navigator.clipboard
-      .writeText('npm install -g @anthropic-ai/claude-cli')
-      .then(() => {
-        Message.success('已复制安装命令到剪贴板，请在终端中执行');
-      })
-      .catch(() => {
-        Message.info('请在终端运行: npm install -g @anthropic-ai/claude-cli');
-      });
+  // Listen for Claude install progress events
+  useEffect(() => {
+    const unsub = ipcBridge.shell.installProgress.on(
+      (event: { phase: string; attempt: number; totalAttempts: number; message: string; source?: 'bundled' | 'mirror' | 'official' }) => {
+        setClaudeInstallProgress(event);
+      },
+    );
+    return unsub;
+  }, []);
+
+  const handleInstallClaude = async () => {
+    setClaudeInstalling(true);
+    setClaudeInstallProgress(null);
+    try {
+      const result = await ipcBridge.shell.installClaude.invoke();
+      if (result.success) {
+        Message.success('Claude Code 安装成功');
+        await mutateAgents();
+        await mutate();
+      } else {
+        Message.error(`安装失败: ${result.error || '未知错误'}`);
+      }
+    } catch (error) {
+      Message.error(`安装失败: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setClaudeInstalling(false);
+      setClaudeInstallProgress(null);
+    }
   };
 
   const [message, messageContext] = Message.useMessage();
@@ -530,8 +557,17 @@ const ModelModalContent: React.FC = () => {
                 <div className='min-w-0'>
                   <div className='text-14px font-600 text-t-primary'>Claude Code</div>
                   <div className='text-12px text-t-secondary'>
-                    {claudeAgent ? `已检测到 · ${claudeAgent.version || '可用'}` : '未检测到'}
+                    {claudeInstalling && claudeInstallProgress
+                      ? `${claudeInstallProgress.source ? `[${claudeInstallProgress.source}] ` : ''}${claudeInstallProgress.message}`
+                      : claudeAgent
+                        ? `已检测到 · ${claudeAgent.version || '可用'}`
+                        : '未检测到'}
                   </div>
+                  {claudeInstalling && claudeInstallProgress && (
+                    <div className='text-11px text-t-3 mt-2px'>
+                      ({claudeInstallProgress.attempt}/{claudeInstallProgress.totalAttempts})
+                    </div>
+                  )}
                 </div>
               </div>
               {claudeAgent ? (
@@ -539,8 +575,8 @@ const ModelModalContent: React.FC = () => {
                   已就绪
                 </Tag>
               ) : (
-                <Button type='primary' size='small' onClick={handleCopyInstallCommand}>
-                  复制安装命令
+                <Button type='primary' size='small' loading={claudeInstalling} onClick={() => void handleInstallClaude()}>
+                  {claudeInstalling ? '安装中...' : '一键安装'}
                 </Button>
               )}
             </div>

@@ -69,6 +69,10 @@ const SHELL_INHERITED_ENV_VARS = [
   'ANTHROPIC_AUTH_TOKEN', // Claude authentication (#776)
   'ANTHROPIC_API_KEY',
   'ANTHROPIC_BASE_URL',
+  // Claude Code model mapping (GLM models when using compatible APIs)
+  'ANTHROPIC_DEFAULT_HAIKU_MODEL',
+  'ANTHROPIC_DEFAULT_SONNET_MODEL',
+  'ANTHROPIC_DEFAULT_OPUS_MODEL',
 ] as const;
 
 /** Cache for shell environment (loaded once per session) */
@@ -414,6 +418,19 @@ export function getEnhancedEnv(customEnv?: Record<string, string>): Record<strin
   const bundledBunDir = getBundledBunDir();
   if (bundledBunDir) {
     mergedPath = `${bundledBunDir}${separator}${mergedPath}`;
+  }
+
+  // Prefer the user-level BondClaw CLI install when present.
+  // This keeps app-launched processes aligned with the actual current-user
+  // installation instead of the packaged seed resources.
+  // NOTE: path is inlined here (instead of importing from bondclawCliPaths.ts)
+  // to avoid a static import of a new module that might not exist in older builds.
+  const bondClawCliBinDir =
+    process.platform === 'win32'
+      ? path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'BondClaw', 'cli', 'bin')
+      : path.join(os.homedir(), '.bondclaw', 'cli', 'bin');
+  if (existsSync(bondClawCliBinDir)) {
+    mergedPath = `${bondClawCliBinDir}${separator}${mergedPath}`;
   }
 
   return {

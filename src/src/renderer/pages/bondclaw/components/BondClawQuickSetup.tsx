@@ -10,14 +10,31 @@ import { CheckCorrect, Lock, Unlock } from '@icon-park/react';
 import type { IProvider } from '@/common/config/storage';
 import { ipcBridge } from '@/common';
 
+/** Claude Code CLI defaults for providers that have separate Anthropic endpoints */
+const CLAUCE_DEFAULTS: Record<string, { claudeBaseUrl: string; claudeSonnetModel: string; claudeOpusModel: string; claudeHaikuModel: string }> = {
+  'GLM Coding': {
+    claudeBaseUrl: 'https://open.bigmodel.cn/api/anthropic',
+    claudeSonnetModel: 'glm-5.1',
+    claudeOpusModel: 'glm-5.1',
+    claudeHaikuModel: 'glm-4.5-air',
+  },
+};
+
 /** Pre-configured provider presets for Chinese market */
 const PROVIDER_PRESETS = [
   {
-    label: '智谱 GLM',
-    name: '智谱 GLM',
-    baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    label: 'GLM Coding',
+    name: 'GLM Coding',
+    baseUrl: 'https://open.bigmodel.cn/api/anthropic',
     model: 'glm-5.1',
     hint: '推荐 · 国内首选',
+  },
+  {
+    label: '智谱 GLM',
+    name: '智谱 GLM',
+    baseUrl: 'https://open.bigmodel.cn/api/paas/v4/',
+    model: 'glm-5.1',
+    hint: '',
   },
   {
     label: '通义千问',
@@ -76,6 +93,7 @@ const BondClawQuickSetup: React.FC<BondClawQuickSetupProps> = ({ onConfigured, c
       const providers: IProvider[] = (await ipcBridge.mode.getModelConfig.invoke()) || [];
 
       const existingIdx = providers.findIndex((p) => p.name === preset.name);
+      const claudeDefaults = CLAUCE_DEFAULTS[preset.name];
       const newProvider: IProvider = {
         id: existingIdx >= 0 ? providers[existingIdx].id : `bondclaw-${preset.name}-${Date.now()}`,
         platform: 'custom',
@@ -84,6 +102,7 @@ const BondClawQuickSetup: React.FC<BondClawQuickSetupProps> = ({ onConfigured, c
         apiKey: apiKey.trim(),
         model: [preset.model],
         enabled: true,
+        ...(claudeDefaults ? claudeDefaults : {}),
       };
 
       // Disable all other providers, keep only one active
@@ -144,7 +163,7 @@ const BondClawQuickSetup: React.FC<BondClawQuickSetupProps> = ({ onConfigured, c
           <div>
             <div className='text-12px font-700 uppercase tracking-[0.18em] text-slate-400'>AI 服务配置</div>
             <div className='mt-4px text-16px font-700 text-slate-900'>选择服务商，填入 API Key 即可使用</div>
-            <div className='mt-4px text-13px text-slate-500'>默认推荐智谱 GLM-5.1。只需两步：选服务商 → 粘贴 Key。</div>
+            <div className='mt-4px text-13px text-slate-500'>默认推荐 GLM Coding。只需两步：选服务商 → 粘贴 Key。</div>
           </div>
         </>
       )}

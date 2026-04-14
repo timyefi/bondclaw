@@ -1,0 +1,8 @@
+{
+  "Endpoint": "http://your-instance.cn-hangzhou.ots.aliyuncs.com",
+  "AccessKeyId": "your-access-key-id",
+  "AccessKeySecret": "your-access-key-secret",
+  "AccessKeySecretToken": "",
+  "Instance": "your-instance-name",
+  "Region": "cn-hangzhou"
+}

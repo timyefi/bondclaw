@@ -3,6 +3,8 @@
 *.pyc
 .DS_Store
 ._*
+~$*.docx
+~*.tmp
 *.pdf
 *.mov
 开篇报告AI 辅助固收投研financialanalysis介绍/
@@ -12,7 +14,11 @@
 万科A：2025年半年度财务报告.PDF
 报告及工作流/
 .claude/
+.tablestore_config
 node_modules/
 out/
 dist/
 src/node_modules/
+训练.md
+serverless/
+src/

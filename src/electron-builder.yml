@@ -115,6 +115,24 @@ extraResources:
     to: bundled-aionrs
   - from: resources/hub
     to: hub
+  # Bundled Node.js runtime (portable, no system install required)
+  - from: resources/bundled-node
+    to: bundled-node
+  # Bundled Claude Code CLI (pre-installed, no npm network access needed)
+  # NOTE: Do NOT add a filter here — the root .gitignore has `node_modules/`
+  # which electron-builder applies to extraResources when a filter is present,
+  # silently dropping the entire node_modules/ directory and leaving only
+  # package.json.  Without a filter, the directory is copied verbatim.
+  - from: resources/claude-code
+    to: claude-code
+  # CLI deployment scripts — run by NSIS installer during install/uninstall
+  - from: scripts/install-cli-tools.cjs
+    to: install-cli-tools.cjs
+  - from: scripts/uninstall-cli-tools.cjs
+    to: uninstall-cli-tools.cjs
+  # Standalone CLI setup script — users can double-click to install CLI tools
+  - from: scripts/setup-cli-tools.bat
+    to: setup-cli-tools.bat
 
 win:
   target:
@@ -133,6 +151,7 @@ nsis:
   uninstallDisplayName: ${productName}
   artifactName: ${productName}-${version}-${os}-${arch}.${ext}
   differentialPackage: false
+  include: build/installer.nsh
 
 mac:
   target:

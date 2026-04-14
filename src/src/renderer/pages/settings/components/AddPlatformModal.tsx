@@ -351,6 +351,11 @@ const AddPlatformModal = ModalHOC<{
           baseUrl: isBedrock ? '' : values.baseUrl || selectedPlatform?.baseUrl || '',
           apiKey: isBedrock ? '' : values.apiKey,
           model: [values.model],
+          // Claude Code model slot configuration
+          ...(values.claudeSonnetModel ? { claudeSonnetModel: values.claudeSonnetModel } : {}),
+          ...(values.claudeOpusModel ? { claudeOpusModel: values.claudeOpusModel } : {}),
+          ...(values.claudeHaikuModel ? { claudeHaikuModel: values.claudeHaikuModel } : {}),
+          ...(values.claudeBaseUrl ? { claudeBaseUrl: values.claudeBaseUrl } : {}),
         };
 
         // Add Bedrock configuration if platform is Bedrock
@@ -416,6 +421,18 @@ const AddPlatformModal = ModalHOC<{
                 const plat = MODEL_PLATFORMS.find((p) => p.value === value);
                 if (plat) {
                   form.setFieldValue('model', '');
+                  // Auto-fill Claude model slot defaults when available
+                  if (plat.claudeDefaults) {
+                    form.setFieldValue('claudeSonnetModel', plat.claudeDefaults.claudeSonnetModel || '');
+                    form.setFieldValue('claudeOpusModel', plat.claudeDefaults.claudeOpusModel || '');
+                    form.setFieldValue('claudeHaikuModel', plat.claudeDefaults.claudeHaikuModel || '');
+                    form.setFieldValue('claudeBaseUrl', plat.claudeDefaults.claudeBaseUrl || '');
+                  } else {
+                    form.setFieldValue('claudeSonnetModel', '');
+                    form.setFieldValue('claudeOpusModel', '');
+                    form.setFieldValue('claudeHaikuModel', '');
+                    form.setFieldValue('claudeBaseUrl', '');
+                  }
                 }
               }}
               renderFormat={(option) => {
@@ -659,6 +676,24 @@ const AddPlatformModal = ModalHOC<{
               <Select value={modelProtocol} onChange={setModelProtocol} options={NEW_API_PROTOCOL_OPTIONS} />
             </Form.Item>
           )}
+
+          {/* Claude Code Model Slot Configuration */}
+          <Form.Item label='Sonnet Model' field='claudeSonnetModel'>
+            <Input placeholder='e.g. claude-sonnet-4-20250514' />
+          </Form.Item>
+          <Form.Item label='Opus Model' field='claudeOpusModel'>
+            <Input placeholder='e.g. claude-opus-4-20250514' />
+          </Form.Item>
+          <Form.Item label='Haiku Model' field='claudeHaikuModel'>
+            <Input placeholder='e.g. claude-haiku-4-5-20251001' />
+          </Form.Item>
+          <Form.Item
+            label='Claude API URL'
+            field='claudeBaseUrl'
+            extra={<div className='text-11px text-t-secondary mt-2'>Anthropic-compatible endpoint for Claude Code CLI (defaults to Base URL)</div>}
+          >
+            <Input placeholder='Anthropic-compatible API endpoint' />
+          </Form.Item>
         </Form>
       </div>
 

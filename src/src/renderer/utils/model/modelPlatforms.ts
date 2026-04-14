@@ -61,6 +61,13 @@ export interface PlatformConfig {
   baseUrl?: string;
   /** 国际化 key（可选，用于需要翻译的平台名称） / i18n key (optional, for platform names that need translation) */
   i18nKey?: string;
+  /** Claude Code CLI default model slot overrides */
+  claudeDefaults?: {
+    claudeBaseUrl?: string;
+    claudeSonnetModel?: string;
+    claudeOpusModel?: string;
+    claudeHaikuModel?: string;
+  };
 }
 
 /**
@@ -155,6 +162,19 @@ export const MODEL_PLATFORMS: PlatformConfig[] = [
     logo: SiliconFlowLogo,
     platform: 'custom',
     baseUrl: 'https://api.siliconflow.com/v1',
+  },
+  {
+    name: 'GLM Coding',
+    value: 'GLM-Coding',
+    logo: ZhipuLogo,
+    platform: 'custom',
+    baseUrl: 'https://open.bigmodel.cn/api/anthropic',
+    claudeDefaults: {
+      claudeBaseUrl: 'https://open.bigmodel.cn/api/anthropic',
+      claudeSonnetModel: 'glm-5.1',
+      claudeOpusModel: 'glm-5.1',
+      claudeHaikuModel: 'glm-4.5-air',
+    },
   },
   {
     name: 'Zhipu',

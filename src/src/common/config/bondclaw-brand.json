@@ -11,6 +11,7 @@
   "githubRepository": "https://github.com/timyefi/bondclaw",
   "releaseNotesUrl": "https://github.com/timyefi/bondclaw/releases",
   "supportUrl": "https://github.com/timyefi/bondclaw/support",
+  "registrationApiBaseUrl": "https://bondclawverify-fimemwznlg.cn-hangzhou.fcapp.run",
   "updateHosts": [
     "github.com",
     "objects.githubusercontent.com",

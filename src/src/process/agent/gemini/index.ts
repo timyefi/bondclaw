@@ -237,8 +237,12 @@ export class GeminiAgent {
       return;
     }
     if (this.authType === AuthType.USE_OPENAI) {
-      fallbackValue('OPENAI_BASE_URL', getBaseUrl());
+      const baseUrl = getBaseUrl();
+      fallbackValue('OPENAI_BASE_URL', baseUrl);
       fallbackValue('OPENAI_API_KEY', getCurrentApiKey());
+      console.log(
+        `[GeminiAgent] USE_OPENAI — OPENAI_BASE_URL="${baseUrl}", model="${this.model.useModel}", platform="${this.model.platform}"`,
+      );
       return;
     }
     if (this.authType === AuthType.USE_ANTHROPIC) {
@@ -429,6 +433,13 @@ export class GeminiAgent {
     console.log(
       `[GeminiAgent] After refreshAuth — config.getModel(): "${this.config.getModel()}", authType used: ${this.authType}`
     );
+    // Log OpenAI client details for USE_OPENAI to help diagnose connectivity issues
+    if (this.authType === AuthType.USE_OPENAI) {
+      const contentGenConfig = this.config.getContentGeneratorConfig?.();
+      console.log(
+        `[GeminiAgent] OpenAI config — apiKey: ${contentGenConfig?.apiKey ? '***set***' : '(missing)'}, model: "${this.model.useModel}"`
+      );
+    }
 
     this.geminiClient = this.config.getGeminiClient();
 

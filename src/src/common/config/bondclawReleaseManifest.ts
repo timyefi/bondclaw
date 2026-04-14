@@ -22,6 +22,7 @@ export type BondClawBrandConfig = {
   supportUrl: string;
   updateHosts: string[];
   researchFeedUrl?: string;
+  registrationApiBaseUrl?: string;
 };
 
 export type BondClawReleaseDistribution = {
@@ -83,6 +84,9 @@ export const getBondClawUpdateHosts = (): string[] => [...getBondClawReleaseHost
 export const getBondClawUserAgent = (): string => getBondClawBrandConfig().appName;
 
 export const getBondClawResearchFeedUrl = (): string | undefined => getBondClawBrandConfig().researchFeedUrl;
+
+export const getBondClawRegistrationApiBaseUrl = (): string =>
+  getBondClawBrandConfig().registrationApiBaseUrl?.trim() || 'https://bondclawverify-fimemwznlg.cn-hangzhou.fcapp.run';
 
 export const getBondClawRuntimeManifestUrl = (): string | undefined =>
   manifestConfig.distribution?.manifestUrl?.trim() || process.env.BONDCLAW_RELEASE_MANIFEST_URL?.trim() || undefined;

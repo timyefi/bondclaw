@@ -1,0 +1,5 @@
+# Force include node_modules — the root .gitignore has `node_modules/` which
+# causes electron-builder to silently drop this directory from the installer.
+# This local negation re-includes it for the bundled Claude Code seed.
+!node_modules
+!node_modules/**

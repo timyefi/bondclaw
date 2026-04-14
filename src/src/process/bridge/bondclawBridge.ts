@@ -154,8 +154,8 @@ const buildTemplateCenterSnapshot = (
 
   return {
     header: {
-      title: 'BondClaw 模板中心',
-      description: '按角色浏览模板、样例和 QA 卡，默认直达可用工作流',
+      title: 'BondClaw 技能中心',
+      description: '按角色浏览技能工作流、样例和 QA 卡，默认直达可用工作流',
       role_count: roleCards.length,
       workflow_count: roleCards.reduce((sum, card) => sum + (card.workflow_count || 0), 0),
       sample_count: roleCards.reduce((sum, card) => sum + (card.sample_count || 0), 0),
@@ -184,15 +184,15 @@ const buildTemplateCenterSnapshot = (
         selectedRoleId && selectedPromptName && !Object.keys(selectedPromptPack).length ? 'Prompt not found' : '',
     },
     recommended_actions: [
-      { action_id: 'open-selected-prompt', label: '查看选中模板', kind: 'prompt' },
-      { action_id: 'browse-by-role', label: '按角色浏览模板', kind: 'prompt-browser' },
+      { action_id: 'open-selected-prompt', label: '查看选中技能', kind: 'prompt' },
+      { action_id: 'browse-by-role', label: '按角色浏览技能', kind: 'prompt-browser' },
       { action_id: 'open-role-manifest', label: '查看角色清单', kind: 'manifest' },
-      { action_id: 'open-template-library', label: '查看当前模板', kind: 'prompt' },
+      { action_id: 'open-template-library', label: '查看当前技能', kind: 'prompt' },
       { action_id: 'open-expansion-plan', label: '查看扩展计划', kind: 'plan' },
     ],
     notes: [
-      '模板中心保持本地目录优先读取',
-      '每个角色先看 manifest，再看具体模板卡片',
+      '技能中心保持本地目录优先读取',
+      '每个角色先看 manifest，再看具体技能卡片',
       '后续可把 selected_prompt 直接作为执行入口',
     ],
   };

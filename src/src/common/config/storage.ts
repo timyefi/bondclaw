@@ -482,6 +482,20 @@ export interface IProvider {
    */
   modelProtocols?: Record<string, string>;
   /**
+   * Claude Code CLI model slot overrides.
+   * These map to ANTHROPIC_DEFAULT_{SLOT}_MODEL env vars.
+   * Only used when the provider is the active one for Claude Code.
+   */
+  claudeSonnetModel?: string;
+  claudeOpusModel?: string;
+  claudeHaikuModel?: string;
+  /**
+   * Anthropic-compatible API URL for Claude Code CLI.
+   * Falls back to baseUrl if not set.
+   * Some providers (e.g. GLM Coding) have separate OpenAI and Anthropic endpoints.
+   */
+  claudeBaseUrl?: string;
+  /**
    * AWS Bedrock specific configuration
    * Only used when platform is 'bedrock'
    */

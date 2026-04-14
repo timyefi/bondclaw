@@ -13,6 +13,7 @@ export {
   getBondClawReleaseNotesUrl,
   getBondClawRepository,
   getBondClawResearchFeedUrl,
+  getBondClawRegistrationApiBaseUrl,
   getBondClawRuntimeManifestUrl,
   getBondClawSupportUrl,
   getBondClawTeamLabel,

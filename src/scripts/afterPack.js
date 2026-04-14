@@ -211,5 +211,50 @@ module.exports = async function afterPack(context) {
     throw new Error(`Failed to rebuild modules for ${electronPlatformName}-${targetArch}: ${failedModules.join(', ')}`);
   }
 
-  console.log(`鉁?All native modules rebuilt successfully for ${targetArch}\n`);
+  console.log(`鉁?All native modules rebuilt successfully for ${targetArch}`);
+
+  // ---------------------------------------------------------------------------
+  // Force-copy Claude Code seed into resources
+  // ---------------------------------------------------------------------------
+  // electron-builder respects .gitignore (including `node_modules/`) when
+  // processing extraResources, which silently drops the entire node_modules
+  // tree from resources/claude-code/.  The afterPack hook runs AFTER
+  // electron-builder has finished copying, so we force the copy here.
+  // ---------------------------------------------------------------------------
+  const claudeSourceDir = path.resolve(__dirname, '..', 'resources', 'claude-code');
+  const claudeTargetDir = path.join(resourcesDir, 'claude-code');
+  const claudeCliMarker = path.join(
+    claudeTargetDir, 'node_modules', '@anthropic-ai', 'claude-code', 'cli.js'
+  );
+
+  if (fs.existsSync(claudeCliMarker)) {
+    console.log(`   鉁?Claude Code seed already present, skipping copy.`);
+  } else if (fs.existsSync(path.join(claudeSourceDir, 'node_modules'))) {
+    console.log(`\n馃搧 Force-copying Claude Code seed (gitignore workaround)...`);
+    if (fs.existsSync(claudeTargetDir)) {
+      fs.rmSync(claudeTargetDir, { recursive: true, force: true });
+    }
+    fs.cpSync(claudeSourceDir, claudeTargetDir, { recursive: true, force: true, dereference: true });
+
+    // Quick size check
+    let totalSize = 0;
+    function walkSize(dir) {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) walkSize(full);
+        else totalSize += fs.statSync(full).size;
+      }
+    }
+    walkSize(claudeTargetDir);
+    const sizeMb = Math.round(totalSize / 1024 / 1024 * 10) / 10;
+    console.log(`   鉁?Claude Code seed copied (${sizeMb} MB)`);
+
+    if (!fs.existsSync(claudeCliMarker)) {
+      throw new Error('Claude Code seed copy failed: cli.js not found after copy');
+    }
+  } else {
+    console.warn(`   鈿狅笍  Claude Code seed source not found, skipping.`);
+  }
+
+  console.log('');
 };

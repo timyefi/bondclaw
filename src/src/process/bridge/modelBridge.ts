@@ -5,6 +5,9 @@
  */
 
 import type { IProvider } from '@/common/config/storage';
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
 import { uuid } from '@/common/utils';
 import {
   type ProtocolDetectionRequest,
@@ -26,6 +29,7 @@ import { ipcBridge } from '@/common';
 import { ProcessConfig } from '@process/utils/initStorage';
 import { ExtensionRegistry } from '@process/extensions';
 import { BedrockClient, ListInferenceProfilesCommand } from '@aws-sdk/client-bedrock';
+import { isDiagEnabled, diagLog, maskKey } from '@process/utils/diag';
 
 /**
  * OpenAI 兼容 API 的常见路径格式
@@ -43,6 +47,8 @@ const API_PATH_PATTERNS = [
   '/v2', // 百度千帆 / Baidu Qianfan
   '/api/v3', // 火山引擎 Ark / Volcengine
   '/api/paas/v4', // 智谱 / Zhipu
+  '/api/coding/paas/v4', // 智谱 GLM Coding Plan
+  '/api/anthropic', // 智谱 GLM Coding Anthropic-compatible endpoint
 ];
 
 /**
@@ -156,6 +162,66 @@ export function initModelBridge(): void {
       }
 
       return { success: true, data: { mode: codingPlanModels } };
+    }
+
+    // 如果是 GLM Coding Plan，返回支持的模型列表
+    // GLM Coding Plan supports both /api/coding/ (OpenAI) and /api/anthropic (Anthropic) endpoints
+    if (base_url && isGlmCodingAPI(base_url)) {
+      const glmCodingModels = [
+        'glm-5.1',
+        'glm-5',
+        'glm-4.7',
+      ];
+
+      // Validate the API key by probing the appropriate endpoint
+      if (actualApiKey) {
+        try {
+          const isAnthropicEndpoint = base_url.includes('/anthropic');
+          if (isAnthropicEndpoint) {
+            // Probe using Anthropic protocol
+            const probeUrl = `${base_url.replace(/\/+$/, '')}/v1/messages`;
+            const probeResponse = await fetch(probeUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': actualApiKey,
+                'anthropic-version': '2023-06-01',
+              },
+              body: JSON.stringify({
+                model: glmCodingModels[0],
+                max_tokens: 1,
+                messages: [{ role: 'user', content: 'hi' }],
+              }),
+            });
+            if (probeResponse.status === 401) {
+              const errorData = await probeResponse.json().catch(() => ({}));
+              const errorMsg = errorData?.error?.message || errorData?.message || 'Invalid API key or token expired';
+              return { success: false, msg: errorMsg };
+            }
+          } else {
+            // Probe using OpenAI protocol (coding endpoint)
+            const probeUrl = `${base_url.replace(/\/+$/, '')}/chat/completions`;
+            const probeResponse = await fetch(probeUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${actualApiKey}` },
+              body: JSON.stringify({
+                model: glmCodingModels[0],
+                messages: [{ role: 'user', content: 'hi' }],
+                max_tokens: 1,
+              }),
+            });
+            if (probeResponse.status === 401) {
+              const errorData = await probeResponse.json().catch(() => ({}));
+              const errorMsg = errorData?.error?.message || errorData?.message || 'Invalid API key or token expired';
+              return { success: false, msg: errorMsg };
+            }
+          }
+        } catch {
+          // Network error during probe - still return model list
+        }
+      }
+
+      return { success: true, data: { mode: glmCodingModels } };
     }
 
     // 如果是 Anthropic/Claude 平台，使用 Anthropic API 获取模型列表
@@ -496,6 +562,44 @@ export function initModelBridge(): void {
   ipcBridge.mode.saveModelConfig.provider((models) => {
     return ProcessConfig.set('model.config', models)
       .then(() => {
+        // Inject Claude Code environment variables from the active provider
+        const activeProvider = (Array.isArray(models) ? models : []).find(
+          (p: { enabled?: boolean; apiKey?: string }) => p.enabled && p.apiKey
+        );
+        console.log('[ModelBridge] saveModelConfig called, activeProvider found:', !!activeProvider);
+        if (activeProvider) {
+          process.env.ANTHROPIC_AUTH_TOKEN = activeProvider.apiKey;
+          if (activeProvider.baseUrl) {
+            // claudeBaseUrl takes priority (for providers with separate Anthropic endpoint)
+            process.env.ANTHROPIC_BASE_URL =
+              (activeProvider as any).claudeBaseUrl || activeProvider.baseUrl;
+          }
+          // Map the provider's model to Claude Code's model slots
+          const model = Array.isArray(activeProvider.model) ? activeProvider.model[0] : activeProvider.model;
+          if (model) {
+            process.env.ANTHROPIC_DEFAULT_SONNET_MODEL =
+              (activeProvider as any).claudeSonnetModel || model;
+            process.env.ANTHROPIC_DEFAULT_OPUS_MODEL =
+              (activeProvider as any).claudeOpusModel || model;
+            process.env.ANTHROPIC_DEFAULT_HAIKU_MODEL =
+              (activeProvider as any).claudeHaikuModel || model;
+          }
+
+          // Write ~/.claude/settings.json for claude-agent-acp to read natively
+          writeClaudeSettingsJson(activeProvider);
+        }
+        if (isDiagEnabled) {
+          diagLog('env-inject', 'Env vars injected into process.env:', {
+            providerName: activeProvider?.name,
+            providerBaseUrl: activeProvider?.baseUrl,
+            providerClaudeBaseUrl: (activeProvider as any)?.claudeBaseUrl || '(not set)',
+            ANTHROPIC_BASE_URL: process.env.ANTHROPIC_BASE_URL,
+            ANTHROPIC_AUTH_TOKEN: maskKey(process.env.ANTHROPIC_AUTH_TOKEN),
+            ANTHROPIC_DEFAULT_SONNET_MODEL: process.env.ANTHROPIC_DEFAULT_SONNET_MODEL,
+            ANTHROPIC_DEFAULT_OPUS_MODEL: process.env.ANTHROPIC_DEFAULT_OPUS_MODEL,
+            ANTHROPIC_DEFAULT_HAIKU_MODEL: process.env.ANTHROPIC_DEFAULT_HAIKU_MODEL,
+          });
+        }
         return { success: true };
       })
       .catch((e) => {
@@ -1153,6 +1257,22 @@ function isDashScopeCodingAPI(baseUrl: string): boolean {
 }
 
 /**
+ * Check if it's GLM Coding API (open.bigmodel.cn/api/coding/ or open.bigmodel.cn/api/anthropic)
+ *
+ * GLM Coding endpoint may not provide /v1/models, return hardcoded model list
+ */
+function isGlmCodingAPI(baseUrl: string): boolean {
+  try {
+    const url = new URL(baseUrl);
+    const hostname = url.hostname.toLowerCase();
+    const pathname = url.pathname.toLowerCase();
+    return hostname === 'open.bigmodel.cn' && (pathname.includes('/coding/') || pathname.includes('/anthropic'));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * 检测是否为 PackyAPI 中转站
  * Check if it's PackyAPI proxy service
  *
@@ -1272,4 +1392,51 @@ function generateSuggestion(
     i18nKey: 'settings.protocolDetected',
     i18nParams: { protocol: displayName },
   };
+}
+
+/**
+ * Write ~/.claude/settings.json for claude-agent-acp to read natively.
+ * This is the official way Claude Code CLI reads its configuration in gateway mode.
+ * If the file already exists, merges the `env` section while preserving other fields.
+ */
+function writeClaudeSettingsJson(activeProvider: any): void {
+  console.log('[ModelBridge] writeClaudeSettingsJson called');
+  const claudeDir = path.join(os.homedir(), '.claude');
+  const settingsPath = path.join(claudeDir, 'settings.json');
+  console.log('[ModelBridge] settingsPath:', settingsPath);
+
+  const model = Array.isArray(activeProvider.model) ? activeProvider.model[0] : activeProvider.model;
+  const baseUrl = activeProvider.claudeBaseUrl || activeProvider.baseUrl;
+
+  const settings = {
+    env: {
+      ANTHROPIC_AUTH_TOKEN: activeProvider.apiKey,
+      ANTHROPIC_BASE_URL: baseUrl,
+      ANTHROPIC_DEFAULT_SONNET_MODEL: activeProvider.claudeSonnetModel || model,
+      ANTHROPIC_DEFAULT_OPUS_MODEL: activeProvider.claudeOpusModel || model,
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: activeProvider.claudeHaikuModel || model,
+      API_TIMEOUT_MS: '3000000',
+      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1',
+    },
+  };
+
+  try {
+    fs.mkdirSync(claudeDir, { recursive: true });
+
+    // If settings.json already exists, merge env section while preserving other fields
+    let existing: Record<string, unknown> = {};
+    if (fs.existsSync(settingsPath)) {
+      try {
+        const raw = fs.readFileSync(settingsPath, 'utf-8');
+        existing = JSON.parse(raw);
+      } catch {
+        // Parse failed, overwrite
+      }
+    }
+
+    const merged = { ...existing, env: settings.env };
+    fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), 'utf-8');
+  } catch (e) {
+    console.warn('[ModelBridge] Failed to write ~/.claude/settings.json:', e);
+  }
 }

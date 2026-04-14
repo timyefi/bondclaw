@@ -148,10 +148,10 @@ const BondClawWorkspacePage: React.FC = () => {
               <Tag color='gray'>{runtimeState.source.toUpperCase()}</Tag>
             </div>
             <Title heading={2} className='!m-0 !text-24px sm:!text-28px'>
-              模板中心
+              资源中心
             </Title>
             <Paragraph className='!mt-6px !mb-0 text-2 text-14px'>
-              角色模板与工作流中心，从研究到执行一站式服务
+              提供投研所需技能库以及国投固收研究内容，从研究到执行一站式服务
             </Paragraph>
           </div>
           <Space wrap>
@@ -219,7 +219,7 @@ const BondClawWorkspacePage: React.FC = () => {
               className='rd-16px'
               title={
                 <div>
-                  <div className='text-16px font-600'>模板中心</div>
+                  <div className='text-16px font-600'>技能中心</div>
                   <div className='mt-2px text-12px text-3'>点击角色卡片展开查看模板</div>
                 </div>
               }

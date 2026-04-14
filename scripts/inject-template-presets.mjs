@@ -22,11 +22,10 @@ let content = readFileSync(PRESETS_FILE, 'utf-8');
 // Since the template presets already have 'category:', we only add to existing ones
 
 const existingIds = [
-  'financial-analysis', 'word-creator', 'ppt-creator', 'excel-creator',
-  'morph-ppt', 'pitch-deck-creator', 'dashboard-creator', 'academic-paper',
-  'financial-model-creator', 'star-office-helper', 'openclaw-setup', 'cowork',
-  'game-3d', 'ui-ux-pro-max', 'planning-with-files', 'human-3-coach',
-  'social-job-publisher', 'moltbook', 'beautiful-mermaid',
+  'beautiful-mermaid', 'moltbook', 'ui-ux-pro-max', 
+  'pitch-deck-creator', 'dashboard-creator', 'academic-paper',
+  'financial-model-creator', 'star-office-helper', 'openclaw-setup', 'cowork','planning-with-files', 
+  'social-job-publisher', 'morph-ppt','ppt-creator', 'excel-creator','word-creator' ,'financial-analysis'
 ];
 
 for (const id of existingIds) {

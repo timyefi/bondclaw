@@ -36,6 +36,7 @@ import {
 } from './acpConnectors';
 import type { SpawnResult } from './acpConnectors';
 import { killChild, readTextFile, writeJsonRpcMessage, writeTextFile } from './utils';
+import { isDiagEnabled, diagLog, truncStr } from '@process/utils/diag';
 
 const execFile = promisify(execFileCb);
 
@@ -183,6 +184,7 @@ export class AcpConnection {
     acpArgs?: string[],
     customEnv?: Record<string, string>
   ): Promise<void> {
+    const result = await spawnGenericBackend(backend, cliPath, workingDir, acpArgs, customEnv);
     await this.spawnAndSetup(result, backend);
   }
 
@@ -476,6 +478,11 @@ export class AcpConnection {
    * Similar to Codex's handleProcessExit implementation
    */
   private handleProcessExit(code: number | null, signal: NodeJS.Signals | null): void {
+    // If disconnect() already cleared setup state, this exit is expected — skip cleanup.
+    if (!this.isSetupComplete && !this.sessionId) {
+      return;
+    }
+
     // 1. Reject all pending requests with clear error message
     for (const [_id, request] of this.pendingRequests) {
       if (request.timeoutId) {
@@ -633,6 +640,12 @@ export class AcpConnection {
   }
 
   private sendMessage(message: AcpRequest | AcpNotification): void {
+    if (isDiagEnabled) {
+      if ('method' in message) {
+        const params = (message as Record<string, unknown>).params;
+        diagLog('rpc-out', `→ ${message.method}`, params ? truncStr(JSON.stringify(params)) : '(no params)');
+      }
+    }
     if (this.child) {
       writeJsonRpcMessage(this.child, message);
     }
@@ -645,6 +658,25 @@ export class AcpConnection {
   }
 
   private handleMessage(message: AcpMessage): void {
+    if (isDiagEnabled) {
+      if ('method' in message) {
+        // Incoming request/notification
+        const msg = message as AcpIncomingMessage;
+        const updateData = (msg.params as Record<string, unknown>)?.update || msg.params;
+        diagLog('rpc-in', `← ${msg.method}`, truncStr(JSON.stringify(updateData || {}), 500));
+      } else if ('id' in message && typeof message.id === 'number') {
+        if ('error' in message) {
+          diagLog('rpc-in', `← ERROR response id=${message.id}: ${JSON.stringify(message.error)}`);
+        } else if ('result' in message) {
+          const result = message.result as Record<string, unknown> | null;
+          if (result && typeof result === 'object') {
+            diagLog('rpc-in', `← response id=${message.id}`, truncStr(JSON.stringify(result), 500));
+          } else {
+            diagLog('rpc-in', `← response id=${message.id}: null`);
+          }
+        }
+      }
+    }
     try {
       if ('method' in message) {
         // Incoming request with method field - delegate to handleIncomingRequest
@@ -822,6 +854,9 @@ export class AcpConnection {
     cwd: string = process.cwd(),
     options?: { resumeSessionId?: string; forkSession?: boolean; mcpServers?: AcpSessionMcpServer[] }
   ): Promise<AcpResponse & { sessionId?: string }> {
+    if (isDiagEnabled) {
+      diagLog('session', `newSession called, cwd=${cwd}, resumeSessionId=${options?.resumeSessionId || '(none)'}, mcpServers=${options?.mcpServers?.length || 0}`);
+    }
     // Normalize workspace-relative paths:
     // Agents such as qwen already run with `workingDir` as their process cwd.
     // Sending the absolute path again makes some CLIs treat it as a nested relative path.
@@ -855,6 +890,17 @@ export class AcpConnection {
     this.sessionId = response.sessionId;
 
     this.parseSessionCapabilities(response);
+
+    if (isDiagEnabled) {
+      diagLog('session', `newSession completed, sessionId=${response.sessionId}`);
+      const result = response as Record<string, unknown>;
+      if (result.models) {
+        diagLog('session', 'Models available:', result.models);
+      }
+      if (result.configOptions) {
+        diagLog('session', 'Config options:', result.configOptions);
+      }
+    }
 
     // Debug: log full session/new response only when ACP_PERF=1
     if (ACP_PERF_LOG) {
@@ -946,14 +992,25 @@ export class AcpConnection {
       throw new Error('No active ACP session');
     }
 
+    if (isDiagEnabled) {
+      diagLog('prompt', `sendPrompt called, sessionId=${this.sessionId}, prompt length=${prompt.length}`);
+      diagLog('prompt', 'Prompt content (first 300 chars):', truncStr(prompt));
+    }
+
     this.lastPromptSentAt = Date.now();
     this.firstChunkReceived = false;
     if (ACP_PERF_LOG) console.log(`[ACP-PERF] send: prompt sent to ${this.backend}`);
 
-    return await this.sendRequest('session/prompt', {
+    const response = await this.sendRequest<AcpResponse>('session/prompt', {
       sessionId: this.sessionId,
       prompt: [{ type: 'text', text: prompt }],
     });
+
+    if (isDiagEnabled) {
+      const result = response as Record<string, unknown> | null;
+      diagLog('prompt', `sendPrompt completed, stopReason=${result?.stopReason || 'N/A'}`);
+    }
+    return response;
   }
 
   /**
@@ -997,6 +1054,10 @@ export class AcpConnection {
   async setModel(modelId: string): Promise<AcpResponse> {
     if (!this.sessionId) {
       throw new Error('No active ACP session');
+    }
+
+    if (isDiagEnabled) {
+      diagLog('model', `setModel called: ${modelId}, current session=${this.sessionId}`);
     }
 
     const response = await this.sendRequest<AcpResponse>('session/set_model', {
@@ -1072,13 +1133,16 @@ export class AcpConnection {
       }
     }
 
+    // Mark as intentionally disconnected BEFORE terminating the child,
+    // so the exit handler knows this is a graceful shutdown, not a crash.
+    this.isSetupComplete = false;
+
     await this.terminateChild();
 
     // Reset session-level state
     this.pendingRequests.clear();
     this.sessionId = null;
     this.isInitialized = false;
-    this.isSetupComplete = false;
     this.backend = null;
     this.initializeResponse = null;
     this.configOptions = null;

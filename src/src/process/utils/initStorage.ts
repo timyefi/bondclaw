@@ -607,7 +607,6 @@ const getBuiltinAssistants = (): AcpBackendConfig[] => {
       preset.id === 'dashboard-creator' ||
       preset.id === 'financial-model-creator' ||
       preset.id === 'pitch-deck-creator' ||
-      preset.id === 'game-3d' ||
       preset.id === 'ui-ux-pro-max' ||
       preset.id === 'planning-with-files' ||
       preset.id === 'human-3-coach' ||

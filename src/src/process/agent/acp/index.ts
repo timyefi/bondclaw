@@ -48,6 +48,7 @@ import {
 } from './mcpSessionConfig';
 import { getClaudeModel } from './utils';
 import { getAionMcpStdioConfig } from '@process/services/mcpServices/aionMcpServiceSingleton';
+import { isDiagEnabled, diagLog, truncStr } from '@process/utils/diag';
 
 /** Enable ACP performance diagnostics via ACP_PERF=1 */
 const ACP_PERF_LOG = process.env.ACP_PERF === '1';
@@ -286,6 +287,17 @@ export class AcpAgent {
   // 启动ACP连接和会话
   async start(): Promise<void> {
     const startTotal = Date.now();
+    if (isDiagEnabled) {
+      diagLog('lifecycle', 'AcpAgent.start() called', {
+        backend: this.extra.backend,
+        workspace: this.extra.workspace,
+        cliPath: this.extra.cliPath,
+        acpSessionId: this.extra.acpSessionId,
+        currentModelId: this.extra.currentModelId,
+        sessionMode: this.extra.sessionMode,
+        yoloMode: this.extra.yoloMode,
+      });
+    }
     try {
       this.emitStatusMessage('connecting');
 
@@ -338,6 +350,7 @@ export class AcpAgent {
       const authStart = Date.now();
       await this.performAuthentication();
       if (ACP_PERF_LOG) console.log(`[ACP-PERF] start: authentication completed ${Date.now() - authStart}ms`);
+      if (isDiagEnabled) diagLog('lifecycle', 'Authentication phase completed');
 
       // 避免重复创建会话：仅当尚无活动会话时再创建
       // Create new session or resume existing one (if ACP backend supports it)
@@ -345,6 +358,7 @@ export class AcpAgent {
         const sessionStart = Date.now();
         await this.createOrResumeSession();
         if (ACP_PERF_LOG) console.log(`[ACP-PERF] start: session created ${Date.now() - sessionStart}ms`);
+        if (isDiagEnabled) diagLog('lifecycle', `Session created/resumed, id=${this.connection.currentSessionId}`);
       }
 
       // YOLO mode: bypass all permission checks for supported backends
@@ -376,9 +390,11 @@ export class AcpAgent {
             const modelStart = Date.now();
             await this.connection.setModel(configuredModel);
             if (ACP_PERF_LOG) console.log(`[ACP-PERF] start: model set ${Date.now() - modelStart}ms`);
+            if (isDiagEnabled) diagLog('lifecycle', `Model set to: ${configuredModel}`);
           } catch (error) {
             const errMsg = error instanceof Error ? error.message : String(error);
             console.warn(`[ACP] Failed to set model from settings: ${errMsg}`);
+            if (isDiagEnabled) diagLog('error', `setModel failed: ${errMsg}`);
             // Detect third-party relay/proxy errors (e.g., NewAPI/OneAPI "model_not_found").
             // These services route by model name and may not have channels configured for
             // specific model IDs like "claude-sonnet-4-6". Emit a visible warning so the
@@ -425,8 +441,10 @@ export class AcpAgent {
 
       this.emitStatusMessage('session_active');
       if (ACP_PERF_LOG) console.log(`[ACP-PERF] start: total ${Date.now() - startTotal}ms`);
+      if (isDiagEnabled) diagLog('lifecycle', `AcpAgent.start() completed in ${Date.now() - startTotal}ms`);
     } catch (error) {
       if (ACP_PERF_LOG) console.log(`[ACP-PERF] start: failed after ${Date.now() - startTotal}ms`);
+      if (isDiagEnabled) diagLog('error', `AcpAgent.start() failed: ${error instanceof Error ? error.message : String(error)}`);
       this.emitStatusMessage('error');
       throw error;
     }
@@ -627,6 +645,9 @@ export class AcpAgent {
   // 发送消息到ACP服务器
   async sendMessage(data: { content: string; files?: string[]; msg_id?: string }): Promise<AcpResult> {
     const sendStart = Date.now();
+    if (isDiagEnabled) {
+      diagLog('lifecycle', `sendMessage called, content length=${data.content.length}, files=${data.files?.length || 0}`);
+    }
     try {
       this.turnHasThought = false;
       this.turnHasContent = false;
@@ -723,7 +744,9 @@ export class AcpAgent {
       await this.applyPromptTimeoutFromConfig();
 
       const promptStart = Date.now();
+      if (isDiagEnabled) diagLog('lifecycle', 'Calling connection.sendPrompt()...');
       await this.connection.sendPrompt(processedContent);
+      if (isDiagEnabled) diagLog('lifecycle', `connection.sendPrompt() returned in ${Date.now() - promptStart}ms`);
       if (ACP_PERF_LOG)
         console.log(
           `[ACP-PERF] send: sendPrompt completed ${Date.now() - promptStart}ms (total send: ${Date.now() - sendStart}ms)`
@@ -733,6 +756,7 @@ export class AcpAgent {
       return { success: true, data: null };
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
+      if (isDiagEnabled) diagLog('error', `sendMessage failed: ${errorMsg}`);
       // Special handling for Internal error
       if (errorMsg.includes('Internal error')) {
         if (this.extra.backend === 'qwen') {
@@ -989,6 +1013,17 @@ export class AcpAgent {
 
   private handleSessionUpdate(data: AcpSessionUpdate): void {
     try {
+      // Diag: log error-related streaming content
+      if (isDiagEnabled && data.update) {
+        const updateType = data.update.sessionUpdate;
+        if (updateType === 'agent_message_chunk') {
+          const content = (data.update as Record<string, unknown>).content || '';
+          if (typeof content === 'string' && (content.includes('error') || content.includes('Error') || content.includes('429'))) {
+            diagLog('stream', `agent_message_chunk contains error: ${truncStr(content)}`);
+          }
+        }
+      }
+
       if (data.update?.sessionUpdate === 'available_commands_update') {
         const commandUpdate = data as AvailableCommandsUpdate;
         const commands: AcpAvailableCommand[] = [];
@@ -1170,6 +1205,7 @@ export class AcpAgent {
   }
 
   private handleEndTurn(): void {
+    if (isDiagEnabled) diagLog('lifecycle', `handleEndTurn called (conversation=${this.id})`);
     if (this.turnHasThought && !this.turnHasContent) {
       console.warn(
         `[ACP-STREAM] End turn with thought but no content (conversation=${this.id}, backend=${this.extra.backend})`
@@ -1216,6 +1252,7 @@ export class AcpAgent {
    * Notify frontend and clean up internal state
    */
   private handleDisconnect(error: { code: number | null; signal: NodeJS.Signals | null }): void {
+    if (isDiagEnabled) diagLog('lifecycle', `handleDisconnect: code=${error.code}, signal=${error.signal}`);
     // Emit finish signal to reset UI loading state (preserving single-chat behavior).
     // The agentCrash flag in data lets TeammateManager distinguish a crash from a normal turn end.
     if (this.onSignalEvent) {
@@ -1727,45 +1764,56 @@ export class AcpAgent {
   }
 
   private async performAuthentication(): Promise<void> {
+    if (isDiagEnabled) diagLog('auth', 'performAuthentication() called');
     try {
       const initResponse = this.connection.getInitializeResponse();
       const result = initResponse?.result as InitializeResult | undefined;
       if (!initResponse || !result?.authMethods?.length) {
         // No auth methods available - CLI should handle authentication itself
+        if (isDiagEnabled) diagLog('auth', 'No auth methods in initResponse — CLI handles auth itself');
         this.emitStatusMessage('authenticated');
         return;
       }
 
       // 先尝试直接创建session以判断是否已鉴权（同时尝试恢复已有会话）
       // Try to create/resume session to check if already authenticated
+      if (isDiagEnabled) diagLog('auth', 'Trying createOrResumeSession to check auth...');
       try {
         await this.createOrResumeSession();
+        if (isDiagEnabled) diagLog('auth', 'Session created successfully — already authenticated');
         this.emitStatusMessage('authenticated');
         return;
       } catch (_err) {
+        if (isDiagEnabled) diagLog('auth', 'Session creation failed, need authentication');
         // 需要鉴权，进行条件化"预热"尝试
       }
 
       // 条件化预热：仅在需要鉴权时尝试调用后端CLI登录以刷新token
       if (this.extra.backend === 'qwen') {
+        if (isDiagEnabled) diagLog('auth', 'Calling ensureQwenAuth...');
         await this.ensureQwenAuth();
       } else if (this.extra.backend === 'claude') {
+        if (isDiagEnabled) diagLog('auth', 'Calling ensureClaudeAuth (claude /login)...');
         await this.ensureClaudeAuth();
       }
       // Note: CodeBuddy does not have a CLI login command; auth is handled by the CLI itself
 
       // 预热后重试创建session（同时尝试恢复会话）
       // Retry creating/resuming session after warmup
+      if (isDiagEnabled) diagLog('auth', 'Retrying createOrResumeSession after auth...');
       try {
         await this.createOrResumeSession();
+        if (isDiagEnabled) diagLog('auth', 'Session created after authentication');
         this.emitStatusMessage('authenticated');
         return;
       } catch (error) {
+        if (isDiagEnabled) diagLog('auth', `Session creation still failed: ${error instanceof Error ? error.message : String(error)}`);
         // If still failing, guide user to login manually
         // 如果仍然失败，引导用户手动登录
         this.emitStatusMessage('error');
       }
     } catch (error) {
+      if (isDiagEnabled) diagLog('auth', `performAuthentication outer error: ${error instanceof Error ? error.message : String(error)}`);
       this.emitStatusMessage('error');
     }
   }

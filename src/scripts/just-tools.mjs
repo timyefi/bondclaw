@@ -14,6 +14,7 @@ const npmCliPath =
   process.platform === 'win32'
     ? path.join(path.dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
     : 'npm';
+const prepareCliResourcesScript = path.join(scriptDir, 'prepare-cli-resources.mjs');
 
 function npmBuildEnv(extra = {}) {
   return {
@@ -261,8 +262,13 @@ function runElectronBuilder(extraArgs = [], extraEnv = {}) {
   });
 }
 
+function prepareCliResources(extraEnv = {}) {
+  run(nodeCommand, [prepareCliResourcesScript], { env: npmBuildEnv(extraEnv) });
+}
+
 function buildWinX64() {
   ensureNodeModules();
+  prepareCliResources({ npm_config_arch: 'x64', npm_config_target_arch: 'x64' });
   run(bunCommand, ['run', 'package'], { env: npmBuildEnv({ NODE_OPTIONS: '--max-old-space-size=8192' }) });
   runElectronBuilder(['--win', '--x64'], {
     npm_config_arch: 'x64',
@@ -272,6 +278,7 @@ function buildWinX64() {
 
 function buildWinArm64() {
   ensureNodeModules();
+  prepareCliResources({ npm_config_arch: 'arm64', npm_config_target_arch: 'arm64' });
   run(bunCommand, ['run', 'package'], { env: npmBuildEnv({ NODE_OPTIONS: '--max-old-space-size=8192' }) });
   runElectronBuilder(['--win', '--arm64'], {
     npm_config_arch: 'arm64',
@@ -285,12 +292,14 @@ function buildWin() {
 
 function buildMacArm64() {
   ensureNodeModules();
+  prepareCliResources({ npm_config_arch: 'arm64', npm_config_target_arch: 'arm64' });
   run(bunCommand, ['run', 'package'], { env: npmBuildEnv({ NODE_OPTIONS: '--max-old-space-size=8192' }) });
   runElectronBuilder(['--mac', '--arm64']);
 }
 
 function buildMacX64() {
   ensureNodeModules();
+  prepareCliResources({ npm_config_arch: 'x64', npm_config_target_arch: 'x64' });
   run(bunCommand, ['run', 'package'], { env: npmBuildEnv({ NODE_OPTIONS: '--max-old-space-size=8192' }) });
   runElectronBuilder(['--mac', '--x64']);
 }
@@ -302,6 +311,7 @@ function buildMac() {
 
 function buildLinux() {
   ensureNodeModules();
+  prepareCliResources({ npm_config_arch: process.arch, npm_config_target_arch: process.arch });
   run(bunCommand, ['run', 'package'], { env: npmBuildEnv({ NODE_OPTIONS: '--max-old-space-size=8192' }) });
   runElectronBuilder(['--linux']);
 }

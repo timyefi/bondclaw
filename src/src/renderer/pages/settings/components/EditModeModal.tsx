@@ -198,16 +198,42 @@ const EditModeModal = ModalHOC<{ data?: IProvider; onChange(data: IProvider): vo
               <Input placeholder={t('settings.modelProvider')} />
             </Form.Item>
 
-            {/* Base URL - 仅 Gemini 平台显示（用于自定义代理）/ Base URL - only for Gemini platform (for custom proxy) */}
+            {/* Base URL */}
             <Form.Item
               hidden={isBedrock}
               label={t('settings.baseUrl')}
               required={data?.platform !== 'gemini' && data?.platform !== 'gemini-vertex-ai' && !isBedrock}
               rules={[{ required: data?.platform !== 'gemini' && data?.platform !== 'gemini-vertex-ai' && !isBedrock }]}
               field={'baseUrl'}
-              disabled
             >
               <Input></Input>
+            </Form.Item>
+
+            {/* Claude Code Model Configuration */}
+            <Form.Item
+              label='Sonnet Model'
+              field='claudeSonnetModel'
+            >
+              <Input placeholder='e.g. claude-sonnet-4-20250514' />
+            </Form.Item>
+            <Form.Item
+              label='Opus Model'
+              field='claudeOpusModel'
+            >
+              <Input placeholder='e.g. claude-opus-4-20250514' />
+            </Form.Item>
+            <Form.Item
+              label='Haiku Model'
+              field='claudeHaikuModel'
+            >
+              <Input placeholder='e.g. claude-haiku-4-5-20251001' />
+            </Form.Item>
+            <Form.Item
+              label='Claude API URL'
+              field='claudeBaseUrl'
+              extra={<div className='text-11px text-t-secondary mt-2'>Anthropic-compatible endpoint for Claude Code CLI (defaults to Base URL)</div>}
+            >
+              <Input placeholder='Anthropic-compatible API endpoint' />
             </Form.Item>
 
             <Form.Item

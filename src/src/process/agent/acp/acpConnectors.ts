@@ -32,6 +32,7 @@ import {
   resolveNpxPath,
 } from '@process/utils/shellEnv';
 import { mainWarn } from '@process/utils/mainLogger';
+import { isDiagEnabled, diagLog, diagEnvSnapshot } from '@process/utils/diag';
 
 const execFile = promisify(execFileCb);
 
@@ -136,6 +137,12 @@ export async function prepareCleanEnv(): Promise<Record<string, string | undefin
   // Remove CLAUDECODE env var to prevent claude-agent-sdk from detecting
   // a nested session when AionUi itself is launched from Claude Code.
   delete merged.CLAUDECODE;
+  // Strip Electron-specific env vars that leak into child processes.
+  // ELECTRON_RUN_AS_NODE: causes Node.js to think it's running in Electron mode
+  // NODE_PATH: may point into app.asar, breaking module resolution in child processes
+  delete merged.ELECTRON_RUN_AS_NODE;
+  delete merged.NODE_PATH;
+  delete merged.ELECTRON_NO_ASAR;
   // Strip npm lifecycle vars inherited from parent `npm start` process.
   // These (npm_config_*, npm_lifecycle_*, npm_package_*) can cause npx to
   // behave as if running inside an npm script, interfering with package
@@ -144,6 +151,10 @@ export async function prepareCleanEnv(): Promise<Record<string, string | undefin
     if (key.startsWith('npm_')) {
       delete merged[key];
     }
+  }
+  if (isDiagEnabled) {
+    diagLog('spawn-env', 'Environment passed to Claude CLI child process:');
+    diagEnvSnapshot(merged);
   }
   return merged;
 }

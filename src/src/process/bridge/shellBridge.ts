@@ -10,6 +10,7 @@ import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs';
 import * as path from 'path';
+import { isClaudeInstalled, installClaudeCode } from '@process/utils/claudeInstaller';
 
 const execAsync = promisify(exec);
 
@@ -269,5 +270,14 @@ export function initShellBridge(): void {
       // Fallback to default shell open
       await shell.openPath(folderPath);
     }
+  });
+
+  // Claude Code CLI install bridge
+  ipcBridge.shell.checkClaudeInstalled.provider(async () => {
+    return isClaudeInstalled();
+  });
+
+  ipcBridge.shell.installClaude.provider(async () => {
+    return installClaudeCode();
   });
 }

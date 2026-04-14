@@ -31,6 +31,25 @@ export const shell = {
   openFolderWith: bridge.buildProvider<void, { folderPath: string; tool: 'vscode' | 'terminal' | 'explorer' }>(
     'shell.open-folder-with'
   ), // 使用指定工具打开文件夹
+  checkClaudeInstalled: bridge.buildProvider<boolean>('shell.check-claude-installed'), // 检查 Claude Code 是否安装
+  installClaude: bridge.buildProvider<{ success: boolean; error?: string }>('shell.install-claude'), // 安装 Claude Code
+  installProgress: bridge.buildEmitter<{
+    phase:
+      | 'checking_node'
+      | 'seeding_bundled'
+      | 'installing_mirror'
+      | 'installing_official'
+      | 'writing_path'
+      | 'verifying'
+      | 'done'
+      | 'error'
+      | 'rollback';
+    attempt: number;
+    totalAttempts: number;
+    message: string;
+    stdout?: string;
+    source?: 'bundled' | 'mirror' | 'official';
+  }>('shell.install-progress'), // Claude 安装进度推送
 };
 
 //通用会话能力
