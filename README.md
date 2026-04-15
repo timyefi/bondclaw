@@ -22,6 +22,13 @@
 它不是单点工具，而是一套从信息收集、文档解析、附注优先分析，到结构化输出、知识沉淀、订阅分发和无代码工作流编排的协作底座。
 
 
+## Windows 下载
+
+- [下载 Windows 安装包（`.exe`）](https://github.com/timyefi/bondclaw/releases/download/v1.0.0/BondClaw-1.0.0-win-x64.exe)
+- [下载 Windows 便携包（`.zip`）](https://github.com/timyefi/bondclaw/releases/download/v1.0.0/BondClaw-1.0.0-win-x64.zip)
+- [查看完整 Release 页面](https://github.com/timyefi/bondclaw/releases/tag/v1.0.0)
+
+
 ## 使用演示视频
 
 GitHub 仓库首页的 `README` 对原生视频播放器支持有限，因此这里使用“可点击播放卡片”的方式展示演示视频。点击卡片后，可在 GitHub 文件页打开视频。
@@ -55,6 +62,15 @@ GitHub 仓库首页的 `README` 对原生视频播放器支持有限，因此这
 ## 安装与上手文档
 
 - [BondClaw 安装及上手指南（Word）](BondClaw安装及上手指南.docx)
+
+
+## 自动更新说明
+
+- 当前 Windows 自动更新清单已发布到 `v1.0.0` Release 中，文件为 [`latest.yml`](https://github.com/timyefi/bondclaw/releases/download/v1.0.0/latest.yml)
+- Windows x64 客户端默认读取 `latest.yml`，这一点与当前 `electron-updater` 配置一致
+- 但自动更新是否提示升级，还取决于**客户端当前安装版本是否低于 `1.0.0`**
+- 如果你现在运行的就是本次打包出的 `1.0.0` 客户端，那么它会判断为“已是最新版本”，不会提示升级
+- 只有当客户端当前版本低于 `1.0.0` 时，才会命中这次 Release 并提示更新
 
 
 ## 许可
