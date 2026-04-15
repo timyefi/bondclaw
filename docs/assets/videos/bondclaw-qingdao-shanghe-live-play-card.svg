@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">BondClaw 实时操作录屏</title>
+  <desc id="desc">点击播放：2026年4月14日青岛上合实时操作录屏，2 倍速压缩版，约 32 分 24 秒。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111827" />
+      <stop offset="50%" stop-color="#7c3aed" />
+      <stop offset="100%" stop-color="#ec4899" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)" rx="32"/>
+  <circle cx="640" cy="300" r="110" fill="#ffffff" fill-opacity="0.18"/>
+  <circle cx="640" cy="300" r="92" fill="#111827" fill-opacity="0.55" filter="url(#shadow)"/>
+  <polygon points="615,245 615,355 710,300" fill="#ffffff"/>
+  <text x="640" y="470" text-anchor="middle" font-size="54" font-family="Segoe UI, Arial, sans-serif" fill="#ffffff" font-weight="700">BondClaw 实时操作录屏</text>
+  <text x="640" y="540" text-anchor="middle" font-size="34" font-family="Segoe UI, Arial, sans-serif" fill="#fce7f3">2026-04-14 青岛上合 · 2 倍速压缩版 · 约 32 分 24 秒</text>
+  <text x="640" y="612" text-anchor="middle" font-size="28" font-family="Segoe UI, Arial, sans-serif" fill="#fae8ff">点击卡片打开 GitHub 视频文件页</text>
+</svg>

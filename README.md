@@ -24,16 +24,37 @@
 
 ## 使用演示视频
 
-下面这段演示视频展示了一个完整案例：使用 BondClaw 分析中国建筑最新财报，并在约 20 分钟内形成规范详尽的财务分析底稿。
+GitHub 仓库首页的 `README` 对原生视频播放器支持有限，因此这里使用“可点击播放卡片”的方式展示演示视频。点击卡片后，可在 GitHub 文件页打开视频。
 
-- 当前版本：2 倍速压缩版
+### 快速案例演示
+
+下面这段演示展示了一个完整案例：使用 BondClaw 分析中国建筑最新财报，并在约 20 分钟内形成规范详尽的财务分析底稿。
+
+- 版本：2 倍速压缩版
 - 时长：约 4 分 50 秒
 - 文件大小：约 20.8 MB
 
-[![BondClaw 使用演示视频封面](docs/assets/videos/bondclaw-demo-cn-buildings-cover.jpg)](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
+[![BondClaw 使用演示视频](docs/assets/videos/bondclaw-demo-cn-buildings-play-card.svg)](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
 
-- 在线播放/打开视频：[`bondclaw-demo-cn-buildings-2x.mp4`](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
-- 封面图：[`bondclaw-demo-cn-buildings-cover.jpg`](docs/assets/videos/bondclaw-demo-cn-buildings-cover.jpg)
+- 打开视频：[`bondclaw-demo-cn-buildings-2x.mp4`](docs/assets/videos/bondclaw-demo-cn-buildings-2x.mp4)
+- 视频截图：[`bondclaw-demo-cn-buildings-cover.jpg`](docs/assets/videos/bondclaw-demo-cn-buildings-cover.jpg)
+
+### 实时操作录屏
+
+这是 2026-04-14 的实时操作录制版本，适合完整查看实际工作流。
+
+- 版本：2 倍速压缩版
+- 时长：约 32 分 24 秒
+- 文件大小：约 46.8 MB
+
+[![BondClaw 实时操作录屏](docs/assets/videos/bondclaw-qingdao-shanghe-live-play-card.svg)](docs/assets/videos/bondclaw-qingdao-shanghe-live-2x.mp4)
+
+- 打开视频：[`bondclaw-qingdao-shanghe-live-2x.mp4`](docs/assets/videos/bondclaw-qingdao-shanghe-live-2x.mp4)
+
+
+## 安装与上手文档
+
+- [BondClaw 安装及上手指南（Word）](BondClaw安装及上手指南.docx)
 
 
 ## 许可
