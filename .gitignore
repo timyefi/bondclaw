@@ -12,3 +12,14 @@ chinamoney/scripts/.playwright-cli/
 chinamoney/scripts/__pycache__/
 chinamoney/scripts/.playwright-cli/*
 tmp/
+src/
+runtime/
+output/
+glmkey.md
+1.md
+研究报告数据录入规范.md
+训练.md
+AI 培训/
+financial-analyzer/SKILL.md
+financial-analyzer/knowledge_base.json
+research-writing/
