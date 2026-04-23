@@ -1,6 +1,0 @@
-{
-  "token": "eyJ0eXBlIjoiSldUIiwiYWxnIjoiSFM1MTIifQ.eyJqdGkiOiI1MDIxMzMwMyIsInJvbCI6IlJPTEVfUkVHSVNURVIiLCJpc3MiOiJPcGVuWExhYiIsImlhdCI6MTc3MzEyMDk1NiwiY2xpZW50SWQiOiJsa3pkeDU3bnZ5MjJqa3BxOXgydyIsInBob25lIjoiMTg1MTYwNTM4OTYiLCJvcGVuSWQiOm51bGwsInV1aWQiOiI1MzZlNTg1Mi00MDQ4LTRjNTQtYjA1OS1iMzU1MTA2MDQwYjIiLCJlbWFpbCI6IiIsImV4cCI6MTc4MDg5Njk1Nn0.umeyYBzd9hGs5_6y4dF8bsY-RQcRbWtBcQslO7E4WFQouB3hZV-fwA5IWLV1Oboijdbb6KOyFCnlnk4rVtK85g",
-  "default_model": "vlm",
-  "default_language": "auto",
-  "default_workers": 5
-}
