@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-market-regime-shift-v1",
   "role": "multi-asset",
@@ -33,3 +34,40 @@
     "是否便于快速决策"
   ]
 }
+=======
+{
+  "id": "multi-asset-market-regime-shift-v1",
+  "role": "multi-asset",
+  "workflow": "market-regime-shift",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "regime_change",
+      "focus_assets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "regime_change": { "type": "string" },
+      "focus_assets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、市场风格变化和关注资产，生成一份市场风格切换观察。要求写清风格变化、触发因素、资产影响和配置建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "regime_change": "风险偏好回落",
+    "focus_assets": ["债券", "信用", "权益"]
+  },
+  "qa_checklist": [
+    "风格变化是否清楚",
+    "触发因素是否具体",
+    "资产影响是否覆盖",
+    "是否便于快速决策"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

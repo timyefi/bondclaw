@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "trader-morning-liquidity-window-v1",
   "role": "trader",
@@ -33,3 +34,40 @@
     "是否适合交易员晨间快速浏览"
   ]
 }
+=======
+{
+  "id": "trader-morning-liquidity-window-v1",
+  "role": "trader",
+  "workflow": "morning-liquidity-window",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "liquidity_view",
+      "trade_queue"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "liquidity_view": { "type": "string" },
+      "trade_queue": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、流动性判断和待处理交易队列，生成一份晨间流动性提示。要求包含资金判断、执行顺序、优先交易、回执检查和盘中关注项，表达简短直接并保持研报准确性。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "liquidity_view": "上午资金略紧",
+    "trade_queue": ["债券A", "债券B", "转债C"]
+  },
+  "qa_checklist": [
+    "流动性判断是否清楚",
+    "执行顺序是否明确",
+    "回执检查是否完整",
+    "是否适合交易员晨间快速浏览"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

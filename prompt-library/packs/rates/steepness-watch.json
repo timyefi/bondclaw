@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "rates-steepness-watch-v1",
   "role": "rates",
@@ -33,3 +34,40 @@
     "风险提示是否具体"
   ]
 }
+=======
+{
+  "id": "rates-steepness-watch-v1",
+  "role": "rates",
+  "workflow": "steepness-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_steepness",
+      "driver_summary"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_steepness": { "type": "string" },
+      "driver_summary": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线陡峭度和驱动摘要，生成一份曲线陡峭度观察。要求说明陡峭化或平坦化的主要来源、不同期限的相对机会、以及需要防范的反向波动风险。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "curve_steepness": "前陡后平",
+    "driver_summary": ["短端资金偏紧", "长端需求稳定"]
+  },
+  "qa_checklist": [
+    "曲线形态是否清楚",
+    "驱动因素是否完整",
+    "期限机会是否明确",
+    "风险提示是否具体"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-policy-translation-note-v1",
   "role": "macro",
@@ -36,3 +37,43 @@
     "后续观察点是否具体可跟踪"
   ]
 }
+=======
+{
+  "id": "macro-policy-translation-note-v1",
+  "role": "macro",
+  "workflow": "policy-translation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_event",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_event": { "type": "string" },
+      "focus_topics": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "基于输入日期、政策事件和关注主题，输出一份政策传导解读。要求拆成政策原文、市场解读、资金和利率含义、对固收资产的影响、后续观察点五部分，语言保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "policy_event": "公开市场操作与表态更新",
+    "focus_topics": ["资金面", "利率", "政策预期"]
+  },
+  "qa_checklist": [
+    "政策原文是否准确转述",
+    "市场解读是否避免过度延伸",
+    "对固收资产影响是否明确",
+    "后续观察点是否具体可跟踪"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

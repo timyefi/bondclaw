@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "trader-spread-trade-opportunity-v1",
   "role": "trader",
@@ -33,3 +34,40 @@
     "是否适合盘中决策"
   ]
 }
+=======
+{
+  "id": "trader-spread-trade-opportunity-v1",
+  "role": "trader",
+  "workflow": "spread-trade-opportunity",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "spread_candidates",
+      "execution_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "spread_candidates": { "type": "array", "items": { "type": "string" } },
+      "execution_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、利差候选和执行观点，生成一份利差交易机会提示。要求说明机会来源、执行顺序、风险点和盘中观察项。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "spread_candidates": ["国开-国债", "信用-利率"],
+    "execution_view": "偏短线"
+  },
+  "qa_checklist": [
+    "利差机会是否明确",
+    "执行顺序是否合理",
+    "风险点是否清楚",
+    "是否适合盘中决策"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-policy-clarity-note-v1",
   "role": "macro",
@@ -33,3 +34,40 @@
     "是否适合晨会快速使用"
   ]
 }
+=======
+{
+  "id": "macro-policy-clarity-note-v1",
+  "role": "macro",
+  "workflow": "policy-clarity-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_text",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_text": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、政策原文和关注主题，生成一份政策表述解读。要求把原文中的关键表述拆成可执行的市场含义，说明短中长端各自可能的反应，并给出后续观察重点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "policy_text": "稳增长与防风险并重",
+    "focus_topics": ["政策", "利率", "风险偏好"]
+  },
+  "qa_checklist": [
+    "政策原文是否拆解清楚",
+    "市场含义是否落到资产层面",
+    "期限反应是否说明",
+    "是否适合晨会快速使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

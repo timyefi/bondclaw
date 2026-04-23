@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "target_workflow_count": 20,
   "target_variant_count": 5,
@@ -201,3 +202,208 @@
     }
   ]
 }
+=======
+{
+  "target_workflow_count": 20,
+  "target_variant_count": 5,
+  "role_count": 7,
+  "roles": [
+    {
+      "role": "convertibles",
+      "display_name": "转债研究员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "double-low-screening",
+        "delta-and-gamma-review",
+        "terms-alert",
+        "rotation-watch",
+        "arbitrage-note",
+        "event-driven-screen",
+        "delta-exposure-note",
+        "rotation-trade-note",
+        "gamma-swing-note",
+        "premium-discount-watch",
+        "underlying-momentum-note",
+        "event-window-note",
+        "new-issue-screen",
+        "redemption-window-note"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "credit",
+      "display_name": "信用研究员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "issuer-deep-dive",
+        "financial-report-review",
+        "event-risk-monitor",
+        "peer-comparison",
+        "covenant-review",
+        "liquidity-pressure-note",
+        "covenant-event-watch",
+        "peer-spread-watch",
+        "cash-conversion-watch",
+        "event-impact-note",
+        "repayment-calendar-watch",
+        "leverage-watch",
+        "issuer-risk-memo",
+        "funding-access-note"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "fund-manager",
+      "display_name": "固收基金经理",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "morning-meeting-pack",
+        "weekly-strategy-update",
+        "portfolio-risk-review",
+        "performance-explanation",
+        "decision-log-summary",
+        "drawdown-review",
+        "weekly-risk-balance",
+        "daily-position-note",
+        "closing-summary",
+        "overnight-brief",
+        "weekly-readout",
+        "risk-committee-note",
+        "week-ahead-playbook",
+        "committee-brief"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "macro",
+      "display_name": "宏观研究员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "daily-brief",
+        "policy-watch",
+        "data-calendar",
+        "cross-asset-view",
+        "macro-scenario-update",
+        "policy-event-wrap",
+        "funding-condition-watch",
+        "data-surprise-note",
+        "overseas-shift-note",
+        "policy-tone-watch",
+        "inflation-implication-note",
+        "growth-signal-note",
+        "policy-translation-note",
+        "liquidity-window-note"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "multi-asset",
+      "display_name": "多资产研究员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "equity-bond-valuation",
+        "cross-asset-allocation",
+        "risk-budget-check",
+        "market-regime-shift",
+        "relative-value-scan",
+        "policy-to-asset-map",
+        "regime-allocation-note",
+        "equity-bond-relative-note",
+        "risk-off-allocation-note",
+        "correlation-shift-note",
+        "duration-beta-balance",
+        "spread-rotation-note",
+        "rebalancing-note",
+        "regime-rotation-note"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "rates",
+      "display_name": "利率研究员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "curve-attribution",
+        "auction-preview",
+        "funding-morning-note",
+        "interbank-liquidity-check",
+        "yield-spread-opportunity",
+        "term-spread-watch",
+        "auction-allocation-note",
+        "liquidity-gap-watch",
+        "curve-positioning-note",
+        "closing-curve-summary",
+        "auction-aftertaste-note",
+        "funding-close-note",
+        "curve-trade-plan",
+        "curve-repricing-note"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    },
+    {
+      "role": "trader",
+      "display_name": "固收交易员",
+      "canonical_skill": "research-writing",
+      "target_workflow_count": 20,
+      "target_variant_count": 5,
+      "existing_workflows": [
+        "inventory-scan",
+        "deal-anomaly-check",
+        "spread-trade-opportunity",
+        "execution-note",
+        "liquidity-warning",
+        "preclose-checklist",
+        "morning-execution-checklist",
+        "liquidity-gap-note",
+        "end-of-day-checklist",
+        "settlement-followup-note",
+        "position-reconciliation-note",
+        "intraday-liquidity-note",
+        "execution-window-note",
+        "morning-liquidity-window"
+      ],
+      "placeholder_workflows": [
+        "workflow_21",
+        "workflow_21"
+      ],
+      "sample_pack_count": 20
+    }
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

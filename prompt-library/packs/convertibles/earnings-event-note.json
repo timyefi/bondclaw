@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-earnings-event-note-v1",
   "role": "convertibles",
@@ -33,3 +34,40 @@
     "是否适合盘中快速查看"
   ]
 }
+=======
+{
+  "id": "convertibles-earnings-event-note-v1",
+  "role": "convertibles",
+  "workflow": "earnings-event-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "earnings_event"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "earnings_event": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和业绩事件，生成一份转债业绩事件观察。要求写清业绩预期、可能的正股反应、转债估值联动和适合的跟踪动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "earnings_event": "业绩预告边际改善"
+  },
+  "qa_checklist": [
+    "业绩事件是否说清",
+    "正股联动是否提到",
+    "转债估值反应是否说明",
+    "是否适合盘中快速查看"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

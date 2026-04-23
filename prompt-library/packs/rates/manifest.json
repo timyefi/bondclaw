@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "role": "rates",
   "display_name": "利率研究员",
@@ -26,3 +27,33 @@
   ],
   "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
 }
+=======
+{
+  "role": "rates",
+  "display_name": "利率研究员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "curve-attribution",
+    "auction-preview",
+    "funding-morning-note",
+    "interbank-liquidity-check",
+    "yield-spread-opportunity",
+    "term-spread-watch",
+    "auction-allocation-note",
+    "liquidity-gap-watch",
+    "curve-positioning-note",
+    "closing-curve-summary",
+    "auction-aftertaste-note",
+    "funding-close-note",
+    "curve-trade-plan",
+    "curve-repricing-note",
+    "curve-shape-update",
+    "funding-curve-guard",
+    "steepness-watch",
+    "curve-kink-watch",
+    "liquidity-turn-note",
+    "curve-pressure-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

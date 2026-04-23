@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-weekly-readout-v1",
   "role": "fund-manager",
@@ -44,3 +45,51 @@
     "是否指出下周关注点"
   ]
 }
+=======
+{
+  "id": "fund-manager-weekly-readout-v1",
+  "role": "fund-manager",
+  "workflow": "weekly-readout",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "weekly_events",
+      "portfolio_actions"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "weekly_events": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "portfolio_actions": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕一周事件和组合动作写一份周度读数，说明本周哪些变化最重要、组合做了什么、下周优先盯什么。要求适合周会。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "weekly_events": [
+      "资金面波动",
+      "信用事件跟踪"
+    ],
+    "portfolio_actions": [
+      "缩短久期",
+      "增加流动性"
+    ]
+  },
+  "qa_checklist": [
+    "是否总结一周核心事件",
+    "是否写清组合动作",
+    "是否指出下周关注点"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

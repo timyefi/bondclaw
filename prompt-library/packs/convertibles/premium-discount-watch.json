@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-premium-discount-watch-v1",
   "role": "convertibles",
@@ -38,3 +39,45 @@
     "是否给出动作建议"
   ]
 }
+=======
+{
+  "id": "convertibles-premium-discount-watch-v1",
+  "role": "convertibles",
+  "workflow": "premium-discount-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "premium_range",
+      "candidate_bonds"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "premium_range": { "type": "string" },
+      "candidate_bonds": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕溢价率和折价率变化写一份跟踪笔记，判断当前估值是否偏贵或偏便宜，并说明是否适合切换风格。先给结论，再给比较，再给动作。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "premium_range": "中等偏高",
+    "candidate_bonds": [
+      "可转债A",
+      "可转债B"
+    ]
+  },
+  "qa_checklist": [
+    "是否判断估值偏离",
+    "是否说明风格切换",
+    "是否给出动作建议"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

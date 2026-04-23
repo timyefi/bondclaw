@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "rates-curve-repricing-note-v1",
   "role": "rates",
@@ -33,3 +34,40 @@
     "是否能直接给交易员参考"
   ]
 }
+=======
+{
+  "id": "rates-curve-repricing-note-v1",
+  "role": "rates",
+  "workflow": "curve-repricing-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_move",
+      "market_context"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_move": { "type": "string" },
+      "market_context": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线变动和市场背景，生成一份曲线重定价点评。要求覆盖曲线结构变化、驱动因素、交易含义、后续观察点和风险提示，语言保持研报化。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "curve_move": "5Y 与 10Y 利差收窄",
+    "market_context": ["招标结果", "资金面波动", "政策预期变化"]
+  },
+  "qa_checklist": [
+    "曲线变动是否明确",
+    "驱动因素是否准确",
+    "交易含义是否可执行",
+    "是否能直接给交易员参考"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

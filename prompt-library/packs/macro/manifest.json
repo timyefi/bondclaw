@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "role": "macro",
   "display_name": "宏观研究员",
@@ -26,3 +27,33 @@
   ],
   "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
 }
+=======
+{
+  "role": "macro",
+  "display_name": "宏观研究员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "daily-brief",
+    "policy-watch",
+    "data-calendar",
+    "cross-asset-view",
+    "macro-scenario-update",
+    "policy-event-wrap",
+    "funding-condition-watch",
+    "data-surprise-note",
+    "overseas-shift-note",
+    "policy-tone-watch",
+    "inflation-implication-note",
+    "growth-signal-note",
+    "policy-translation-note",
+    "liquidity-window-note",
+    "funding-migration-note",
+    "policy-shift-brief",
+    "policy-implementation-note",
+    "policy-clarity-note",
+    "funding-stress-note",
+    "policy-demand-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

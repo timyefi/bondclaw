@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-funding-condition-watch-v1",
   "role": "macro",
@@ -38,3 +39,45 @@
     "是否给出债市含义"
   ]
 }
+=======
+{
+  "id": "macro-funding-condition-watch-v1",
+  "role": "macro",
+  "workflow": "funding-condition-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "money_market_signals",
+      "policy_expectation"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "money_market_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "policy_expectation": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕资金面和政策预期写一份观察笔记，说明资金松紧、公开市场操作、同业存单和机构行为的联动。先给判断，再给数据，再给对债市的含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "money_market_signals": [
+      "DR007维持稳定",
+      "同业存单发行节奏加快"
+    ],
+    "policy_expectation": "稳资金预期延续"
+  },
+  "qa_checklist": [
+    "是否讲清资金松紧",
+    "是否说明政策与市场的联动",
+    "是否给出债市含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

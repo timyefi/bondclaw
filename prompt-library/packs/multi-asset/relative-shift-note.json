@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-relative-shift-note-v1",
   "role": "multi-asset",
@@ -33,3 +34,40 @@
     "是否适合组合讨论"
   ]
 }
+=======
+{
+  "id": "multi-asset-relative-shift-note-v1",
+  "role": "multi-asset",
+  "workflow": "relative-shift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "relative_shift",
+      "asset_buckets"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "relative_shift": { "type": "string" },
+      "asset_buckets": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、相对变化和资产桶，生成一份相对变化说明。要求写清相对优势如何变化、对配置的含义、以及需要同步观察的联动信号，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "relative_shift": "信用相对利率走强",
+    "asset_buckets": ["利率", "信用", "转债", "权益"]
+  },
+  "qa_checklist": [
+    "相对优势是否清楚",
+    "配置含义是否明确",
+    "联动信号是否完整",
+    "是否适合组合讨论"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

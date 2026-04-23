@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-morning-meeting-pack-v1",
   "role": "fund-manager",
@@ -27,3 +28,34 @@
     "是否包含关键风险"
   ]
 }
+=======
+{
+  "id": "fund-manager-morning-meeting-pack-v1",
+  "role": "fund-manager",
+  "workflow": "morning-meeting-pack",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["date", "portfolio_focus"],
+    "properties": {
+      "date": { "type": "string" },
+      "portfolio_focus": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "为固收基金经理生成晨会包，覆盖市场回顾、风险点、今日关注和仓位建议。要求简短、结论优先、可直接开会使用。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "portfolio_focus": ["久期", "信用", "流动性"]
+  },
+  "qa_checklist": [
+    "是否适合晨会阅读",
+    "是否覆盖仓位建议",
+    "是否包含关键风险"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

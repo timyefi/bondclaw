@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-refinancing-track-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "验证点是否具体"
   ]
 }
+=======
+{
+  "id": "credit-refinancing-track-v1",
+  "role": "credit",
+  "workflow": "refinancing-track",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "date",
+      "refinancing_signals"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "date": { "type": "string" },
+      "refinancing_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入发行人、日期和再融资信号，生成一份再融资跟踪笔记。要求说明资金缺口、替代融资、期限安排和利差影响，并给出下一步验证点。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "date": "2026-04-11",
+    "refinancing_signals": ["短债压力", "银行授信波动", "债券发行计划变化"]
+  },
+  "qa_checklist": [
+    "再融资信号是否明确",
+    "期限安排是否写清",
+    "利差影响是否说明",
+    "验证点是否具体"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

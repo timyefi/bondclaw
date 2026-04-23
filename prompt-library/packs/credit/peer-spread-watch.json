@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-peer-spread-watch-v1",
   "role": "credit",
@@ -35,3 +36,42 @@
     "是否提示重估风险"
   ]
 }
+=======
+{
+  "id": "credit-peer-spread-watch-v1",
+  "role": "credit",
+  "workflow": "peer-spread-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer",
+      "peer_list"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer": { "type": "string" },
+      "peer_list": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕主体和同业比较写一份利差观察，说明主体的相对位置、偏离是否合理、是否存在重估机会。要求先结论，再比较，再风险提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "issuer": "示例主体",
+    "peer_list": ["同业A", "同业B", "同业C"]
+  },
+  "qa_checklist": [
+    "是否给出相对位置",
+    "是否说明偏离合理性",
+    "是否提示重估风险"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

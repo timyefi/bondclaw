@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-closing-summary-v1",
   "role": "fund-manager",
@@ -44,3 +45,51 @@
     "是否列出待跟踪问题"
   ]
 }
+=======
+{
+  "id": "fund-manager-closing-summary-v1",
+  "role": "fund-manager",
+  "workflow": "closing-summary",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "day_actions",
+      "open_questions"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "day_actions": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "open_questions": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据当天动作生成收盘总结，说明做了什么、为什么做、还有哪些问题留到明天继续跟踪。要求简洁、能进决策日志。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "day_actions": [
+      "调整久期",
+      "减仓低流动性标的"
+    ],
+    "open_questions": [
+      "资金面后续变化",
+      "信用事件跟踪"
+    ]
+  },
+  "qa_checklist": [
+    "是否记录当天动作",
+    "是否说明决策原因",
+    "是否列出待跟踪问题"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

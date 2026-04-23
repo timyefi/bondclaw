@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-funding-migration-note-v1",
   "role": "macro",
@@ -33,3 +34,40 @@
     "是否适合晨会快速使用"
   ]
 }
+=======
+{
+  "id": "macro-funding-migration-note-v1",
+  "role": "macro",
+  "workflow": "funding-migration-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "funding_shift",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "funding_shift": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、资金迁移描述和关注主题，生成一份资金迁移观察。要求写清资金从哪里来、流向哪里、对利率和信用的影响以及后续观察点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "funding_shift": "短端资金向中长端传导",
+    "focus_topics": ["资金面", "利率", "信用"]
+  },
+  "qa_checklist": [
+    "资金迁移是否说清",
+    "对利率和信用的含义是否明确",
+    "后续观察点是否具体",
+    "是否适合晨会快速使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

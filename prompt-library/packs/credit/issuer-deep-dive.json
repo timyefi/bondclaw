@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-issuer-deep-dive-v1",
   "role": "credit",
@@ -24,3 +25,31 @@
     "是否覆盖核心风险点"
   ]
 }
+=======
+{
+  "id": "credit-issuer-deep-dive-v1",
+  "role": "credit",
+  "workflow": "issuer-deep-dive",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["issuer", "reporting_period"],
+    "properties": {
+      "issuer": { "type": "string" },
+      "reporting_period": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕发行主体做深度信用分析，优先检查财务结构、债务压力、现金流、受限资金、担保与或有事项。必须先结论，再证据，再风险。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "reporting_period": "2025A"
+  },
+  "qa_checklist": [
+    "是否包含主体结论",
+    "是否引用附注证据",
+    "是否覆盖核心风险点"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

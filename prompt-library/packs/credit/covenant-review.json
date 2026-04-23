@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-covenant-review-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "是否适合风控复核"
   ]
 }
+=======
+{
+  "id": "credit-covenant-review-v1",
+  "role": "credit",
+  "workflow": "covenant-review",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "covenant_terms",
+      "risk_focus"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "covenant_terms": { "type": "array", "items": { "type": "string" } },
+      "risk_focus": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入发行人、条款和风险关注点，生成一份契约条款审查笔记。要求说明条款要点、潜在触发条件、对持仓和再融资的影响，以及后续跟踪路径。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "covenant_terms": ["财务约束", "回售条款", "担保安排"],
+    "risk_focus": ["现金流", "再融资"]
+  },
+  "qa_checklist": [
+    "条款要点是否写清",
+    "触发条件是否明确",
+    "影响是否覆盖持仓",
+    "是否适合风控复核"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

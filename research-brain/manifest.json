@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "schemaVersion": 1,
   "brainName": "BondClaw 订阅与案例",
@@ -73,3 +74,80 @@
     "starter_case_count": 20
   }
 }
+=======
+{
+  "schemaVersion": 1,
+  "brainName": "BondClaw 订阅与案例",
+  "default_polling_interval": "15m",
+  "supported_formats": [
+    "rss",
+    "atom",
+    "json"
+  ],
+  "notification_order": [
+    "local-cache",
+    "desktop-notification",
+    "website-push"
+  ],
+  "dedupe_fields": [
+    "guid",
+    "url",
+    "title_hash"
+  ],
+  "source_groups": [
+    {
+      "group_id": "bondclaw-reports",
+      "display_name": "国投报告",
+      "topic_tags": [
+        "report",
+        "strategy",
+        "credit"
+      ],
+      "role_tags": [
+        "macro",
+        "rates",
+        "credit",
+        "fund-manager"
+      ],
+      "polling_interval": "15m",
+      "notification_policy": "notify-on-new"
+    },
+    {
+      "group_id": "ai-intel",
+      "display_name": "AI 资讯",
+      "topic_tags": [
+        "ai",
+        "tooling",
+        "workflow"
+      ],
+      "role_tags": [
+        "multi-asset",
+        "fund-manager",
+        "trader"
+      ],
+      "polling_interval": "30m",
+      "notification_policy": "digest-only"
+    },
+    {
+      "group_id": "policy-watch",
+      "display_name": "政策与市场",
+      "topic_tags": [
+        "policy",
+        "liquidity",
+        "rates"
+      ],
+      "role_tags": [
+        "macro",
+        "rates",
+        "credit"
+      ],
+      "polling_interval": "15m",
+      "notification_policy": "notify-on-new"
+    }
+  ],
+  "case_library": {
+    "case_index_path": "case-library/index.json",
+    "starter_case_count": 20
+  }
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

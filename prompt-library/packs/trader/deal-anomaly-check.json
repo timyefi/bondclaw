@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "trader-deal-anomaly-check-v1",
   "role": "trader",
@@ -33,3 +34,40 @@
     "是否适合交易员快速查看"
   ]
 }
+=======
+{
+  "id": "trader-deal-anomaly-check-v1",
+  "role": "trader",
+  "workflow": "deal-anomaly-check",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "deal_list",
+      "anomaly_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "deal_list": { "type": "array", "items": { "type": "string" } },
+      "anomaly_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、交易清单和异常信号，生成一份成交异常检查笔记。要求说明异常位置、可能原因、是否影响结算和需要立刻复核的内容。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "deal_list": ["成交A", "成交B"],
+    "anomaly_signals": ["价格偏离", "数量异常"]
+  },
+  "qa_checklist": [
+    "异常是否写清",
+    "可能原因是否合理",
+    "结算影响是否说明",
+    "是否适合交易员快速查看"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

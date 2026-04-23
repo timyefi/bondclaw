@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-leverage-watch-v1",
   "role": "credit",
@@ -38,3 +39,45 @@
     "是否提示再融资压力"
   ]
 }
+=======
+{
+  "id": "credit-leverage-watch-v1",
+  "role": "credit",
+  "workflow": "leverage-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "leverage_metrics",
+      "debt_structure"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "leverage_metrics": { "type": "string" },
+      "debt_structure": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕杠杆水平写一份跟踪笔记，说明债务杠杆、期限结构和再融资压力的变化。先给结论，再列指标，再给风险提示。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "leverage_metrics": "杠杆水平偏高",
+    "debt_structure": [
+      "短债占比高",
+      "中长期债务压力上升"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明杠杆变化",
+    "是否列出期限结构",
+    "是否提示再融资压力"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

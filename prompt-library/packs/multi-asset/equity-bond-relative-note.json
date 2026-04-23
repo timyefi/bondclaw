@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-equity-bond-relative-note-v1",
   "role": "multi-asset",
@@ -44,3 +45,51 @@
     "是否落到仓位含义"
   ]
 }
+=======
+{
+  "id": "multi-asset-equity-bond-relative-note-v1",
+  "role": "multi-asset",
+  "workflow": "equity-bond-relative-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "equity_signals",
+      "bond_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "equity_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "bond_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "比较权益和债券信号，判断当前更适合偏权益、偏债券还是维持平衡。要求先给偏好，再给证据，再给仓位含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "equity_signals": [
+      "风格轮动加快",
+      "波动率抬升"
+    ],
+    "bond_signals": [
+      "长端利率震荡",
+      "资金面平稳"
+    ]
+  },
+  "qa_checklist": [
+    "是否比较股债信号",
+    "是否给出偏好判断",
+    "是否落到仓位含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

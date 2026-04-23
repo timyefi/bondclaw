@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-policy-tone-watch-v1",
   "role": "macro",
@@ -38,3 +39,45 @@
     "是否给出市场含义"
   ]
 }
+=======
+{
+  "id": "macro-policy-tone-watch-v1",
+  "role": "macro",
+  "workflow": "policy-tone-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_text",
+      "tone_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_text": { "type": "string" },
+      "tone_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕政策表述的语气和措辞变化写一份跟踪笔记，说明是偏宽松、偏中性还是偏收紧，以及这种语气变化对市场预期的影响。要求先判断，再拆语气，再给含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "policy_text": "政策表述示例",
+    "tone_signals": [
+      "强调稳增长",
+      "继续关注流动性"
+    ]
+  },
+  "qa_checklist": [
+    "是否判断政策语气",
+    "是否拆解措辞变化",
+    "是否给出市场含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

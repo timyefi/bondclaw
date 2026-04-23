@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-risk-budget-check-v1",
   "role": "multi-asset",
@@ -33,3 +34,40 @@
     "是否适合基金经理查看"
   ]
 }
+=======
+{
+  "id": "multi-asset-risk-budget-check-v1",
+  "role": "multi-asset",
+  "workflow": "risk-budget-check",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "risk_budget",
+      "asset_list"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "risk_budget": { "type": "string" },
+      "asset_list": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、风险预算和资产列表，生成一份风险预算检查笔记。要求说明各资产的风险占用、是否超配、调整建议和复核节点。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "risk_budget": "中性偏保守",
+    "asset_list": ["债券", "信用", "权益"]
+  },
+  "qa_checklist": [
+    "风险预算是否明确",
+    "资产占用是否覆盖",
+    "调整建议是否可执行",
+    "是否适合基金经理查看"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

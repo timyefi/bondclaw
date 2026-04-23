@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-covenant-event-watch-v1",
   "role": "credit",
@@ -44,3 +45,51 @@
     "是否说明可能路径"
   ]
 }
+=======
+{
+  "id": "credit-covenant-event-watch-v1",
+  "role": "credit",
+  "workflow": "covenant-event-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "covenant_events",
+      "early_warning_signals"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "covenant_events": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "early_warning_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕主体条款事件和风险信号写一份监控简报，强调条款触发、保护边界、可能的违约路径和需要追踪的变量。输出适合内部预警。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "covenant_events": [
+      "担保结构变化",
+      "新增限制性条款"
+    ],
+    "early_warning_signals": [
+      "外部融资收紧",
+      "经营现金流波动"
+    ]
+  },
+  "qa_checklist": [
+    "是否明确条款事件",
+    "是否识别预警信号",
+    "是否说明可能路径"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

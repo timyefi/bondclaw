@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-weekly-strategy-update-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合周会上直接说明"
   ]
 }
+=======
+{
+  "id": "fund-manager-weekly-strategy-update-v1",
+  "role": "fund-manager",
+  "workflow": "weekly-strategy-update",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "week_start",
+      "strategy_focus",
+      "risk_items"
+    ],
+    "properties": {
+      "week_start": { "type": "string" },
+      "strategy_focus": { "type": "array", "items": { "type": "string" } },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入周起点、策略重点和风险项，生成一份周度策略更新。要求说明本周策略重心、组合动作、风控关注和复盘节点，保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "week_start": "2026-04-13",
+    "strategy_focus": ["久期控制", "信用分层", "现金管理"],
+    "risk_items": ["政策变化", "流动性收缩"]
+  },
+  "qa_checklist": [
+    "策略重点是否明确",
+    "组合动作是否可执行",
+    "风险项是否覆盖",
+    "是否适合周会上直接说明"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

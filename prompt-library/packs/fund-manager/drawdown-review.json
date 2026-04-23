@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-drawdown-review-v1",
   "role": "fund-manager",
@@ -38,3 +39,45 @@
     "是否提出后续修复路径"
   ]
 }
+=======
+{
+  "id": "fund-manager-drawdown-review-v1",
+  "role": "fund-manager",
+  "workflow": "drawdown-review",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "drawdown_window",
+      "portfolio_changes"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "drawdown_window": { "type": "string" },
+      "portfolio_changes": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕组合回撤做一份复盘，说明回撤来源、暴露方向、应对动作和后续修复路径。要求先结论，再拆因，再给管理建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "drawdown_window": "近五个交易日",
+    "portfolio_changes": [
+      "利率久期偏长",
+      "信用仓位集中"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明回撤来源",
+    "是否给出应对动作",
+    "是否提出后续修复路径"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

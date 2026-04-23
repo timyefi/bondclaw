@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-delta-exposure-note-v1",
   "role": "convertibles",
@@ -38,3 +39,45 @@
     "是否给出仓位动作"
   ]
 }
+=======
+{
+  "id": "convertibles-delta-exposure-note-v1",
+  "role": "convertibles",
+  "workflow": "delta-exposure-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "position_profile",
+      "underlying_moves"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "position_profile": { "type": "string" },
+      "underlying_moves": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据持仓的 delta 暴露和正股变动，判断组合当前对行情的敏感度，并给出是否需要调节仓位的建议。要求先判断，再解释，再给动作。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "position_profile": "偏高 delta，集中在成长风格",
+    "underlying_moves": [
+      "正股放量上行",
+      "波动率抬升"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明 delta 暴露",
+    "是否结合正股变化",
+    "是否给出仓位动作"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

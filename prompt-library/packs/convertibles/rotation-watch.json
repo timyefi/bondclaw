@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-rotation-watch-v1",
   "role": "convertibles",
@@ -33,3 +34,40 @@
     "是否适合晨会或盘前使用"
   ]
 }
+=======
+{
+  "id": "convertibles-rotation-watch-v1",
+  "role": "convertibles",
+  "workflow": "rotation-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "rotation_view",
+      "candidate_list"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "rotation_view": { "type": "string" },
+      "candidate_list": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、轮动判断和候选列表，生成一份转债轮动观察。要求说明轮动逻辑、候选优先级、正股驱动和需要跟踪的信号。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "rotation_view": "风格切向进攻",
+    "candidate_list": ["转债A", "转债B", "转债C"]
+  },
+  "qa_checklist": [
+    "轮动逻辑是否明确",
+    "优先级是否合理",
+    "跟踪信号是否具体",
+    "是否适合晨会或盘前使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

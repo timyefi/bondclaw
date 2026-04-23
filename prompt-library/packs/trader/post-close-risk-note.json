@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "trader-post-close-risk-note-v1",
   "role": "trader",
@@ -33,3 +34,40 @@
     "是否适合交易员收尾查看"
   ]
 }
+=======
+{
+  "id": "trader-post-close-risk-note-v1",
+  "role": "trader",
+  "workflow": "post-close-risk-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "post_close_items",
+      "risk_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "post_close_items": { "type": "array", "items": { "type": "string" } },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、收盘后事项和风险项，生成一份盘后风险提示。要求写清收盘后还要完成什么、哪类风险最需要留档、第二天最先承接的动作是什么，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "post_close_items": ["未完成回执", "待确认成交"],
+    "risk_items": ["差异未闭合", "结算延迟"]
+  },
+  "qa_checklist": [
+    "盘后事项是否完整",
+    "风险留档是否清楚",
+    "次日承接动作是否明确",
+    "是否适合交易员收尾查看"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

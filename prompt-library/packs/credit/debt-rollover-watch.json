@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-debt-rollover-watch-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "是否适合风控和研究共享"
   ]
 }
+=======
+{
+  "id": "credit-debt-rollover-watch-v1",
+  "role": "credit",
+  "workflow": "debt-rollover-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "rollover_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "rollover_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和到期滚动信号，生成一份债务滚动观察。要求写清到期压力、滚动可得性、替代融资路径和需要继续跟踪的节点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "rollover_signals": ["短债集中到期", "银行授信收紧", "再融资条件不稳"]
+  },
+  "qa_checklist": [
+    "到期压力是否清楚",
+    "滚动路径是否明确",
+    "替代融资路径是否提到",
+    "是否适合风控和研究共享"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-new-issue-screen-v1",
   "role": "convertibles",
@@ -36,3 +37,43 @@
     "是否适合盘前直接使用"
   ]
 }
+=======
+{
+  "id": "convertibles-new-issue-screen-v1",
+  "role": "convertibles",
+  "workflow": "new-issue-screen",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issue_list",
+      "screen_criteria"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issue_list": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "screen_criteria": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入发行列表和筛选标准，输出一份转债新券筛选结果。要求列出筛选逻辑、候选排序、关键条款、正股观察点和交易提醒，写作风格保持研报化。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "issue_list": ["新券A", "新券B", "新券C"],
+    "screen_criteria": "双低、条款友好、正股弹性"
+  },
+  "qa_checklist": [
+    "筛选标准是否清楚",
+    "候选排序是否合理",
+    "条款和正股是否都覆盖",
+    "是否适合盘前直接使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

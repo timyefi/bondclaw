@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "rates-curve-attribution-v1",
   "role": "rates",
@@ -27,3 +28,34 @@
     "是否给出交易含义"
   ]
 }
+=======
+{
+  "id": "rates-curve-attribution-v1",
+  "role": "rates",
+  "workflow": "curve-attribution",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["date", "curve_points"],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_points": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "根据输入的收益率曲线点位和市场变化，判断曲线变陡、变平或平移的主要驱动，并给出交易含义。要求结构清晰，先结论后解释。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "curve_points": ["1Y", "3Y", "5Y", "10Y"]
+  },
+  "qa_checklist": [
+    "是否先给曲线判断",
+    "是否解释驱动因素",
+    "是否给出交易含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

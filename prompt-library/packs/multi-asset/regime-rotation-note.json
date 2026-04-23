@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-regime-rotation-note-v1",
   "role": "multi-asset",
@@ -33,3 +34,40 @@
     "是否适合周会或晨会使用"
   ]
 }
+=======
+{
+  "id": "multi-asset-regime-rotation-note-v1",
+  "role": "multi-asset",
+  "workflow": "regime-rotation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "regime_view",
+      "rotation_triggers"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "regime_view": { "type": "string" },
+      "rotation_triggers": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、市场风格判断和轮动触发项，生成一份多资产轮动说明。要求覆盖股债、信用、现金和权益之间的相对变化，并给出调仓优先级、风险预算和观察节点，全文保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "regime_view": "防守切换",
+    "rotation_triggers": ["利率抬升", "权益波动加大", "信用利差走阔"]
+  },
+  "qa_checklist": [
+    "市场风格判断是否明确",
+    "轮动触发条件是否具体",
+    "优先级是否可执行",
+    "是否适合周会或晨会使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

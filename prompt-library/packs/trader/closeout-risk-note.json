@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "trader-closeout-risk-note-v1",
   "role": "trader",
@@ -33,3 +34,40 @@
     "是否适合收盘前快速查看"
   ]
 }
+=======
+{
+  "id": "trader-closeout-risk-note-v1",
+  "role": "trader",
+  "workflow": "closeout-risk-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "closeout_items",
+      "risk_items"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "closeout_items": { "type": "array", "items": { "type": "string" } },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、收尾事项和风险项，生成一份收盘收尾风险提示。要求写清待收尾事项、可能卡点、优先处理顺序和次日需要承接的动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "closeout_items": ["成交确认", "回执核对"],
+    "risk_items": ["对账延迟", "回款未确认"]
+  },
+  "qa_checklist": [
+    "收尾事项是否完整",
+    "卡点是否明确",
+    "优先顺序是否清楚",
+    "是否适合收盘前快速查看"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

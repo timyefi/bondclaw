@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-terms-alert-v1",
   "role": "convertibles",
@@ -33,3 +34,40 @@
     "是否适合交易员和研究员共用"
   ]
 }
+=======
+{
+  "id": "convertibles-terms-alert-v1",
+  "role": "convertibles",
+  "workflow": "terms-alert",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "terms_updates",
+      "convertible_list"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "terms_updates": { "type": "array", "items": { "type": "string" } },
+      "convertible_list": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、条款更新和转债列表，生成一份条款提醒。要求说明条款变化、潜在影响、对应标的和是否需要立刻调整关注顺序。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "terms_updates": ["回售条件变化", "赎回窗口变化"],
+    "convertible_list": ["转债A", "转债B"]
+  },
+  "qa_checklist": [
+    "条款变化是否写明",
+    "影响标的是否清楚",
+    "是否需要调整关注顺序",
+    "是否适合交易员和研究员共用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

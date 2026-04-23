@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-exposure-tilt-note-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合投委或晨会使用"
   ]
 }
+=======
+{
+  "id": "fund-manager-exposure-tilt-note-v1",
+  "role": "fund-manager",
+  "workflow": "exposure-tilt-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "exposure_state",
+      "tilt_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "exposure_state": { "type": "string" },
+      "tilt_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、敞口状态和倾斜信号，生成一份敞口倾斜说明。要求写清当前敞口偏向、为何倾斜、需要保留的约束以及下一步验证点，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "exposure_state": "久期略高、信用中性",
+    "tilt_signals": ["利率波动收敛", "信用利差稳定"]
+  },
+  "qa_checklist": [
+    "敞口偏向是否清楚",
+    "倾斜理由是否明确",
+    "约束是否保留",
+    "是否适合投委或晨会使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

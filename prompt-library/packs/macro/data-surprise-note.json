@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-data-surprise-note-v1",
   "role": "macro",
@@ -32,3 +33,39 @@
     "是否落到政策与定价"
   ]
 }
+=======
+{
+  "id": "macro-data-surprise-note-v1",
+  "role": "macro",
+  "workflow": "data-surprise-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "data_release",
+      "consensus_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "data_release": { "type": "string" },
+      "consensus_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕宏观数据发布写一份数据超预期或不及预期点评，说明预期差、背后结构、对政策判断和市场定价的影响。要求先结论，再证据，再交易含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "data_release": "通胀数据发布",
+    "consensus_view": "市场预期持平"
+  },
+  "qa_checklist": [
+    "是否说明预期差",
+    "是否分析结构性原因",
+    "是否落到政策与定价"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

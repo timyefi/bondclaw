@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "role": "trader",
   "display_name": "固收交易员",
@@ -26,3 +27,33 @@
   ],
   "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
 }
+=======
+{
+  "role": "trader",
+  "display_name": "固收交易员",
+  "canonical_skill": "research-writing",
+  "workflows": [
+    "inventory-scan",
+    "deal-anomaly-check",
+    "spread-trade-opportunity",
+    "execution-note",
+    "liquidity-warning",
+    "preclose-checklist",
+    "morning-execution-checklist",
+    "liquidity-gap-note",
+    "end-of-day-checklist",
+    "settlement-followup-note",
+    "position-reconciliation-note",
+    "intraday-liquidity-note",
+    "execution-window-note",
+    "morning-liquidity-window",
+    "settlement-risk-note",
+    "inventory-risk-note",
+    "closeout-risk-note",
+    "open-close-spread-note",
+    "reconciliation-closeout-note",
+    "post-close-risk-note"
+  ],
+  "notes": "This manifest is the seed for expanding to 20 workflows and 100 prompt variants."
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

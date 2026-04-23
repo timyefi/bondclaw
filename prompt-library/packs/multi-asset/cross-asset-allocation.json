@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-cross-asset-allocation-v1",
   "role": "multi-asset",
@@ -27,3 +28,34 @@
     "是否提示风险预算"
   ]
 }
+=======
+{
+  "id": "multi-asset-cross-asset-allocation-v1",
+  "role": "multi-asset",
+  "workflow": "cross-asset-allocation",
+  "variant": "default",
+  "required_skills": ["research-writing"],
+  "input_schema": {
+    "type": "object",
+    "required": ["date", "asset_views"],
+    "properties": {
+      "date": { "type": "string" },
+      "asset_views": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "基于多资产观点生成配置建议，重点说明股债比价、风险预算和风格切换。先结论，再理由，再操作建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "asset_views": ["权益", "利率债", "信用债"]
+  },
+  "qa_checklist": [
+    "是否体现跨资产比较",
+    "是否给出配置建议",
+    "是否提示风险预算"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

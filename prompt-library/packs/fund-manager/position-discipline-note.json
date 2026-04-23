@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-position-discipline-note-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合投委或晨会使用"
   ]
 }
+=======
+{
+  "id": "fund-manager-position-discipline-note-v1",
+  "role": "fund-manager",
+  "workflow": "position-discipline-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "position_state",
+      "discipline_flags"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "position_state": { "type": "string" },
+      "discipline_flags": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、持仓状态和纪律信号，生成一份持仓纪律说明。要求写清当前仓位结构、纪律约束、是否需要降风险，以及下一步调仓前应确认的事项，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "position_state": "久期略高、信用中性",
+    "discipline_flags": ["回撤接近阈值", "单券集中度抬升"]
+  },
+  "qa_checklist": [
+    "仓位结构是否说明",
+    "纪律约束是否明确",
+    "调仓确认点是否具体",
+    "是否适合投委或晨会使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

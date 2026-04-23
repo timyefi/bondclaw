@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-delta-and-gamma-review-v1",
   "role": "convertibles",
@@ -33,3 +34,40 @@
     "是否适合盘中参考"
   ]
 }
+=======
+{
+  "id": "convertibles-delta-and-gamma-review-v1",
+  "role": "convertibles",
+  "workflow": "delta-and-gamma-review",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "convertible_list",
+      "risk_focus"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "convertible_list": { "type": "array", "items": { "type": "string" } },
+      "risk_focus": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、转债列表和风险关注点，生成一份 delta/gamma 复盘。要求写清正股驱动、弹性变化、仓位含义和交易提醒，保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "convertible_list": ["转债A", "转债B"],
+    "risk_focus": ["正股波动", "仓位敏感度"]
+  },
+  "qa_checklist": [
+    "弹性变化是否清楚",
+    "仓位含义是否明确",
+    "交易提醒是否具体",
+    "是否适合盘中参考"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-event-risk-monitor-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "后续验证是否具体"
   ]
 }
+=======
+{
+  "id": "credit-event-risk-monitor-v1",
+  "role": "credit",
+  "workflow": "event-risk-monitor",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "date",
+      "event_signals"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "date": { "type": "string" },
+      "event_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入发行人、日期和事件信号，生成一份信用事件风险监测笔记。要求拆解事件内容、潜在影响、市场反馈和需要继续验证的细节，语言保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "date": "2026-04-11",
+    "event_signals": ["公告变更", "评级关注", "舆情升温"]
+  },
+  "qa_checklist": [
+    "事件描述是否清楚",
+    "影响评估是否有边界",
+    "市场反馈是否覆盖",
+    "后续验证是否具体"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

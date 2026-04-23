@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-overseas-shift-note-v1",
   "role": "macro",
@@ -44,3 +45,51 @@
     "是否落到国内含义"
   ]
 }
+=======
+{
+  "id": "macro-overseas-shift-note-v1",
+  "role": "macro",
+  "workflow": "overseas-shift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "overseas_signals",
+      "domestic_implications"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "overseas_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "domestic_implications": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕海外利率、汇率和风险偏好变化写一份简短笔记，说明海外变化如何传导到国内债市和资金面。要求先结论，再机制，再操作含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "overseas_signals": [
+      "美债收益率波动",
+      "美元指数走强"
+    ],
+    "domestic_implications": [
+      "情绪传导",
+      "久期波动"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明海外变化",
+    "是否讲清传导机制",
+    "是否落到国内含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

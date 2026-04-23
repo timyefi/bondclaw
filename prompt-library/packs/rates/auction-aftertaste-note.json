@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "rates-auction-aftertaste-note-v1",
   "role": "rates",
@@ -38,3 +39,45 @@
     "是否给出含义"
   ]
 }
+=======
+{
+  "id": "rates-auction-aftertaste-note-v1",
+  "role": "rates",
+  "workflow": "auction-aftertaste-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "auction_result",
+      "price_action"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "auction_result": { "type": "string" },
+      "price_action": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕招标后的市场反应写一份余味点评，说明结果是否改变了市场对供给和定价的判断。要求先给结论，再给结果，再给含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "auction_result": "结果偏稳",
+    "price_action": [
+      "中长端跟随",
+      "短端波动有限"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明招标结果",
+    "是否分析市场反应",
+    "是否给出含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

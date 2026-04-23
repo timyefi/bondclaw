@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-committee-brief-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合会议直接宣读"
   ]
 }
+=======
+{
+  "id": "fund-manager-committee-brief-v1",
+  "role": "fund-manager",
+  "workflow": "committee-brief",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "committee_date",
+      "decision_points",
+      "risk_items"
+    ],
+    "properties": {
+      "committee_date": { "type": "string" },
+      "decision_points": { "type": "array", "items": { "type": "string" } },
+      "risk_items": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入的会议日期、决策点和风险项，生成一份委员会简报。要求分成当前组合状态、需要讨论的决策、主要风险、后续执行安排和复盘节点，语言保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "committee_date": "2026-04-11",
+    "decision_points": ["久期调整", "信用加减仓", "现金头寸安排"],
+    "risk_items": ["政策变化", "资金面波动"]
+  },
+  "qa_checklist": [
+    "决策点是否清楚",
+    "风险项是否覆盖主要问题",
+    "执行安排是否明确",
+    "是否适合会议直接宣读"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-issuer-risk-memo-v1",
   "role": "credit",
@@ -36,3 +37,43 @@
     "是否便于直接发给基金经理"
   ]
 }
+=======
+{
+  "id": "credit-issuer-risk-memo-v1",
+  "role": "credit",
+  "workflow": "issuer-risk-memo",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "date",
+      "risk_signals"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "date": { "type": "string" },
+      "risk_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "针对输入发行人和风险信号，生成一份信用风险备忘录。要求先给出风险结论，再拆解财务、流动性、债务结构、事件催化和后续验证路径，全文保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "date": "2026-04-10",
+    "risk_signals": ["偿债压力", "融资收紧", "担保变化"]
+  },
+  "qa_checklist": [
+    "风险结论是否先行",
+    "信号是否有证据链",
+    "后续验证路径是否明确",
+    "是否便于直接发给基金经理"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

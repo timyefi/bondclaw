@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-policy-implementation-note-v1",
   "role": "macro",
@@ -33,3 +34,40 @@
     "是否适合晨会快速使用"
   ]
 }
+=======
+{
+  "id": "macro-policy-implementation-note-v1",
+  "role": "macro",
+  "workflow": "policy-implementation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_measure",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_measure": { "type": "string" },
+      "focus_topics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、政策落地措施和关注主题，生成一份政策落地观察。要求写清政策如何实施、最先影响哪些变量、市场会如何重新定价，以及后续需要验证的信号，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "policy_measure": "降准并配合窗口指导",
+    "focus_topics": ["政策", "流动性", "利率"]
+  },
+  "qa_checklist": [
+    "实施路径是否说清",
+    "影响变量是否明确",
+    "市场定价逻辑是否完整",
+    "是否适合晨会快速使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -15,6 +15,15 @@
 报告及工作流/
 .claude/
 .tablestore_config
+serverless/.env
+tmp/
+vendor/
+glmkey.md
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
 node_modules/
 out/
 dist/
@@ -24,3 +33,4 @@ serverless/
 src/
 研究报告数据录入规范.md
 训练.md
+AI 培训/

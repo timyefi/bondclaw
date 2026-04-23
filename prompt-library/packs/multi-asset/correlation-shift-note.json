@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-correlation-shift-note-v1",
   "role": "multi-asset",
@@ -44,3 +45,51 @@
     "是否给出配置含义"
   ]
 }
+=======
+{
+  "id": "multi-asset-correlation-shift-note-v1",
+  "role": "multi-asset",
+  "workflow": "correlation-shift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "correlation_changes",
+      "asset_impacts"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "correlation_changes": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "asset_impacts": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕相关性变化写一份多资产观察，说明哪些资产之间的联动变强或变弱，以及这会怎样影响组合分散效果。先结论，再解释，再给配置含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "correlation_changes": [
+      "股债相关性阶段性上升",
+      "信用与权益联动增强"
+    ],
+    "asset_impacts": [
+      "分散效果下降",
+      "需提升防御性"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明相关性变化",
+    "是否解释组合影响",
+    "是否给出配置含义"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

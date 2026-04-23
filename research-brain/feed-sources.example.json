@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "sources": [
     {
@@ -30,3 +31,37 @@
     }
   ]
 }
+=======
+{
+  "sources": [
+    {
+      "source_url": "https://example.com/feeds/research.xml",
+      "topic_tags": [
+        "report",
+        "strategy"
+      ],
+      "role_tags": [
+        "macro",
+        "rates"
+      ],
+      "polling_interval": "15m",
+      "dedupe_key": "guid",
+      "notification_policy": "notify-on-new"
+    },
+    {
+      "source_url": "https://example.com/feeds/ai-news.json",
+      "topic_tags": [
+        "ai",
+        "tooling"
+      ],
+      "role_tags": [
+        "multi-asset",
+        "fund-manager"
+      ],
+      "polling_interval": "30m",
+      "dedupe_key": "url",
+      "notification_policy": "digest-only"
+    }
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

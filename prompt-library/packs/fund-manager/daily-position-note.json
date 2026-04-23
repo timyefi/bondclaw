@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-daily-position-note-v1",
   "role": "fund-manager",
@@ -44,3 +45,51 @@
     "是否有今日关注动作"
   ]
 }
+=======
+{
+  "id": "fund-manager-daily-position-note-v1",
+  "role": "fund-manager",
+  "workflow": "daily-position-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "position_summary",
+      "overnight_changes"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "position_summary": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "overnight_changes": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕当日持仓生成一份简短仓位说明，说明当前配置、夜盘变化、需要重点关注的风险和今天要盯的动作。要求简洁、适合日常晨会后使用。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "position_summary": [
+      "久期中性",
+      "信用偏中高等级"
+    ],
+    "overnight_changes": [
+      "海外利率波动",
+      "存单收益率变化"
+    ]
+  },
+  "qa_checklist": [
+    "是否说明当前配置",
+    "是否覆盖夜盘变化",
+    "是否有今日关注动作"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

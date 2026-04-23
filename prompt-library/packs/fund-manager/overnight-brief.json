@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-overnight-brief-v1",
   "role": "fund-manager",
@@ -44,3 +45,51 @@
     "是否能接晨会"
   ]
 }
+=======
+{
+  "id": "fund-manager-overnight-brief-v1",
+  "role": "fund-manager",
+  "workflow": "overnight-brief",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "overnight_events",
+      "portfolio_watchlist"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "overnight_events": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "portfolio_watchlist": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕夜间发生的海外和国内事件写一份隔夜简报，说明哪些事件会影响第二天组合判断、哪些标的需要优先观察。要求短、准、能接晨会。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "overnight_events": [
+      "海外利率上行",
+      "国内政策消息"
+    ],
+    "portfolio_watchlist": [
+      "利率久期",
+      "信用敞口"
+    ]
+  },
+  "qa_checklist": [
+    "是否抓住隔夜事件",
+    "是否对应到持仓关注点",
+    "是否能接晨会"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

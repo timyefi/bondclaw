@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "convertibles-rotation-trade-note-v1",
   "role": "convertibles",
@@ -35,3 +36,42 @@
     "是否给出回撤控制"
   ]
 }
+=======
+{
+  "id": "convertibles-rotation-trade-note-v1",
+  "role": "convertibles",
+  "workflow": "rotation-trade-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "rotation_theme",
+      "candidate_bonds"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "rotation_theme": { "type": "string" },
+      "candidate_bonds": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕风格轮动写一份转债交易笔记，说明轮动主题、候选标的、入场逻辑和回撤控制。先给结论，再给排序，再给执行建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "rotation_theme": "低波动切高弹性",
+    "candidate_bonds": ["可转债A", "可转债B"]
+  },
+  "qa_checklist": [
+    "是否说明轮动主题",
+    "是否排序候选标的",
+    "是否给出回撤控制"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

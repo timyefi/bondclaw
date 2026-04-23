@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-financial-report-review-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "是否适合基金经理快速阅读"
   ]
 }
+=======
+{
+  "id": "credit-financial-report-review-v1",
+  "role": "credit",
+  "workflow": "financial-report-review",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "report_period",
+      "focus_metrics"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "report_period": { "type": "string" },
+      "focus_metrics": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入发行人、报告期和关注指标，生成一份财报解读。要求先给信用结论，再给利润、现金流、负债和非经常性项目的分析，最后给后续跟踪建议。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例发行人",
+    "report_period": "2025 年年报",
+    "focus_metrics": ["营业收入", "经营现金流", "有息负债"]
+  },
+  "qa_checklist": [
+    "信用结论是否先行",
+    "财务指标是否解释到位",
+    "现金流和负债是否覆盖",
+    "是否适合基金经理快速阅读"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

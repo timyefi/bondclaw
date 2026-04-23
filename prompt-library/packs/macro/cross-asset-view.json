@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-cross-asset-view-v1",
   "role": "macro",
@@ -33,3 +34,40 @@
     "是否便于投研团队共享"
   ]
 }
+=======
+{
+  "id": "macro-cross-asset-view-v1",
+  "role": "macro",
+  "workflow": "cross-asset-view",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "asset_classes",
+      "macro_theme"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "asset_classes": { "type": "array", "items": { "type": "string" } },
+      "macro_theme": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、资产类别和宏观主题，输出一份跨资产联动观察。要求把债券、权益、商品和外汇的方向一起看，说明宏观主题如何传导，并给出固收资产的操作含义。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "asset_classes": ["债券", "权益", "外汇"],
+    "macro_theme": "增长预期变化"
+  },
+  "qa_checklist": [
+    "资产联动是否覆盖",
+    "传导逻辑是否清楚",
+    "固收含义是否明确",
+    "是否便于投研团队共享"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

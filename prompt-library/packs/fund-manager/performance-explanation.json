@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-performance-explanation-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合对外解释"
   ]
 }
+=======
+{
+  "id": "fund-manager-performance-explanation-v1",
+  "role": "fund-manager",
+  "workflow": "performance-explanation",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "period",
+      "performance_reason",
+      "key_drivers"
+    ],
+    "properties": {
+      "period": { "type": "string" },
+      "performance_reason": { "type": "string" },
+      "key_drivers": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入周期、业绩原因和驱动项，生成一份业绩解释说明。要求写清收益来源、拖累项、可复制经验和后续优化方向，全文保持研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "period": "2026Q1",
+    "performance_reason": "利率方向判断正确",
+    "key_drivers": ["久期", "信用分层"]
+  },
+  "qa_checklist": [
+    "收益来源是否写清",
+    "拖累项是否覆盖",
+    "经验是否可复制",
+    "是否适合对外解释"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "rates-curve-trade-plan-v1",
   "role": "rates",
@@ -36,3 +37,43 @@
     "是否适合作为盘前计划"
   ]
 }
+=======
+{
+  "id": "rates-curve-trade-plan-v1",
+  "role": "rates",
+  "workflow": "curve-trade-plan",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "curve_segments",
+      "trade_view"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "curve_segments": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "trade_view": { "type": "string" }
+    }
+  },
+  "prompt_template": "基于输入日期、曲线分段和交易观点，生成一份利率曲线交易计划。要求包含当前曲线结构、驱动因素、交易思路、止损/止盈与风险提示，写作风格保持研报化、结论先行。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "curve_segments": ["1Y", "5Y", "10Y", "30Y"],
+    "trade_view": "关注 5Y-10Y 曲线形态变化"
+  },
+  "qa_checklist": [
+    "曲线分段是否写清",
+    "交易思路是否可执行",
+    "风险控制是否明确",
+    "是否适合作为盘前计划"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

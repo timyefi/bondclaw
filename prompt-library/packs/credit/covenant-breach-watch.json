@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-covenant-breach-watch-v1",
   "role": "credit",
@@ -33,3 +34,40 @@
     "是否适合风控共享"
   ]
 }
+=======
+{
+  "id": "credit-covenant-breach-watch-v1",
+  "role": "credit",
+  "workflow": "covenant-breach-watch",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "issuer_name",
+      "covenant_signals"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "issuer_name": { "type": "string" },
+      "covenant_signals": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、主体名称和契约信号，生成一份契约预警观察。要求写清可能触发的条款、对应的财务压力、事件演变路径和后续验证动作，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "issuer_name": "样本主体",
+    "covenant_signals": ["净资产约束趋紧", "担保空间缩小", "借新还旧压力抬升"]
+  },
+  "qa_checklist": [
+    "契约触发点是否清楚",
+    "压力传导是否说清",
+    "事件路径是否具体",
+    "是否适合风控共享"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

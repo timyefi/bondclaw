@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-daily-brief-v1",
   "role": "macro",
@@ -33,3 +34,40 @@
     "输出是否适合直接转发给投研团队"
   ]
 }
+=======
+{
+  "id": "macro-daily-brief-v1",
+  "role": "macro",
+  "workflow": "daily-brief",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "focus_topics"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "focus_topics": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "基于输入日期和关注主题，生成一份宏观晨报。要求先给结论，再给驱动因素、数据证据、市场含义和风险提示。全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "focus_topics": ["资金面", "政策预期", "海外利率"]
+  },
+  "qa_checklist": [
+    "结论是否先行",
+    "证据是否可回溯",
+    "风险提示是否明确",
+    "输出是否适合直接转发给投研团队"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

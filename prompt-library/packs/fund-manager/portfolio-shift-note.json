@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-portfolio-shift-note-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合投委或晨会使用"
   ]
 }
+=======
+{
+  "id": "fund-manager-portfolio-shift-note-v1",
+  "role": "fund-manager",
+  "workflow": "portfolio-shift-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "portfolio_shift",
+      "constraint_flags"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "portfolio_shift": { "type": "string" },
+      "constraint_flags": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、组合变化和约束信号，生成一份组合变化说明。要求写清调仓方向、约束原因、后续承接动作和需要同步给投委的内容，全文使用研报写作风格。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "portfolio_shift": "缩短久期、提高信用分散度",
+    "constraint_flags": ["回撤压力", "流动性约束"]
+  },
+  "qa_checklist": [
+    "调仓方向是否清楚",
+    "约束原因是否明确",
+    "承接动作是否具体",
+    "是否适合投委或晨会使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

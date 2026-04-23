@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "multi-asset-risk-off-allocation-note-v1",
   "role": "multi-asset",
@@ -44,3 +45,51 @@
     "是否落到配置动作"
   ]
 }
+=======
+{
+  "id": "multi-asset-risk-off-allocation-note-v1",
+  "role": "multi-asset",
+  "workflow": "risk-off-allocation-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "risk_off_signals",
+      "allocation_changes"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "risk_off_signals": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "allocation_changes": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "在风险偏好转弱时生成配置提示，说明需要向哪些资产收缩风险、哪些资产更适合作为防御性配置。先结论，再拆信号，再给动作。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "risk_off_signals": [
+      "海外波动上升",
+      "权益回撤扩大"
+    ],
+    "allocation_changes": [
+      "提升利率债占比",
+      "降低高弹性资产"
+    ]
+  },
+  "qa_checklist": [
+    "是否识别风险偏好变化",
+    "是否给出防御方向",
+    "是否落到配置动作"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

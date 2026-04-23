@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "credit-liquidity-pressure-note-v1",
   "role": "credit",
@@ -38,3 +39,45 @@
     "是否给出后续观察点"
   ]
 }
+=======
+{
+  "id": "credit-liquidity-pressure-note-v1",
+  "role": "credit",
+  "workflow": "liquidity-pressure-note",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "issuer",
+      "liquidity_events",
+      "latest_cash_profile"
+    ],
+    "properties": {
+      "issuer": { "type": "string" },
+      "liquidity_events": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "latest_cash_profile": { "type": "string" }
+    }
+  },
+  "prompt_template": "围绕主体流动性压力做快速备忘，说明触发事件、现金流缓冲、再融资路径和后续观察点。要求直接、简洁、可用于内部风险提醒。",
+  "output_format": "markdown",
+  "sample_case": {
+    "issuer": "示例主体",
+    "liquidity_events": [
+      "短债集中到期",
+      "融资渠道收缩"
+    ],
+    "latest_cash_profile": "账面现金覆盖率下降"
+  },
+  "qa_checklist": [
+    "是否明确压力来源",
+    "是否说明缓冲能力",
+    "是否给出后续观察点"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

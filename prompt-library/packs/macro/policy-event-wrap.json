@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "macro-policy-event-wrap-v1",
   "role": "macro",
@@ -38,3 +39,45 @@
     "是否落到债市和资金面"
   ]
 }
+=======
+{
+  "id": "macro-policy-event-wrap-v1",
+  "role": "macro",
+  "workflow": "policy-event-wrap",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "policy_event",
+      "market_reaction"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "policy_event": { "type": "string" },
+      "market_reaction": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  },
+  "prompt_template": "围绕当天政策事件写一份简短复盘，先给结论，再给政策含义、市场反馈、对债市和资金面的影响。文风保持克制、清晰、可转发。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-10",
+    "policy_event": "央行公开市场操作",
+    "market_reaction": [
+      "短端资金利率回落",
+      "长端收益率小幅震荡"
+    ]
+  },
+  "qa_checklist": [
+    "是否先给政策结论",
+    "是否解释市场反应",
+    "是否落到债市和资金面"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)

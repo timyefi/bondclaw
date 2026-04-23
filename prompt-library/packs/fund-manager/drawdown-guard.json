@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "id": "fund-manager-drawdown-guard-v1",
   "role": "fund-manager",
@@ -33,3 +34,40 @@
     "是否适合周会和风控会使用"
   ]
 }
+=======
+{
+  "id": "fund-manager-drawdown-guard-v1",
+  "role": "fund-manager",
+  "workflow": "drawdown-guard",
+  "variant": "default",
+  "required_skills": [
+    "research-writing"
+  ],
+  "input_schema": {
+    "type": "object",
+    "required": [
+      "date",
+      "drawdown_signal",
+      "portfolio_actions"
+    ],
+    "properties": {
+      "date": { "type": "string" },
+      "drawdown_signal": { "type": "string" },
+      "portfolio_actions": { "type": "array", "items": { "type": "string" } }
+    }
+  },
+  "prompt_template": "基于输入日期、回撤信号和组合动作，生成一份回撤防守提示。要求说明回撤来源、当前防守动作、是否需要减风险和后续观察信号。",
+  "output_format": "markdown",
+  "sample_case": {
+    "date": "2026-04-11",
+    "drawdown_signal": "净值波动扩大",
+    "portfolio_actions": ["减久期", "控制信用敞口"]
+  },
+  "qa_checklist": [
+    "回撤信号是否清楚",
+    "防守动作是否具体",
+    "是否需要减风险是否说明",
+    "是否适合周会和风控会使用"
+  ]
+}
+>>>>>>> 1183b41 (chore: sync current project snapshot)
